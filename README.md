@@ -13,7 +13,7 @@ die Konfiguration (`~/.config/cachy-daily-toolkit/config.env`) wird übernommen.
 
 ```
 ÜBERSICHT                 Übersicht: GPU, RAM, Laufzeit, Updates, Prefixe, Laufwerke · Schnellzugriff · Hinweise · Systemdaten
-WINE & PREFIXE            Programm starten · Prefixe verwalten
+WINE & PREFIXE            Launcher · Programm starten · Prefixe verwalten
 LAUNCHER & SPEICHERORTE   Speicherorte & Migration · ProtonPlus & Compat-Tools · Speicherplatz
 LAUFWERKE                 Laufwerke einbinden · Ordner anlegen
 SYSTEM                    Update & DKMS · GPU-Status · Logs & Diagnose · Shader-Cache leeren · Skalierung
@@ -29,9 +29,10 @@ Die Fenstergröße wird beim Schließen gespeichert; die zuletzt geöffnete Seit
 | Seite | Was sie tut |
 |---|---|
 | **Übersicht** | Kacheln mit Live-Werten (GPU-Name, Temperatur, Last, VRAM · RAM-Belegung · Laufzeit · Updates · Prefixe · Laufwerke), Schnellzugriff auf die wichtigsten Seiten, Hinweise (temporär gemountete oder nicht eingebundene Laufwerke, Kernel-Neustart, fehlendes ProtonPlus, Updates), Systemdaten. |
+| **Launcher** | Assistent für bekannte Windows-Launcher: **Ubisoft Connect, EA App, Epic Games Launcher, GOG Galaxy 2.0 (vollständiger Offline-Installer, aktuelle Version über GOGs Versionsabfrage, MD5-geprüft), Battle.net, Rockstar Games Launcher, Amazon Games**. Steam (Windows) fehlt bewusst: Proton ersetzt dessen `steam.exe` zwingend durch seine eingebaute Version. Ein Klick auf „Installieren …“ fragt Prefix (neu oder vorhanden), Speicherort, Runner (Proton über umu, Proton direkt, Wine), Startoptionen mit GOverlay-Übernahme, Programmargumente, Umgebungsvariablen und Verknüpfungen (Startmenü, Schreibtisch) ab, lädt dann den **offiziellen Installer** mit Fortschritt (Zwischenspeicher `~/.cache/cachy-daily-toolkit/installers`), legt den Prefix an, installiert (unbeaufsichtigt, wo das zuverlässig geht) und **legt die Verknüpfung automatisch an**, sobald das neu installierte Hauptprogramm existiert – auch wenn sich der Launcher nach der Installation selbst öffnet. Je Launcher sind belegte Proton-Einstellungen hinterlegt (z. B. `PROTON_ENABLE_WAYLAND=0`, Battle.net `WINE_SIMULATE_WRITECOPY=1`), der empfohlene Runner ist vorausgewählt; Ubisoft Connect bekommt vorab eine Einstellungsdatei (Overlay aus, Schließen beendet den Client). Bei einem Speicherort auf NTFS/exFAT warnt der Assistent. Installierte Launcher werden in **allen Prefixen erkannt**, auch manuell installierte; ein Klick legt dafür die Verknüpfung an. Je installiertem Launcher: Starten, Einstellungen (Runner, Startoptionen, Variablen, Verknüpfungen), **Deinstallieren**. |
 | **Programm starten** | .exe/.msi wählen oder per Drag & Drop ablegen, Prefix wählen oder neu anlegen. **Runner** je Start wählbar (Wie Prefix, Proton über umu, Proton direkt, Wine). **Startoptionen in Steam-Syntax** (`mangohud gamemoderun %command% -windowed`, Umgebungsvariablen vorne), Vorlagen, **„Aus GOverlay übernehmen“** (leitet die Zeile aus der GOverlay-/MangoHud-Konfiguration ab) und „GOverlay öffnen“, zusätzliche Umgebungsvariablen, **Befehlsvorschau** des vollständigen Startbefehls. **Installieren …** öffnet den Installations-Dialog (siehe unten). winecfg, winetricks, drive_c, Dateimanager-Verknüpfung für .exe/.msi. |
-| **Installieren …** | Fragt vor jeder Installation: Name der Anwendung, **Zielordner** (Standardordner, weitere Speicherorte oder beliebiger anderer Ordner – wird bei Bedarf angelegt) und Prefix-Name oder ein vorhandener Prefix, Runner, Architektur, Startoptionen, Verknüpfung im Startmenü/auf dem Schreibtisch. Legt den Prefix an, führt den Installer im Protokollfenster aus, sucht danach die neu installierten Programme und lässt das Hauptprogramm bestätigen; Icon wird aus der .exe gelesen. |
-| **Prefixe verwalten** | **Speicherorte**: Standardordner ändern (auf Wunsch vorhandene Prefixe mitverschieben), weitere Orte hinzufügen/entfernen – Prefixe in allen Orten werden automatisch gefunden und mit „WEITERER ORT“ markiert. Jeder Prefix (auch außerhalb des Standardordners, Wine- und Proton-Layout) als aufklappbare Zeile: Starten, winecfg, winetricks, drive_c, Backup, **Umbenennen**, **Verschieben** (anderes Dateisystem per rsync), **Verknüpfung anlegen**, **Löschen**; **Runner** (Proton/Wine/umu), **Startoptionen** und **Umgebungsvariablen** für alle Programme im Prefix, **Windows-DPI**; darunter die Anwendungen des Prefix mit Starten/Bearbeiten/Entfernen und Markierung für Startmenü/Schreibtisch. Backups wiederherstellen oder löschen. |
+| **Installieren …** | Fragt vor jeder Installation: Name der Anwendung, **Zielordner** (Standardordner, weitere Speicherorte oder beliebiger anderer Ordner – wird bei Bedarf angelegt) und Prefix-Name oder ein vorhandener Prefix, Runner, Architektur, Startoptionen, Verknüpfung im Startmenü/auf dem Schreibtisch. Erkennt bekannte Launcher-Installer am Dateinamen (dann unbeaufsichtigt und mit bekanntem Programmpfad). Legt den Prefix an, führt den Installer im Protokollfenster aus und **legt danach automatisch die Verknüpfung an**: bei bekannten Launchern sicher, sonst für das wahrscheinlichste neu installierte Programm (änderbar unter „Prefixe verwalten“); nur wenn nichts gefunden wird, fragt das Tool nach. Icon wird aus der .exe gelesen. |
+| **Prefixe verwalten** | **Speicherorte**: Standardordner ändern (auf Wunsch vorhandene Prefixe mitverschieben), weitere Orte hinzufügen/entfernen – Prefixe in allen Orten werden automatisch gefunden und mit „WEITERER ORT“ markiert. Jeder Prefix (auch außerhalb des Standardordners, Wine- und Proton-Layout) als aufklappbare Zeile: Starten, winecfg, winetricks, drive_c, Backup, **Umbenennen**, **Verschieben** (anderes Dateisystem per rsync), **Verknüpfung anlegen**, **Löschen**; **Runner** (Proton/Wine/umu), **Startoptionen** und **Umgebungsvariablen** für alle Programme im Prefix, **Windows-DPI**; darunter die Anwendungen des Prefix mit Starten/Bearbeiten/**Deinstallieren** und Markierung für Startmenü/Schreibtisch, sowie gefundene Launcher ohne Verknüpfung mit „Verknüpfung anlegen“. **Windows-Programme …** zeigt die Windows-Programmliste des Prefix (wie „Programme deinstallieren“ unter Windows) mit Deinstallieren je Eintrag. Backups wiederherstellen oder löschen. |
 | **Speicherorte & Migration** | Zielordner wählen (freier Platz wird angezeigt). Gefundene Launcher mit Art (nativ/Flatpak/Wine-Prefix), Pfad und Größe: Steam, Lutris, Heroic, Bottles, Steam-Compat-Tools sowie Ubisoft Connect, GOG Galaxy, Rockstar, Xbox, Epic, Battle.net, EA App in beliebig benannten Prefixen. Auswahl → **rsync mit Fortschritt**, danach Original löschen und Symlink setzen. Bereits verschobene Einträge sind markiert. |
 | **ProtonPlus & Compat-Tools** | Status (nativ/Flatpak/fehlt), starten, per Flatpak installieren/aktualisieren (Flathub wird bei Bedarf als Benutzer-Remote eingerichtet). Tags für umu-launcher und proton-cachyos. Liste installierter Proton-/Wine-Versionen in Steam, Heroic, Lutris, Bottles, umu; alle Tool-Pfade mit Vorhanden/Fehlt. |
 | **Speicherplatz** | Alle realen Dateisysteme mit Balken und frei/gesamt; Gaming-Ordner (Steam, Lutris, Heroic, Bottles, Prefix-Root, Zielordner, Backups) mit Größen und Summe. |
@@ -43,6 +44,18 @@ Die Fenstergröße wird beim Schließen gespeichert; die zuletzt geöffnete Seit
 | **Shader-Cache leeren** | Steam-Shader-Cache (nativ/Flatpak), DXVK-/VKD3D-Caches in Prefixen und Spieleordner, Mesa-Cache, NVIDIA GLCache – mit Größen, Auswahl und Bestätigung. |
 | **Skalierung** | Desktop-Skalierung 100–250 % (KDE kdeglobals / GNOME / GDK_SCALE) mit Anzeige des aktuellen Werts und Verweis auf die Anzeige-Einstellungen (Plasma Wayland skaliert je Bildschirm); Windows-DPI je Prefix; Fenstergröße zurücksetzen. |
 | **Einstellungen** (Menü) | Wine-Prefix-Root, Gaming-Zielordner, Backup-Ordner, Basisverzeichnis für Mountpoints, Standard-Startoptionen, GPU-Autoaktualisierung. |
+
+## Deinstallation von Launchern und Programmen
+
+„Deinstallieren …“ (Launcher-Seite oder Anwendung auf der Prefix-Seite) bietet drei Stufen:
+
+| Stufe | Was passiert |
+|---|---|
+| Programm im Prefix (Vorauswahl) | Windows-Deinstallation des Programms im Prefix starten (Eintrag aus der Windows-Programmliste per `uninstaller --remove`, über denselben Runner wie der Prefix; bei mehreren Treffern Auswahl). Das Tool wartet, bis auch nachgelagerte Deinstallationsprozesse beendet sind, und entfernt dann Verknüpfungen und Eintrag. Der Prefix samt darin installierten Spielen bleibt. |
+| Vollständig | Laufende Prozesse des Prefix beenden, Prefix samt allen Dateien – auch darin installierter Spiele – löschen, alle Anwendungen des Prefix samt Verknüpfungen entfernen. Speicherorte, das Home-Verzeichnis und Ordner, die keine Prefixe sind, werden nie gelöscht. |
+| Nur Verknüpfung | Verknüpfungen und Eintrag entfernen, Dateien bleiben. |
+
+Während ein Launcher nach der Installation noch geöffnet ist, weist das Tool beim Deinstallieren darauf hin, ihn zuerst zu schließen.
 
 ## Runner: Proton, umu-launcher, Wine
 
@@ -136,7 +149,8 @@ cachy_toolkit/            Python-Paket
   goverlay.py             GOverlay-/MangoHud-Anbindung und Vorlagen
   registry.py             Prefixe außerhalb des Standardordners, Einstellungen je Prefix, Anwendungen
   shortcuts.py            Startmenü-/Schreibtisch-Verknüpfungen, Icon aus .exe (pefile + Pillow)
-  ui/                     app.py, window.py, widgets.py, dashboard.py, pages_*.py, dialogs.py, style.css
+  launchers.py            Launcher-Katalog (offizielle Installer, Silent-Argumente, Programmpfade), Download, Erkennung
+  ui/                     app.py, window.py, widgets.py, dashboard.py, pages_*.py (u. a. pages_launchers.py), dialogs.py, style.css
 data/                     .desktop-Datei und Icons (hicolor)
 scripts/                  Startskript, Paketbau, uninstall.sh (Wrapper auf cachy_toolkit/uninstall.sh)
 tests/                    Unit-Tests der Backend-Logik

@@ -10,6 +10,7 @@ from .dashboard import DashboardPage
 from .pages_drives import DrivesPage, FoldersPage
 from .pages_launcher import CompatPage, StoragePage, UsagePage
 from .pages_system import CachePage, GpuPage, LogsPage, ScalingPage, UpdatePage
+from .pages_launchers import LaunchersPage
 from .pages_wine import LaunchPage, PrefixesPage
 from .util import Adw, Gio, Gtk, icon_button, label, pick_icon, run_async
 from .widgets import NavItem, Page
@@ -17,7 +18,7 @@ from .widgets import NavItem, Page
 SIDEBAR_WIDTH = 272
 SECTIONS: list[tuple[str, list[type[Page]]]] = [
     ("ÜBERSICHT", [DashboardPage]),
-    ("WINE & PREFIXE", [LaunchPage, PrefixesPage]),
+    ("WINE & PREFIXE", [LaunchersPage, LaunchPage, PrefixesPage]),
     ("LAUNCHER & SPEICHERORTE", [StoragePage, CompatPage, UsagePage]),
     ("LAUFWERKE", [DrivesPage, FoldersPage]),
     ("SYSTEM", [UpdatePage, GpuPage, LogsPage, CachePage, ScalingPage]),

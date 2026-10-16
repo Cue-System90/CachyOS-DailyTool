@@ -36,6 +36,7 @@ class AppEntry:
     menu: bool = False
     desktop: bool = False
     created: float = 0.0
+    launcher: str = ""              # Kennung aus launchers.CATALOG, wenn es ein bekannter Launcher ist
 
 
 def slugify(text: str) -> str:
@@ -182,6 +183,16 @@ class Registry:
     def apps_for_prefix(self, path: str | Path) -> list[AppEntry]:
         key = self._key(path)
         return [a for a in self.apps.values() if self._key(a.prefix) == key]
+
+    def find_app(self, prefix: str | Path, launcher: str = "", exe: str = "") -> AppEntry | None:
+        """Vorhandenen Eintrag im selben Prefix für denselben Launcher bzw. dieselbe .exe finden (keine Doppelten)."""
+        key = self._key(prefix)
+        for a in self.apps.values():
+            if self._key(a.prefix) != key:
+                continue
+            if (launcher and a.launcher == launcher) or (exe and self._key(a.exe) == self._key(exe)):
+                return a
+        return None
 
     def all_apps(self) -> list[AppEntry]:
         return sorted(self.apps.values(), key=lambda a: a.name.lower())

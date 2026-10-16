@@ -135,6 +135,18 @@ class ToolkitApp(Adw.Application):
                         self.window.refresh_current()
                     elif parts[0] == "prefs" and self.window:
                         self.window.open_preferences()
+                    elif parts[0] == "wizard" and len(parts) > 1 and self.window:
+                        from .. import launchers as _l
+                        from .pages_launchers import launcher_install_dialog
+                        self.window.navigate("launchers")
+                        pg = self.window.pages["launchers"]
+                        spec = _l.get(parts[1])
+                        if spec:
+                            launcher_install_dialog(pg, pg.task, spec, pg.prefixes, pg._changed)
+                    elif parts[0] == "click-ok":
+                        from .pages_wine import FormDialog
+                        if FormDialog.last is not None:
+                            FormDialog.last.ok.emit("clicked")
                     elif parts[0] == "tour" and self.window:
                         self._tour(int(parts[1]) if len(parts) > 1 else 3000)
                     elif parts[0] == "quit":

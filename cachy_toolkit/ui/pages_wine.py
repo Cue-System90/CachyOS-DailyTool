@@ -9,14 +9,15 @@ from __future__ import annotations
 import os
 import re
 import shutil
+import time
 from pathlib import Path
 
-from .. import compat, goverlay, launch_options, shortcuts, system
+from .. import compat, goverlay, launch_options, launchers, shortcuts, system
 from ..launcher import LaunchError
 from ..registry import AppEntry, slugify
-from .util import (Adw, Gdk, Gio, Gtk, button, choose_file, choose_folder, confirm, ask_text, copy_text, fmt_time,
-                   icon_button, label, pick_icon, run_async)
-from .widgets import Page, PathRow, Tag, TaskRunner, action_row, group
+from .util import (Adw, Gdk, Gio, GLib, Gtk, button, choose_file, choose_folder, confirm, ask_text, copy_text, fmt_time,
+                   icon_button, idle, label, pick_icon, run_async)
+from .widgets import Page, PathRow, Tag, TaskRunner, action_row, button_flow, group
 
 ARCHS = ["win64 (empfohlen)", "win32 (ältere 32-Bit-Programme)"]
 EXE_PATTERNS = [("Windows-Programme (*.exe, *.msi)", ["*.exe", "*.EXE", "*.msi", "*.MSI"]), ("Alle Dateien", ["*"])]
@@ -75,12 +76,18 @@ def scan_exes(wine_dir: Path) -> set[str]:
     return out
 
 
-def candidate_exes(before: set[str], after: set[str], app_name: str) -> list[str]:
+def split_candidates(before: set[str], after: set[str], app_name: str) -> tuple[list[str], list[str]]:
+    """(plausible Hauptprogramme, aussortierte wie Uninstaller/Updater/Setup) unter den neu hinzugekommenen .exe."""
     new = sorted(after - before)
     tokens = [t for t in re.split(r"[^a-z0-9]+", app_name.lower()) if len(t) > 2]
     good = [e for e in new if not any(s in Path(e).stem.lower() for s in SKIP_EXE)]
     good.sort(key=lambda e: (-sum(1 for t in tokens if t in Path(e).stem.lower()), len(Path(e).parts), e.lower()))
     rest = [e for e in new if e not in good]
+    return good, rest
+
+
+def candidate_exes(before: set[str], after: set[str], app_name: str) -> list[str]:
+    good, rest = split_candidates(before, after, app_name)
     return good + rest
 
 
@@ -144,8 +151,11 @@ class LocationRow(Adw.ComboRow):
 
 
 class FormDialog(Adw.Dialog):
+    last: "FormDialog | None" = None     # zuletzt geöffneter Dialog (für den Test-Steuerkanal)
+
     def __init__(self, title: str, ok_label: str, on_ok, width: int = 640, height: int = 640) -> None:
         super().__init__(title=title, content_width=width, content_height=height)
+        FormDialog.last = self
         tv = Adw.ToolbarView()
         tv.add_top_bar(Adw.HeaderBar())
         self.page = Adw.PreferencesPage()
@@ -161,6 +171,215 @@ class FormDialog(Adw.Dialog):
         self.page.add(g)
 
 
+# ----------------------------------------------------------------------------- Gemeinsame Abläufe
+def register_app(win, *, name: str, exe: str, prefix: str | Path, launcher_id: str = "", launch_options_text: str = "",
+                 args: str = "", env: dict[str, str] | None = None, tool: str = "", menu: bool = True, desktop: bool = False,
+                 keep_existing: bool = False) -> AppEntry:
+    """Anwendung eintragen (oder vorhandenen Eintrag desselben Launchers/derselben .exe im Prefix aktualisieren),
+    Icon aus der .exe lesen und Verknüpfungen anlegen. keep_existing: Startoptionen, Argumente, Variablen und Runner
+    eines vorhandenen Eintrags nicht überschreiben. Blockiert kurz (Icon) – aus einem Hintergrund-Thread aufrufen."""
+    R = win.registry
+    entry = R.find_app(prefix, launcher=launcher_id, exe=exe)
+    existed = entry is not None
+    if entry is None:
+        entry = AppEntry(id=R.new_app_id(name), name=name, exe=str(exe), prefix=str(prefix))
+    entry.exe, entry.prefix = str(exe), str(prefix)
+    entry.launcher = launcher_id or entry.launcher
+    if not (existed and keep_existing):
+        entry.name = name
+        entry.launch_options = launch_options_text
+        entry.args = args
+        entry.env = dict(env or {})
+        entry.tool = tool
+        entry.menu, entry.desktop = menu, desktop
+    else:
+        entry.menu, entry.desktop = entry.menu or menu, entry.desktop or desktop
+    if not entry.icon or not Path(entry.icon).exists():
+        entry.icon = shortcuts.extract_icon(entry.exe, entry.id) or ""
+    shortcuts.create(entry, menu, desktop)
+    return R.add_app(entry)
+
+
+def toast_with_start(page: Page, app: AppEntry, text: str) -> None:
+    t = Adw.Toast(title=text, timeout=8, button_label="Starten")
+
+    def start(*_: object) -> None:
+        try:
+            plan = page.win.launcher.app_plan(app)
+            page.win.launcher.launch(plan, f"app-{app.id}")
+            page.toast(f"„{app.name}“ gestartet über {plan.description}.")
+        except (LaunchError, launch_options.LaunchOptionsError, OSError) as exc:
+            page.toast(f"Start fehlgeschlagen: {exc}")
+    t.connect("button-clicked", start)
+    page.win.toasts.add_toast(t)
+
+
+BUSY_TEXT = ("Es läuft noch ein Vorgang (z. B. ein nach der Installation geöffneter Launcher). "
+             "Bitte erst beenden oder im Protokoll auf „Abbrechen“ klicken.")
+
+
+def protected_locations(win) -> list[Path]:
+    return [win.cfg.wine_prefix_root, win.cfg.backup_dir, win.cfg.games_target] + [Path(l) for l in win.registry.locations]
+
+
+def match_programs(entries: list[tuple[str, str]], names: list[str]) -> list[tuple[str, str]]:
+    wanted = [n.lower() for n in names if n]
+    return [e for e in entries if any(w in e[1].lower() for w in wanted)]
+
+
+def programs_dialog(page: Page, task: TaskRunner, prefix: str | Path, title: str = "", preferred: list[str] | None = None,
+                    on_removed=None) -> None:
+    """Liste der in der Windows-Programmliste des Prefix eingetragenen Programme mit Deinstallieren-Knopf je Eintrag."""
+    win = page.win
+    dlg = Adw.Dialog(title=title or f"Windows-Programme in „{Path(prefix).name}“", content_width=620, content_height=520)
+    tv = Adw.ToolbarView()
+    tv.add_top_bar(Adw.HeaderBar())
+    pg = Adw.PreferencesPage()
+    grp = group("Installierte Programme", "Eintrag wählen – die Windows-Deinstallation des Programms startet im Prefix.")
+    status = label("Wird gelesen …", css=["hint"])
+    grp.add(status)
+    pg.add(grp)
+    tv.set_content(pg)
+    dlg.set_child(tv)
+    dlg.present(page)
+
+    def fill(entries: list[tuple[str, str]]) -> None:
+        grp.remove(status)
+        if not entries:
+            grp.add(label("Keine Einträge in der Windows-Programmliste.", css=["hint"]))
+            return
+        pref = match_programs(entries, preferred or [])
+        ordered = pref + [e for e in entries if e not in pref]
+        for key, name in ordered:
+            row = action_row(name, key, pick_icon("application-x-executable-symbolic"))
+            if (key, name) in pref:
+                row.add_suffix(Tag("PASST", "accent"))
+            b = button("Deinstallieren", ["btn-danger"], on_click=lambda k=key, n=name: run(k, n))
+            b.set_valign(Gtk.Align.CENTER)
+            row.add_suffix(b)
+            grp.add(row)
+
+    def run(key: str, name: str) -> None:
+        if task.busy:
+            page.toast(BUSY_TEXT, 8)
+            return
+        dlg.close()
+        try:
+            steps = win.launcher.uninstall_steps(prefix, key)
+        except LaunchError as exc:
+            page.toast(str(exc))
+            return
+        task.run_steps(steps, f"Deinstalliere „{name}“ – ggf. im Fenster des Deinstallationsprogramms bestätigen …",
+                       on_done=lambda rc: on_removed(key, name, rc) if on_removed else page.toast(f"Deinstallation von „{name}“ beendet."))
+
+    run_async(lambda: win.launcher.installed_programs(prefix), fill,
+              lambda exc: (grp.remove(status), grp.add(label(f"Konnte die Liste nicht lesen: {exc}", css=["hint"]))))
+
+
+def uninstall_app_dialog(page: Page, task: TaskRunner, app: AppEntry, on_done) -> None:
+    """Deinstallation in drei Stufen: Programm im Prefix (Vorauswahl), ganzer Prefix, nur Verknüpfung."""
+    win = page.win
+    R = win.registry
+    if task.busy:
+        page.toast(BUSY_TEXT, 8)
+        return
+    prefix = Path(app.prefix)
+    others = [a for a in R.apps_for_prefix(prefix) if a.id != app.id]
+    spec = launchers.get(app.launcher) if app.launcher else launchers.match_exe(app.exe)
+    box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+    opt_program = Gtk.CheckButton(label="Programm per Windows-Deinstallation entfernen, Prefix behalten (empfohlen)")
+    opt_prefix = Gtk.CheckButton(label=f"Vollständig: Prefix „{prefix.name}“ samt allen Dateien löschen – auch darin installierte Spiele",
+                                 group=opt_program)
+    opt_link = Gtk.CheckButton(label="Nur Verknüpfungen und Eintrag entfernen (Dateien bleiben)", group=opt_program)
+    for w in (opt_program, opt_prefix, opt_link):
+        box.append(w)
+    opt_program.set_active(True)
+    if others:
+        box.append(label("Im selben Prefix liegen außerdem: " + ", ".join(a.name for a in others) +
+                         " – beim Löschen des Prefix wären sie ebenfalls weg.", css=["hint"], wrap=True))
+    box.append(label(f"Prefix: {prefix}", css=["hint"], wrap=True))
+    dlg = Adw.AlertDialog(heading=f"„{app.name}“ deinstallieren?",
+                          body="Verknüpfungen im Startmenü und auf dem Schreibtisch werden in jedem Fall entfernt.", extra_child=box)
+    dlg.add_response("cancel", "Abbrechen")
+    dlg.add_response("ok", "Deinstallieren")
+    dlg.set_response_appearance("ok", Adw.ResponseAppearance.DESTRUCTIVE)
+    dlg.set_default_response("cancel")
+    dlg.set_close_response("cancel")
+
+    def drop_entry() -> None:
+        shortcuts.remove(app.id)
+        R.remove_app(app.id)
+
+    def resp(_d, response: str) -> None:
+        if response != "ok":
+            return
+        if task.busy:
+            page.toast(BUSY_TEXT, 8)
+            return
+        if opt_link.get_active():
+            run_async(drop_entry, lambda _r: (page.toast(f"Verknüpfungen von „{app.name}“ entfernt – die Dateien im Prefix bleiben."), on_done()),
+                      lambda exc: page.toast(f"Fehler: {exc}"))
+        elif opt_prefix.get_active():
+            err = system.safe_to_delete_prefix(prefix, protected_locations(win)) if prefix.exists() else None
+            if err:
+                page.toast(err, 8)
+                return
+
+            def work(log) -> int:
+                system.kill_prefix_processes(prefix, log)
+                if prefix.exists():
+                    log(f"Lösche {prefix} …")
+                    shutil.rmtree(prefix)
+                removed = R.forget_prefix(prefix)
+                for a in removed:
+                    shortcuts.remove(a.id)
+                    log(f"Verknüpfungen von „{a.name}“ entfernt")
+                if app.id in R.apps:
+                    drop_entry()
+                return len(removed)
+            task.run_callable(work, f"Entferne „{app.name}“ samt Prefix …",
+                              on_done=lambda _n: (page.toast(f"„{app.name}“ vollständig entfernt (Prefix gelöscht)."), win.refresh_badges(), on_done()),
+                              on_error=lambda exc: on_done())
+        else:
+            names = list(spec.uninstall_match) if spec else []
+            names.append(app.name)
+
+            def removed(_key: str, prog: str, _rc: int) -> None:
+                def check() -> bool:
+                    # manche Deinstaller räumen kurz nach dem Prozessende auf – bis zu 15 s nachsehen
+                    for _ in range(30):
+                        if not Path(app.exe).exists():
+                            return True
+                        time.sleep(0.5)
+                    return False
+
+                def checked(gone: bool) -> None:
+                    if not gone:
+                        page.toast(f"„{app.name}“ ist noch vorhanden – Deinstallation abgebrochen? Die Verknüpfung bleibt.", 8)
+                        on_done()
+                        return
+                    run_async(drop_entry, lambda _r: (page.toast(f"„{prog}“ deinstalliert, Verknüpfungen entfernt. Der Prefix bleibt erhalten."),
+                                                      on_done()))
+                run_async(check, checked)
+
+            def listed(entries: list[tuple[str, str]]) -> None:
+                hits = match_programs(entries, names)
+                if len(hits) == 1:
+                    key, prog = hits[0]
+                    try:
+                        steps = win.launcher.uninstall_steps(prefix, key)
+                    except LaunchError as exc:
+                        page.toast(str(exc))
+                        return
+                    task.run_steps(steps, f"Deinstalliere „{prog}“ – ggf. im Fenster des Deinstallationsprogramms bestätigen …",
+                                   on_done=lambda rc: removed(key, prog, rc))
+                else:
+                    programs_dialog(page, task, prefix, f"Welches Programm gehört zu „{app.name}“?", names, removed)
+            run_async(lambda: win.launcher.installed_programs(prefix), listed, lambda exc: page.toast(f"Fehler: {exc}", 8))
+    dlg.connect("response", resp)
+    dlg.present(page)
+
+
 # ----------------------------------------------------------------------------- Dialog: neuer Prefix
 def new_prefix_dialog(page: Page, task: TaskRunner, on_created, default_name: str = "") -> None:
     win = page.win
@@ -172,8 +391,9 @@ def new_prefix_dialog(page: Page, task: TaskRunner, on_created, default_name: st
 
     def ok(d: FormDialog) -> None:
         n = name.get_text().strip().replace("/", "-")
-        if not n:
-            page.toast("Bitte einen Namen eingeben.")
+        err = system.prefix_name_error(n)
+        if err:
+            page.toast(err)
             return
         target = Path(loc.get_path()) / n
         if system.is_prefix(target):
@@ -238,7 +458,8 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
         page.toast("Kein Proton/Wine gefunden – bitte proton-cachyos, umu-launcher oder wine installieren.")
         return
     names, ids = tool_choices(L)
-    app_default = guess_app_name(installer)
+    spec = launchers.spec_for_installer(installer)
+    app_default = spec.name if spec else guess_app_name(installer)
 
     def ok(d: FormDialog) -> None:
         app_name = name.get_text().strip() or app_default
@@ -251,6 +472,10 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
             tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
         else:
             pn = pname.get_text().strip().replace("/", "-") or slugify(app_name)
+            err = system.prefix_name_error(pn)
+            if err:
+                page.toast(err)
+                return
             prefix = Path(loc.get_path()) / pn
             tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
             try:
@@ -259,18 +484,41 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
                 page.toast(str(exc))
                 return
         opts_text = opts.get_text().strip()
+        app_env = spec.env_dict if spec else {}
         try:
-            plan = L.build_plan(prefix, installer, [page.cfg.get("LAUNCH_OPTIONS", ""), R.prefix_settings(prefix).launch_options, opts_text],
-                                tool=tool)
+            # Der Installer selbst läuft ohne Wrapper (mangohud & Co. gelten erst für das installierte Programm)
+            plan = L.build_plan(prefix, installer, [], extra_env=app_env, tool=tool,
+                                args=(list(spec.install_args) if spec else []) +
+                                     (list(spec.silent_args) if (spec and silent is not None and silent.get_active()) else []))
         except LaunchError as exc:
             page.toast(str(exc))
             return
         d.close()
-        wine_dir = L.wine_prefix_dir(prefix)
-        before = scan_exes(wine_dir)
+        before = scan_exes(L.wine_prefix_dir(prefix)) if system.is_prefix(prefix) else set()
         want_menu, want_desktop = menu.get_active(), desktop.get_active()
         newly = bool(create_steps)
         external = str(prefix.parent) != str(page.cfg.wine_prefix_root)
+        # Bei einem vorhandenen Prefix gilt der gewählte Runner (falls nicht „Automatisch“) für die Anwendung selbst
+        app_tool = tool_id if (not newly and tool_id != compat.AUTO_ID) else ""
+        state: dict = {"app": None}
+
+        def early_register(s2, exe: str) -> None:
+            if state["app"] is not None:
+                return
+            state["app"] = "pending"
+            run_async(lambda: register_app(win, name=s2.name, exe=exe, prefix=prefix, launcher_id=s2.id, launch_options_text=opts_text,
+                                           args=s2.launch_args, env=s2.env_dict, tool=app_tool, menu=want_menu, desktop=want_desktop),
+                      lambda app: (state.__setitem__("app", app), task.log.append(f"Verknüpfung angelegt: {app.name} → {app.exe}"),
+                                   toast_with_start(page, app, f"„{app.name}“ eingerichtet – Verknüpfungen angelegt."), on_finished()),
+                      lambda exc: (state.__setitem__("app", "failed"), page.toast(f"Verknüpfung fehlgeschlagen: {exc}", 8)))
+
+        def poll() -> bool:
+            # Erkannte Launcher öffnen sich nach der Installation oft selbst und halten den Vorgang offen
+            if spec and state["app"] is None and system.is_prefix(prefix):
+                exe = launchers.find_exe(spec, L.wine_prefix_dir(prefix))
+                if exe and str(exe) not in before:
+                    early_register(spec, str(exe))
+            return GLib.SOURCE_CONTINUE if task.busy else GLib.SOURCE_REMOVE
 
         def after(rc: int) -> None:
             if newly and system.is_prefix(prefix):
@@ -280,19 +528,79 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
             if not system.is_prefix(prefix):
                 page.toast("Prefix konnte nicht angelegt werden – siehe Protokoll.")
                 return
+            if state["app"] is not None:
+                if state["app"] == "failed":
+                    on_finished()
+                return
+            if rc == 130:
+                page.toast("Installation abgebrochen.")
+                on_finished()
+                return
             if rc != 0:
                 page.toast(f"Installer endete mit Code {rc} – Programmsuche läuft trotzdem.")
-            cands = candidate_exes(before, scan_exes(L.wine_prefix_dir(prefix)), app_name)
-            choose_exe_dialog(page, cands, app_name, prefix, opts_text, want_menu, want_desktop, on_finished)
+            wdir = L.wine_prefix_dir(prefix)
+            good, rest = split_candidates(before, scan_exes(wdir), app_name)
+            cands = good + rest
 
-        steps = create_steps + [(plan.argv, plan.env)]
+            def find() -> tuple:
+                # 1. bekannter Launcher (sicher), 2. eine der neuen .exe gehört zu einem bekannten Launcher,
+                # 3. wahrscheinlichstes neues Programm – nur aus den plausiblen (keine Uninstaller/Updater/Setups)
+                if spec:
+                    exe = launchers.find_exe(spec, wdir, search=True)
+                    if exe:
+                        return spec, str(exe)
+                for c in cands:
+                    s2 = launchers.match_exe(c)
+                    if s2:
+                        return s2, c
+                return None, (good[0] if good else "")
+
+            def found(res: tuple) -> None:
+                s2, exe = res
+                if not exe:
+                    choose_exe_dialog(page, cands, app_name, prefix, opts_text, want_menu, want_desktop, on_finished, tool=app_tool)
+                    return
+                nm = s2.name if s2 else app_name
+                env2 = s2.env_dict if s2 else {}
+                run_async(lambda: register_app(win, name=nm, exe=exe, prefix=prefix, launcher_id=s2.id if s2 else "",
+                                               launch_options_text=opts_text, args=s2.launch_args if s2 else "", env=env2,
+                                               tool=app_tool, menu=want_menu, desktop=want_desktop),
+                          lambda app: (toast_with_start(page, app, f"„{app.name}“ eingerichtet – Programm {Path(app.exe).name}"
+                                                        + (", Verknüpfungen angelegt." if (want_menu or want_desktop) else ".")
+                                                        + ("" if s2 else " Falls falsch: unter „Prefixe verwalten“ ändern.")),
+                                       on_finished()),
+                          lambda exc: (page.toast(f"Fehler beim Anlegen der Verknüpfung: {exc}"), on_finished()))
+            run_async(find, found)
+
+        def settings_step(log, ctx) -> int:
+            if spec and system.is_prefix(prefix):
+                for f in launchers.write_post_install(spec, L.wine_prefix_dir(prefix)):
+                    log(f"Empfohlene Einstellungen angelegt: {f}")
+            return 0
+        def install_step(log, ctx) -> int:
+            log("$ " + plan.shell_preview())
+            if spec and spec.install_notes:
+                log(f"Hinweis: {spec.install_notes}")
+            rc = system.stream(plan.argv, log, env=plan.env, cwd=plan.cwd, on_start=ctx.on_start)
+            if ctx.cancelled():
+                return 130
+            if rc != 0:
+                log(f"Installer endete mit Code {rc} – das Ergebnis wird trotzdem geprüft.")
+            return 0
+        steps = create_steps + [settings_step, install_step]
         task.run_steps(steps, f"Installiere „{app_name}“ in {prefix} ({plan.description}) …", on_done=after)
+        GLib.timeout_add_seconds(3, poll)
 
     dlg = FormDialog("Programm installieren", "Installieren", ok, height=720)
-    g = group("Installation")
+    g = group("Installation", f"Erkannt: {spec.name} – Installation, Programmpfad und Verknüpfung laufen automatisch." if spec else None)
     g.add(action_row(Path(installer).name, installer, pick_icon("application-x-executable-symbolic")))
     name = Adw.EntryRow(title="Name der Anwendung", text=app_default)
     g.add(name)
+    silent = None
+    if spec and spec.silent_args:
+        silent = Adw.SwitchRow(title="Unbeaufsichtigt installieren", subtitle="Installer-Argumente: " + " ".join(spec.silent_args),
+                               active=spec.silent_default)
+        g.add(silent)
     dlg.add_group(g)
 
     g2 = group("Zielordner", "Jede Installation bekommt ihren eigenen Prefix; der Ordner wird bei Bedarf angelegt.")
@@ -319,10 +627,11 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
     g3.add(opts)
     dlg.add_group(g3)
 
-    g4 = group("Nach der Installation", "Das Hauptprogramm wird automatisch gesucht; du bestätigst die Auswahl.")
+    g4 = group("Nach der Installation", "Das Hauptprogramm wird automatisch erkannt und verknüpft – bekannte Launcher sicher, "
+               "sonst das wahrscheinlichste neue Programm (änderbar unter „Prefixe verwalten“).")
     menu = Adw.SwitchRow(title="Verknüpfung im Startmenü anlegen", active=True)
     g4.add(menu)
-    desktop = Adw.SwitchRow(title="Verknüpfung auf dem Schreibtisch anlegen", active=False)
+    desktop = Adw.SwitchRow(title="Verknüpfung auf dem Schreibtisch anlegen", active=bool(spec))
     g4.add(desktop)
     dlg.add_group(g4)
 
@@ -346,9 +655,9 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
 
 
 def choose_exe_dialog(page: Page, cands: list[str], app_name: str, prefix: Path, opts_text: str, want_menu: bool,
-                      want_desktop: bool, on_finished) -> None:
+                      want_desktop: bool, on_finished, *, env: dict[str, str] | None = None, args: str = "",
+                      launcher_id: str = "", tool: str = "") -> None:
     win = page.win
-    R = win.registry
     box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
     labels = [f"{Path(c).name}  ·  {Path(c).relative_to(win.launcher.wine_prefix_dir(prefix) / 'drive_c') if str(c).startswith(str(win.launcher.wine_prefix_dir(prefix))) else c}" for c in cands]
     dd = Gtk.DropDown.new_from_strings(labels + ["Andere Datei wählen …"])
@@ -384,30 +693,27 @@ def choose_exe_dialog(page: Page, cands: list[str], app_name: str, prefix: Path,
             page.toast("Installation abgeschlossen – Verknüpfung kann später über „Prefixe verwalten“ angelegt werden.", 6)
             on_finished()
             return
-        app_id = R.new_app_id(app_name)
-        app = AppEntry(id=app_id, name=app_name, exe=chosen["path"], prefix=str(prefix), launch_options=opts_text,
-                       menu=want_menu, desktop=want_desktop)
-
-        def work() -> AppEntry:
-            app.icon = shortcuts.extract_icon(app.exe, app_id) or ""
-            R.add_app(app)
-            if want_menu or want_desktop:
-                shortcuts.create(app, want_menu, want_desktop)
-            return app
-        run_async(work, lambda a: (page.toast(f"„{a.name}“ eingerichtet" + (" – Verknüpfungen angelegt." if (want_menu or want_desktop) else "."), 6),
-                                   on_finished()),
+        exe = chosen["path"]
+        s2 = launchers.get(launcher_id) if launcher_id else launchers.match_exe(exe)
+        run_async(lambda: register_app(win, name=app_name, exe=exe, prefix=prefix, launcher_id=s2.id if s2 else "",
+                                       launch_options_text=opts_text, args=args or (s2.launch_args if s2 else ""),
+                                       env=env if env is not None else (s2.env_dict if s2 else {}), tool=tool,
+                                       menu=want_menu, desktop=want_desktop),
+                  lambda a: (toast_with_start(page, a, f"„{a.name}“ eingerichtet" + (" – Verknüpfungen angelegt." if (want_menu or want_desktop) else ".")),
+                             on_finished()),
                   lambda exc: (page.toast(f"Fehler: {exc}"), on_finished()))
     dlg.connect("response", resp)
     dlg.present(page)
 
 
 # ----------------------------------------------------------------------------- Dialog: Verknüpfung / Anwendung
-def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved) -> None:
+def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved, preset: dict | None = None) -> None:
     win = page.win
     L, R = win.launcher, win.registry
     ps = R.prefix_settings(prefix.path)
     names, ids = tool_choices(L, prefix_default=tool_name(L, ps.tool))
-    state = {"exe": app.exe if app else ""}
+    preset = preset or {}
+    state = {"exe": app.exe if app else preset.get("exe", ""), "launcher": app.launcher if app else preset.get("launcher", "")}
 
     def ok(d: FormDialog) -> None:
         n = name.get_text().strip()
@@ -420,11 +726,13 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
 
         def work() -> AppEntry:
             if app is None:
-                app_id = R.new_app_id(n)
-                entry = AppEntry(id=app_id, name=n, exe=state["exe"], prefix=str(prefix.path))
+                entry = R.find_app(prefix.path, launcher=state["launcher"], exe=state["exe"]) or \
+                    AppEntry(id=R.new_app_id(n), name=n, exe=state["exe"], prefix=str(prefix.path))
+                entry.name, entry.exe = n, state["exe"]
             else:
                 entry = app
                 entry.name, entry.exe = n, state["exe"]
+            entry.launcher = state["launcher"]
             entry.args = args.get_text().strip()
             entry.launch_options = opts.get_text().strip()
             entry.env = launch_options.parse_env_line(envrow.get_text())
@@ -438,16 +746,17 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
 
     dlg = FormDialog("Anwendung bearbeiten" if app else "Verknüpfung anlegen", "Speichern", ok, height=680)
     g = group("Anwendung", f"Prefix: {prefix.path}")
-    name = Adw.EntryRow(title="Name", text=app.name if app else "")
+    name = Adw.EntryRow(title="Name", text=app.name if app else preset.get("name", ""))
     g.add(name)
     exe_row = action_row("Programm (.exe)", state["exe"] or "Noch keine Datei gewählt", pick_icon("application-x-executable-symbolic"))
     pick = button("Wählen …", ["btn-secondary"], on_click=lambda: choose_file(
         win, "Programm im Prefix wählen", str(prefix.wine_dir / "drive_c"),
-        lambda p: (state.__setitem__("exe", p), exe_row.set_subtitle(p), name.set_text(name.get_text() or guess_app_name(p))), EXE_PATTERNS))
+        lambda p: (state.__setitem__("exe", p), state.__setitem__("launcher", (launchers.match_exe(p).id if launchers.match_exe(p) else "")),
+                   exe_row.set_subtitle(p), name.set_text(name.get_text() or guess_app_name(p))), EXE_PATTERNS))
     pick.set_valign(Gtk.Align.CENTER)
     exe_row.add_suffix(pick)
     g.add(exe_row)
-    args = Adw.EntryRow(title="Programmargumente (optional)", text=app.args if app else "")
+    args = Adw.EntryRow(title="Programmargumente (optional)", text=app.args if app else preset.get("args", ""))
     g.add(args)
     dlg.add_group(g)
 
@@ -459,14 +768,15 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
     opts = Adw.EntryRow(title="Startoptionen (Steam-Syntax)", text=app.launch_options if app else "")
     add_goverlay_buttons(opts, page)
     g2.add(opts)
-    envrow = Adw.EntryRow(title="Umgebungsvariablen (KEY=WERT …)", text=launch_options.format_env(app.env) if app else "")
+    envrow = Adw.EntryRow(title="Umgebungsvariablen (KEY=WERT …)",
+                          text=launch_options.format_env(app.env if app else preset.get("env", {})))
     g2.add(envrow)
     dlg.add_group(g2)
 
     g3 = group("Verknüpfungen")
     menu = Adw.SwitchRow(title="Startmenü", subtitle=str(shortcuts.APPS_DIR), active=app.menu if app else True)
     g3.add(menu)
-    desktop = Adw.SwitchRow(title="Schreibtisch", subtitle=str(shortcuts.desktop_dir()), active=app.desktop if app else False)
+    desktop = Adw.SwitchRow(title="Schreibtisch", subtitle=str(shortcuts.desktop_dir()), active=app.desktop if app else bool(preset.get("desktop")))
     g3.add(desktop)
     dlg.add_group(g3)
     dlg.present(page)
@@ -530,14 +840,14 @@ class LaunchPage(Page):
         g3.add(self.preview_row)
         self.content.append(g3)
 
-        actions = Gtk.Box(spacing=8)
-        actions.append(button("STARTEN", ["btn-primary"], icon=pick_icon("media-playback-start-symbolic"), on_click=self._start))
-        actions.append(button("INSTALLIEREN …", ["btn-primary"], icon=pick_icon("document-save-symbolic", "folder-download-symbolic"),
-                              on_click=self._install, tooltip="Installer in einem (neuen) Prefix ausführen, Hauptprogramm suchen, Verknüpfungen anlegen"))
-        actions.append(button("winecfg", ["btn-secondary"], on_click=lambda: self._tool("winecfg")))
-        actions.append(button("winetricks", ["btn-secondary"], on_click=lambda: self._tool("winetricks")))
-        actions.append(button("drive_c öffnen", ["btn-secondary"], icon=pick_icon("folder-open-symbolic"), on_click=lambda: self._tool("explorer")))
-        self.content.append(actions)
+        self.content.append(button_flow([
+            button("STARTEN", ["btn-primary"], icon=pick_icon("media-playback-start-symbolic"), on_click=self._start),
+            button("INSTALLIEREN …", ["btn-primary"], icon=pick_icon("document-save-symbolic", "folder-download-symbolic"),
+                   on_click=self._install, tooltip="Installer in einem (neuen) Prefix ausführen, Hauptprogramm erkennen, Verknüpfungen anlegen"),
+            button("winecfg", ["btn-secondary"], on_click=lambda: self._tool("winecfg")),
+            button("winetricks", ["btn-secondary"], on_click=lambda: self._tool("winetricks")),
+            button("drive_c öffnen", ["btn-secondary"], icon=pick_icon("folder-open-symbolic"), on_click=lambda: self._tool("explorer")),
+        ], margin=0))
 
         self.task = TaskRunner(min_height=150, idle_text="Protokoll von Prefix-Erstellung und Installationen erscheint hier.")
         self.content.append(self.task)
@@ -805,24 +1115,22 @@ class PrefixesPage(Page):
             if p.external:
                 row.add_suffix(Tag("WEITERER ORT", "warn"))
 
-            act = Adw.ActionRow(title="Aktionen")
-            bb = Gtk.Box(spacing=6, valign=Gtk.Align.CENTER)
-            bb.append(button("Starten", ["btn-secondary"], icon=pick_icon("media-playback-start-symbolic"), on_click=lambda pp=p: self._goto_launch(pp)))
-            bb.append(button("winecfg", ["btn-secondary"], on_click=lambda pp=p: self._wine_tool(pp, "winecfg")))
-            bb.append(button("winetricks", ["btn-secondary"], on_click=lambda pp=p: self._wine_tool(pp, "winetricks")))
-            bb.append(button("drive_c", ["btn-secondary"], icon=pick_icon("folder-open-symbolic"), on_click=lambda pp=p: system.open_path(pp.wine_dir / "drive_c")))
-            bb.append(button("Backup", ["btn-secondary"], icon=pick_icon("document-save-symbolic"), on_click=lambda pp=p: self._backup(pp)))
-            act.add_suffix(bb)
-            row.add_row(act)
-            act2 = Adw.ActionRow(title="Verwalten")
-            bb2 = Gtk.Box(spacing=6, valign=Gtk.Align.CENTER)
-            bb2.append(button("Umbenennen", ["btn-secondary"], on_click=lambda pp=p: self._rename(pp)))
-            bb2.append(button("Verschieben …", ["btn-secondary"], on_click=lambda pp=p: self._move(pp)))
-            bb2.append(button("Verknüpfung anlegen", ["btn-secondary"], icon=pick_icon("list-add-symbolic"),
-                              on_click=lambda pp=p: app_dialog(self, pp, None, self.on_show)))
-            bb2.append(button("Löschen", ["btn-danger"], icon=pick_icon("user-trash-symbolic"), on_click=lambda pp=p: self._delete(pp)))
-            act2.add_suffix(bb2)
-            row.add_row(act2)
+            acts = [
+                button("Starten", ["btn-secondary"], icon=pick_icon("media-playback-start-symbolic"), on_click=lambda pp=p: self._goto_launch(pp)),
+                button("winecfg", ["btn-secondary"], on_click=lambda pp=p: self._wine_tool(pp, "winecfg")),
+                button("winetricks", ["btn-secondary"], on_click=lambda pp=p: self._wine_tool(pp, "winetricks")),
+                button("drive_c", ["btn-secondary"], icon=pick_icon("folder-open-symbolic"), on_click=lambda pp=p: system.open_path(pp.wine_dir / "drive_c")),
+                button("Backup", ["btn-secondary"], icon=pick_icon("document-save-symbolic"), on_click=lambda pp=p: self._backup(pp)),
+                button("Umbenennen", ["btn-secondary"], on_click=lambda pp=p: self._rename(pp)),
+                button("Verschieben …", ["btn-secondary"], on_click=lambda pp=p: self._move(pp)),
+                button("Verknüpfung anlegen", ["btn-secondary"], icon=pick_icon("list-add-symbolic"),
+                       on_click=lambda pp=p: app_dialog(self, pp, None, self.on_show)),
+                button("Windows-Programme …", ["btn-secondary"], tooltip="Installierte Programme im Prefix anzeigen und deinstallieren",
+                       on_click=lambda pp=p: programs_dialog(self, self.task, pp.path, on_removed=lambda _k, n, _rc: (
+                           self.toast(f"Deinstallation von „{n}“ beendet."), self.on_show()))),
+                button("Löschen", ["btn-danger"], icon=pick_icon("user-trash-symbolic"), on_click=lambda pp=p: self._delete(pp)),
+            ]
+            row.add_row(button_flow(acts))
 
             names, ids = tool_choices(L)
             runner = Adw.ComboRow(title="Runner (Proton/Wine)")
@@ -857,10 +1165,21 @@ class PrefixesPage(Page):
                 ab2.append(button("Starten", ["btn-secondary"], on_click=lambda a=app: self._run_app(a)))
                 ab2.append(icon_button(pick_icon("document-edit-symbolic", "edit-symbolic"), "Bearbeiten", ["flat"],
                                        on_click=lambda a=app, pp=p: app_dialog(self, pp, a, self.on_show)))
-                ab2.append(icon_button(pick_icon("user-trash-symbolic"), "Anwendung und Verknüpfungen entfernen", ["flat"],
-                                       on_click=lambda a=app: self._remove_app(a)))
+                ab2.append(icon_button(pick_icon("user-trash-symbolic"), "Deinstallieren …", ["flat"],
+                                       on_click=lambda a=app: uninstall_app_dialog(self, self.task, a, self._after_uninstall)))
                 arow.add_suffix(ab2)
                 row.add_row(arow)
+
+            for spec, exe in launchers.detect_installed(p.wine_dir):
+                if R.find_app(p.path, launcher=spec.id, exe=str(exe)) is not None:
+                    continue
+                drow = Adw.ActionRow(title=f"{spec.name} gefunden", subtitle=f"{exe} · noch ohne Verknüpfung")
+                drow.add_prefix(Gtk.Image(icon_name=pick_icon("dialog-information-symbolic"), pixel_size=16))
+                db = button("Verknüpfung anlegen", ["btn-primary"], on_click=lambda s=spec, e=exe, pp=p: self._link_detected(pp, s, e))
+                db.set_valign(Gtk.Align.CENTER)
+                drow.add_suffix(db)
+                row.add_row(drow)
+                row.set_expanded(True)
 
             self.pgroup.add(row)
             self.rows.append(row)
@@ -926,6 +1245,18 @@ class PrefixesPage(Page):
             self.toast(f"„{app.name}“ gestartet über {plan.description}.")
         except (LaunchError, launch_options.LaunchOptionsError, OSError) as exc:
             self.toast(f"Start fehlgeschlagen: {exc}")
+
+    def _after_uninstall(self) -> None:
+        self.on_show()
+        self.win.refresh_badges()
+        self.win.invalidate_pages()
+
+    def _link_detected(self, p: system.Prefix, spec, exe: Path) -> None:
+        run_async(lambda: register_app(self.win, name=spec.name, exe=str(exe), prefix=p.path, launcher_id=spec.id,
+                                       args=spec.launch_args, env=spec.env_dict, menu=True, desktop=True, keep_existing=True),
+                  lambda app: (toast_with_start(self, app, f"Verknüpfung für „{app.name}“ angelegt (Startmenü und Schreibtisch)."),
+                               self.on_show()),
+                  lambda exc: self.toast(f"Fehler: {exc}"))
 
     def _remove_app(self, app: AppEntry) -> None:
         def do() -> None:
@@ -1008,8 +1339,14 @@ class PrefixesPage(Page):
     def _delete(self, p: system.Prefix) -> None:
         apps = self.win.registry.apps_for_prefix(p.path)
 
+        err = system.safe_to_delete_prefix(p.path, protected_locations(self.win))
+        if err:
+            self.toast(err, 8)
+            return
+
         def do() -> None:
             def work() -> None:
+                system.kill_prefix_processes(p.path)
                 shutil.rmtree(p.path)
                 for a in self.win.registry.forget_prefix(p.path):
                     shortcuts.remove(a.id)

@@ -104,6 +104,21 @@ class Tag(Gtk.Label):
             self.add_css_class(style)
 
 
+def button_flow(buttons: list[Gtk.Widget], margin: int = 10) -> Gtk.FlowBox:
+    """Knopfleiste, die bei wenig Platz umbricht (statt das Fenster zu verbreitern oder Beschriftungen zu quetschen)."""
+    flow = Gtk.FlowBox(selection_mode=Gtk.SelectionMode.NONE, homogeneous=False, column_spacing=6, row_spacing=6,
+                       min_children_per_line=1, max_children_per_line=12, valign=Gtk.Align.CENTER)
+    flow.set_margin_top(margin)
+    flow.set_margin_bottom(margin)
+    flow.set_margin_start(12)
+    flow.set_margin_end(12)
+    for b in buttons:
+        flow.append(b)
+    for child in list(flow):
+        child.set_focusable(False)
+    return flow
+
+
 def group(title: str, description: str | None = None) -> Adw.PreferencesGroup:
     # Titel ist Pango-Markup: „&“ muss maskiert werden
     g = Adw.PreferencesGroup(title=GLib.markup_escape_text(title))
@@ -362,8 +377,8 @@ class Page(Gtk.Box):
     def refresh(self) -> None:
         self.on_show()
 
-    def toast(self, text: str) -> None:
-        self.win.toast(text)
+    def toast(self, text: str, timeout: int = 4) -> None:
+        self.win.toast(text, timeout)
 
     def add_refresh_button(self, tooltip: str = "Aktualisieren") -> Gtk.Button:
         b = icon_button(pick_icon("view-refresh-symbolic"), tooltip, ["flat", "hdr-btn"])

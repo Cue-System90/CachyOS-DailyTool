@@ -93,6 +93,9 @@ class LauncherPlanTests(unittest.TestCase):
     def test_create_prefix_steps_wine_suppresses_mono_dialogs(self):
         with mock.patch.object(compat, "wine_binary", return_value="/usr/bin/wine"):
             steps = self.L.create_prefix_steps(self.prefix.parent / "neu", compat.resolve("wine:/usr/bin/wine", self.L.tools()), "win32")
+        self.assertTrue(callable(steps[0]))                      # Ordner erst beim Ausführen anlegen
+        self.assertFalse((self.prefix.parent / "neu").exists())
+        steps = steps[1:]
         argv, env, _check = steps[0]
         self.assertEqual(argv, ["/usr/bin/wine", "wineboot", "--init"])
         self.assertEqual(env["WINEARCH"], "win32")
@@ -160,6 +163,7 @@ class LocationScanTests(unittest.TestCase):
             (loc / "ubi-connect" / "drive_c").mkdir(parents=True)
             os.symlink(".", loc / "ubi-connect" / "pfx")      # so legt umu Prefixe an
             (loc / "kein-prefix").mkdir()
+            self.assertEqual(launcher.Launcher.wine_prefix_dir(loc / "ubi-connect"), loc / "ubi-connect")
             found = system.list_prefixes(root, [loc / "ubi-connect"], [loc, root])
             self.assertEqual([(p.name, p.layout, p.external) for p in found], [("ubi-connect", "wine", True)])
             self.assertEqual(system.list_prefixes(root), [])
@@ -188,8 +192,9 @@ class StepSequenceTests(unittest.TestCase):
             target = Path(td) / "pfx" / "ubi-connect"
             with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"):
                 steps = L.create_prefix_steps(target, compat.UMU_GE)
-            self.assertEqual(len(steps), 1)
-            argv, env, check = steps[0]
+            self.assertEqual(len(steps), 2)
+            self.assertTrue(callable(steps[0]))
+            argv, env, check = steps[1]
             self.assertEqual(argv, ["/usr/bin/umu-run", "wineboot", "-u"])
             self.assertEqual(env["WINEPREFIX"], str(target))
             self.assertFalse(check())

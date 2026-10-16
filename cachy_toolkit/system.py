@@ -96,10 +96,16 @@ def stream(argv: list[str], log: LogFn, env: dict[str, str] | None = None, cwd: 
     return proc.returncode if proc.returncode is not None else proc.wait()
 
 
+@dataclass
+class StepContext:
+    cancelled: Callable[[], bool]
+    on_start: Callable[[subprocess.Popen], None] | None = None
+
+
 def run_step_sequence(steps: list, log: LogFn, env: dict[str, str] | None = None, cwd: str | Path | None = None,
                       on_start: Callable[[subprocess.Popen], None] | None = None,
                       cancelled: Callable[[], bool] = lambda: False) -> int:
-    """Schritte nacheinander ausführen. Ein Schritt ist argv, (argv, env) oder (argv, env, prüfung).
+    """Schritte nacheinander ausführen. Ein Schritt ist argv, (argv, env), (argv, env, prüfung) oder step(log, ctx) -> int.
 
     Endet ein Schritt mit Code ≠ 0, bricht die Folge ab – außer seine Prüfung liefert True (Ergebnis liegt vor).
     """
@@ -107,6 +113,17 @@ def run_step_sequence(steps: list, log: LogFn, env: dict[str, str] | None = None
     for step in steps:
         if cancelled():
             return 130
+        if callable(step):
+            # Python-Schritt: step(log, ctx) -> Rückgabecode; ctx.cancelled()/ctx.on_start wie bei Befehlen
+            ctx = StepContext(cancelled=cancelled, on_start=on_start)
+            try:
+                rc = int(step(log, ctx) or 0)
+            except Exception as exc:
+                log(f"Fehler: {exc}")
+                return 1
+            if rc != 0:
+                return rc
+            continue
         if isinstance(step, tuple):
             argv, step_env = step[0], step[1]
             check = step[2] if len(step) > 2 else None
@@ -629,6 +646,18 @@ def mounted_filesystems() -> list[MountedFs]:
     return uniq
 
 
+UNSUITABLE_PREFIX_FS = ("ntfs", "ntfs3", "fuseblk", "exfat", "vfat", "msdos")
+
+
+def fs_type(path: str | Path) -> str:
+    """Dateisystem des nächstgelegenen vorhandenen Elternordners (findmnt -T)."""
+    p = Path(path)
+    while not p.exists() and p != p.parent:
+        p = p.parent
+    r = run(["findmnt", "-T", str(p), "-n", "-o", "FSTYPE"], timeout=10)
+    return (r.stdout.strip().splitlines() or [""])[0].strip()
+
+
 def is_mountpoint(path: str) -> bool:
     return run(["findmnt", "-T", path], timeout=10).returncode == 0 if path else False
 
@@ -735,6 +764,88 @@ def list_prefixes(root: Path, extra: list[Path] | None = None, locations: list[P
             seen.add(key)
             out.append(p)
     return out
+
+
+def prefix_name_error(name: str) -> str | None:
+    """Fehlermeldung für einen ungültigen Prefix-Ordnernamen, sonst None."""
+    n = (name or "").strip()
+    if not n:
+        return "Bitte einen Namen eingeben."
+    if n in (".", "..") or n.startswith(".") or "/" in n or "\0" in n:
+        return f"„{n}“ ist als Ordnername nicht erlaubt (kein Punkt am Anfang, kein „/“)."
+    return None
+
+
+def safe_to_delete_prefix(prefix: Path, protected: list[Path]) -> str | None:
+    """Fehlermeldung, wenn prefix nicht gelöscht werden darf (kein Prefix, Speicherort, Home, Wurzel …), sonst None."""
+    try:
+        p = prefix.resolve()
+    except OSError:
+        return f"{prefix} ist nicht erreichbar."
+    if not is_prefix(p):
+        return f"{p} ist kein Wine-Prefix – Löschen verweigert."
+    guarded = {Path("/").resolve(), Path.home().resolve()}
+    for q in protected:
+        try:
+            guarded.add(Path(q).resolve())
+        except OSError:
+            pass
+    for g in guarded:
+        if p == g or g.is_relative_to(p):
+            return f"{p} ist ein Speicherort oder enthält einen – Löschen verweigert."
+    return None
+
+
+def prefix_pids(prefix: Path) -> list[int]:
+    """PIDs eigener Prozesse, deren WINEPREFIX bzw. STEAM_COMPAT_DATA_PATH auf diesen Prefix zeigt (Wine, Proton, umu)."""
+    try:
+        target = str(prefix.resolve())
+    except OSError:
+        return []
+    keys = (b"WINEPREFIX=", b"STEAM_COMPAT_DATA_PATH=")
+    out: list[int] = []
+    me = os.getpid()
+    for d in Path("/proc").iterdir():
+        if not d.name.isdigit() or int(d.name) == me:
+            continue
+        try:
+            env = (d / "environ").read_bytes()
+        except OSError:
+            continue
+        for item in env.split(b"\0"):
+            for k in keys:
+                if item.startswith(k):
+                    val = item[len(k):].decode("utf-8", "replace").rstrip("/")
+                    try:
+                        if val and (str(Path(val).resolve()) in (target, str(Path(target) / "pfx"))):
+                            out.append(int(d.name))
+                    except OSError:
+                        pass
+    return sorted(set(out))
+
+
+def kill_prefix_processes(prefix: Path, log: LogFn | None = None, timeout: float = 8.0) -> int:
+    """Alle Prozesse des Prefix beenden (SIGTERM, dann SIGKILL). Liefert die Anzahl betroffener Prozesse."""
+    import signal
+    import time as _t
+    pids = prefix_pids(prefix)
+    for pid in pids:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except OSError:
+            pass
+    end = _t.monotonic() + timeout
+    while _t.monotonic() < end and any(Path(f"/proc/{p}").exists() for p in pids):
+        _t.sleep(0.3)
+    for pid in pids:
+        if Path(f"/proc/{pid}").exists():
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except OSError:
+                pass
+    if pids and log:
+        log(f"{len(pids)} laufende Prozesse des Prefix beendet.")
+    return len(pids)
 
 
 def move_dir(src: Path, dest: Path, log: LogFn) -> Path:

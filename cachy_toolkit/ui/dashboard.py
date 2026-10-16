@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from .. import system
 from .util import Gtk, button, label, pick_icon, run_async
-from .widgets import Card, Page, StatTile
+from .widgets import Card, Page, StatTile, button_flow
 
 
 class DashboardPage(Page):
@@ -30,17 +30,17 @@ class DashboardPage(Page):
         self.content.append(row2)
 
         quick = Card("Schnellzugriff")
-        qb = Gtk.Box(spacing=8)
-        qb.set_halign(Gtk.Align.START)
+        qbuttons = []
         for text, icon, key in (
+            ("Launcher installieren", ("applications-games-symbolic", "input-gaming-symbolic"), "launchers"),
             ("Programm starten", ("system-run-symbolic", "media-playback-start-symbolic"), "launch"),
             ("Laufwerk einbinden", ("drive-harddisk-symbolic",), "drives"),
             ("System-Update", ("software-update-available-symbolic", "system-software-update-symbolic"), "update"),
             ("Logs & Diagnose", ("utilities-terminal-symbolic", "text-x-generic-symbolic"), "logs"),
             ("Shader-Cache", ("edit-clear-all-symbolic", "user-trash-symbolic"), "cache"),
         ):
-            qb.append(button(text, ["btn-secondary"], icon=pick_icon(*icon), on_click=lambda k=key: self.win.navigate(k)))
-        quick.append(qb)
+            qbuttons.append(button(text, ["btn-secondary"], icon=pick_icon(*icon), on_click=lambda k=key: self.win.navigate(k)))
+        quick.append(button_flow(qbuttons, margin=0))
         self.content.append(quick)
 
         self.hints = Card("Hinweise")
