@@ -411,7 +411,7 @@ class ScalingPage(Page):
             self.prefixes = prefixes
             self.prefix_row.set_model(Gtk.StringList.new([p.name for p in prefixes] or ["(kein Prefix vorhanden)"]))
             self._sync_dpi()
-        run_async(lambda: system.list_prefixes(self.cfg.wine_prefix_root, self.win.registry.registered_prefix_paths()), done_p)
+        run_async(self.win.prefix_list, done_p)
 
     def _sync_dpi(self) -> None:
         i = self.prefix_row.get_selected()

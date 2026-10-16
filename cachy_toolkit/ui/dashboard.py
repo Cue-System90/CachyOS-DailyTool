@@ -59,7 +59,7 @@ class DashboardPage(Page):
             return {
                 "info": info,
                 "gpus": system.gpu_status(),
-                "prefixes": system.list_prefixes(self.cfg.wine_prefix_root),
+                "prefixes": self.win.prefix_list(),
                 "parts": system.list_partitions(),
                 "reboot": system.kernel_needs_reboot(),
                 "protonplus": system.protonplus_status(),

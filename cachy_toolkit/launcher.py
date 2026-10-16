@@ -220,25 +220,33 @@ class Launcher:
                                                "/d", str(int(dpi)), "/f"])
         return subprocess.run(argv, env=env, text=True, capture_output=True, timeout=180)
 
-    def create_prefix_steps(self, prefix: str | Path, tool: CompatTool | None, arch: str = "win64") -> list[tuple[list[str], dict[str, str]]]:
-        """Schritte zum Anlegen eines Prefix (für TaskRunner.run_steps). Mono/Gecko-Dialoge werden unterdrückt."""
+    def create_prefix_steps(self, prefix: str | Path, tool: CompatTool | None, arch: str = "win64") -> list[tuple]:
+        """Schritte zum Anlegen eines Prefix (für TaskRunner.run_steps): (argv, env, prüfung).
+
+        Die Prüfung meldet, ob der Prefix danach vollständig vorhanden ist; dann gilt ein Rückgabecode ≠ 0 nicht als
+        Fehler (Proton/umu melden bei der Ersteinrichtung teils Code 1, obwohl alles angelegt wurde).
+        Mono/Gecko-Dialoge werden bei System-Wine unterdrückt.
+        """
         prefix_p = Path(os.path.expanduser(str(prefix)))
         prefix_p.mkdir(parents=True, exist_ok=True)
         tool = tool or self.default_tool()
         if tool is None:
             raise LaunchError("Kein Proton/Wine gefunden. Bitte proton-cachyos, umu-launcher oder wine installieren.")
         runner = self.runner_for(tool)
+        ready = lambda: system.is_prefix(prefix_p)  # noqa: E731
         if runner == "umu":
+            # „umu-run ''“ legt den Prefix zwar an, startet danach aber ein leeres Programm und endet mit Code 1
+            # („ShellExecuteEx fehlgeschlagen“). wineboot -u erzeugt denselben Prefix und endet sauber.
             env = self._base_env(prefix_p)
             env.update({"WINEPREFIX": str(prefix_p), "PROTONPATH": tool.path, "GAMEID": f"umu-{prefix_p.name}", "STORE": "none",
                         "PROTON_VERB": "run"})
-            return [([compat.umu_path() or "umu-run", ""], env)]
+            return [([compat.umu_path() or "umu-run", "wineboot", "-u"], env, ready)]
         if runner == "proton":
             argv, env = self.prefix_command(prefix_p, ["wineboot", "-u"], tool, verb="run")
-            return [(argv, env)]
+            return [(argv, env, ready)]
         wine_argv, env = self.wine_command(prefix_p, ["wineboot", "--init"], tool)
         env["WINEARCH"] = arch if arch in ("win32", "win64") else "win64"
         env["WINEDLLOVERRIDES"] = "mscoree=d;mshtml=d"
         wineserver = str(Path(wine_argv[0]).parent / "wineserver") if (Path(wine_argv[0]).parent / "wineserver").exists() else (shutil.which("wineserver") or "wineserver")
         wineboot_end = [wine_argv[0], "wineboot", "--end-session"]
-        return [(wine_argv, env), (wineboot_end, env), ([wineserver, "-w"], env)]
+        return [(wine_argv, env, ready), (wineboot_end, env, ready), ([wineserver, "-w"], env, ready)]

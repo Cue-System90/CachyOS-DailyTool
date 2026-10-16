@@ -96,6 +96,38 @@ def stream(argv: list[str], log: LogFn, env: dict[str, str] | None = None, cwd: 
     return proc.returncode if proc.returncode is not None else proc.wait()
 
 
+def run_step_sequence(steps: list, log: LogFn, env: dict[str, str] | None = None, cwd: str | Path | None = None,
+                      on_start: Callable[[subprocess.Popen], None] | None = None,
+                      cancelled: Callable[[], bool] = lambda: False) -> int:
+    """Schritte nacheinander ausführen. Ein Schritt ist argv, (argv, env) oder (argv, env, prüfung).
+
+    Endet ein Schritt mit Code ≠ 0, bricht die Folge ab – außer seine Prüfung liefert True (Ergebnis liegt vor).
+    """
+    rc = 0
+    for step in steps:
+        if cancelled():
+            return 130
+        if isinstance(step, tuple):
+            argv, step_env = step[0], step[1]
+            check = step[2] if len(step) > 2 else None
+        else:
+            argv, step_env, check = step, None, None
+        shown_env = dict(env or {})
+        if step_env:
+            shown_env.update({k: v for k, v in step_env.items() if os.environ.get(k) != v})
+        shown = " ".join(f"{k}={shlex.quote(v)}" for k, v in sorted(shown_env.items())
+                         if k in ("WINEPREFIX", "WINEARCH", "PROTONPATH", "GAMEID", "STEAM_COMPAT_DATA_PATH", "WINEDLLOVERRIDES"))
+        log("$ " + (shown + " " if shown else "") + " ".join(shlex.quote(a) for a in argv))
+        rc = stream(argv, log, env=(step_env if step_env else env), cwd=cwd, on_start=on_start)
+        if rc != 0:
+            if check is not None and check():
+                log(f"Rückgabecode {rc} ignoriert – das Ergebnis ist vollständig vorhanden.")
+                rc = 0
+                continue
+            return rc
+    return rc
+
+
 def root_helper() -> str | None:
     for c in ("pkexec", "sudo"):
         if have(c):
@@ -667,19 +699,33 @@ def describe_prefix(path: Path, external: bool = False) -> Prefix | None:
                   layout=layout, external=external)
 
 
-def list_prefixes(root: Path, extra: list[Path] | None = None) -> list[Prefix]:
-    """Prefixe im Standardordner plus zusätzlich eingetragene Pfade (auch außerhalb), ohne Duplikate."""
+def list_prefixes(root: Path, extra: list[Path] | None = None, locations: list[Path] | None = None) -> list[Prefix]:
+    """Prefixe im Standardordner, in allen weiteren Speicherorten und einzeln eingetragene Pfade – ohne Duplikate.
+
+    Prefixe außerhalb des Standardordners sind als external markiert.
+    """
     out: list[Prefix] = []
     seen: set[str] = set()
-    try:
-        entries = sorted(root.iterdir(), key=lambda p: p.name.lower())
-    except OSError:
-        entries = []
-    for d in entries:
-        p = describe_prefix(d)
-        if p:
-            seen.add(str(d.resolve()) if d.exists() else str(d))
-            out.append(p)
+
+    def scan(base: Path, external: bool) -> None:
+        try:
+            entries = sorted(base.iterdir(), key=lambda p: p.name.lower())
+        except OSError:
+            return
+        for d in entries:
+            key = str(d.resolve()) if d.exists() else str(d)
+            if key in seen:
+                continue
+            p = describe_prefix(d, external=external)
+            if p:
+                seen.add(key)
+                out.append(p)
+
+    scan(root, False)
+    root_key = str(root.resolve()) if root.exists() else str(root)
+    for loc in locations or []:
+        if (str(loc.resolve()) if loc.exists() else str(loc)) != root_key:
+            scan(loc, True)
     for e in extra or []:
         key = str(e.resolve()) if e.exists() else str(e)
         if key in seen:

@@ -1,6 +1,8 @@
 """Hauptfenster: Kopfzeile, Seitenleiste mit Abschnitten und Zählern, Seiten-Stack."""
 from __future__ import annotations
 
+from pathlib import Path
+
 from .. import APP_ID, APP_NAME, __version__, system
 from ..launcher import Launcher
 from ..registry import Registry
@@ -146,6 +148,11 @@ class MainWindow(Adw.ApplicationWindow):
             else:
                 page.stale = True
 
+    def prefix_list(self) -> list:
+        """Alle Prefixe: Standardordner, weitere Speicherorte, einzeln eingetragene Pfade (im Hintergrund aufrufen)."""
+        return system.list_prefixes(self.cfg.wine_prefix_root, self.registry.registered_prefix_paths(),
+                                    [Path(l) for l in self.registry.locations])
+
     def toast(self, text: str, timeout: int = 4) -> None:
         self.toasts.add_toast(Adw.Toast(title=text, timeout=timeout))
 
@@ -156,7 +163,7 @@ class MainWindow(Adw.ApplicationWindow):
     # ------------------------------------------------------------------ Zähler in der Seitenleiste
     def refresh_badges(self) -> None:
         def work() -> tuple[int, list]:
-            return (len(system.list_prefixes(self.cfg.wine_prefix_root, self.registry.registered_prefix_paths())),
+            return (len(self.prefix_list()),
                     system.list_partitions())
 
         def done(res) -> None:

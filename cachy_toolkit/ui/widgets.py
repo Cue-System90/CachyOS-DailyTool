@@ -221,7 +221,8 @@ class TaskRunner(Gtk.Box):
 
     def run_steps(self, steps: list, title: str, env: dict[str, str] | None = None, cwd: str | None = None,
                   on_done: Callable[[int], None] | None = None, clear: bool = True) -> None:
-        """steps: Liste aus argv-Listen oder (argv, env)-Tupeln; env eines Tupels ersetzt die Umgebung des Schritts."""
+        """steps: argv-Listen oder (argv, env[, prüfung])-Tupel; env ersetzt die Umgebung des Schritts, eine Prüfung,
+        die True liefert, lässt einen Rückgabecode ≠ 0 zu (siehe system.run_step_sequence)."""
         if self.busy:
             return
         if clear:
@@ -231,23 +232,9 @@ class TaskRunner(Gtk.Box):
         self.set_status(title)
 
         def work() -> int:
-            rc = 0
-            for step in steps:
-                if self._cancelled:
-                    return 130
-                argv, step_env = (step if isinstance(step, tuple) else (step, None))
-                merged = dict(env or {})
-                if step_env:
-                    # Schritt-Umgebung ist vollständig (os.environ-Kopie) → nur Unterschiede anzeigen
-                    merged.update({k: v for k, v in step_env.items() if system.os.environ.get(k) != v})
-                shown = " ".join(f"{k}={system.shlex.quote(v)}" for k, v in sorted(merged.items())
-                                 if k in ("WINEPREFIX", "WINEARCH", "PROTONPATH", "GAMEID", "STEAM_COMPAT_DATA_PATH", "WINEDLLOVERRIDES"))
-                idle(self.log.append, "$ " + (shown + " " if shown else "") + " ".join(system.shlex.quote(a) for a in argv))
-                rc = system.stream(argv, lambda l: idle(self.log.append, l), env=(step_env if step_env else env), cwd=cwd,
-                                   on_start=self._on_start)
-                self._proc = None
-                if rc != 0:
-                    return rc
+            rc = system.run_step_sequence(steps, lambda l: idle(self.log.append, l), env=env, cwd=cwd,
+                                          on_start=self._on_start, cancelled=lambda: self._cancelled)
+            self._proc = None
             return rc
 
         def done(rc: int) -> None:

@@ -93,7 +93,7 @@ class LauncherPlanTests(unittest.TestCase):
     def test_create_prefix_steps_wine_suppresses_mono_dialogs(self):
         with mock.patch.object(compat, "wine_binary", return_value="/usr/bin/wine"):
             steps = self.L.create_prefix_steps(self.prefix.parent / "neu", compat.resolve("wine:/usr/bin/wine", self.L.tools()), "win32")
-        argv, env = steps[0]
+        argv, env, _check = steps[0]
         self.assertEqual(argv, ["/usr/bin/wine", "wineboot", "--init"])
         self.assertEqual(env["WINEARCH"], "win32")
         self.assertEqual(env["WINEDLLOVERRIDES"], "mscoree=d;mshtml=d")
@@ -148,6 +148,53 @@ class PrefixDetectionTests(unittest.TestCase):
             self.assertEqual([(p.name, p.layout, p.external) for p in found], [("a", "wine", False), ("b", "proton", False), ("c", "wine", True)])
             self.assertEqual(found[1].wine_dir, root / "b" / "pfx")
             self.assertEqual(found[1].arch, "win64")
+
+
+class LocationScanTests(unittest.TestCase):
+    def test_prefixes_in_additional_locations_are_listed(self):
+        """Fall vom Notebook: Standardordner leer, Prefix liegt in einem weiteren Speicherort."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "Wine_Prefix"
+            root.mkdir()
+            loc = Path(td) / "Ubisoft" / "01.Prefixes"
+            (loc / "ubi-connect" / "drive_c").mkdir(parents=True)
+            os.symlink(".", loc / "ubi-connect" / "pfx")      # so legt umu Prefixe an
+            (loc / "kein-prefix").mkdir()
+            found = system.list_prefixes(root, [loc / "ubi-connect"], [loc, root])
+            self.assertEqual([(p.name, p.layout, p.external) for p in found], [("ubi-connect", "wine", True)])
+            self.assertEqual(system.list_prefixes(root), [])
+
+
+class StepSequenceTests(unittest.TestCase):
+    def test_nonzero_rc_tolerated_when_check_passes(self):
+        lines: list[str] = []
+        rc = system.run_step_sequence([(["sh", "-c", "echo eins; exit 1"], None, lambda: True), ["true"]], lines.append)
+        self.assertEqual(rc, 0)
+        self.assertTrue(any("ignoriert" in l for l in lines))
+        self.assertIn("eins", lines)
+
+    def test_nonzero_rc_aborts_without_check(self):
+        lines: list[str] = []
+        rc = system.run_step_sequence([(["sh", "-c", "exit 3"], None, lambda: False), ["sh", "-c", "echo nie"]], lines.append)
+        self.assertEqual(rc, 3)
+        self.assertNotIn("nie", lines)
+
+    def test_umu_creation_uses_wineboot_and_check(self):
+        with tempfile.TemporaryDirectory() as td:
+            cfg = config.Config(Path(td) / "c.env")
+            reg = registry.Registry(Path(td) / "r.json")
+            L = launcher.Launcher(cfg, reg)
+            L._tools = _fake_tools()
+            target = Path(td) / "pfx" / "ubi-connect"
+            with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"):
+                steps = L.create_prefix_steps(target, compat.UMU_GE)
+            self.assertEqual(len(steps), 1)
+            argv, env, check = steps[0]
+            self.assertEqual(argv, ["/usr/bin/umu-run", "wineboot", "-u"])
+            self.assertEqual(env["WINEPREFIX"], str(target))
+            self.assertFalse(check())
+            (target / "drive_c").mkdir(parents=True)
+            self.assertTrue(check())
 
 
 class ShortcutTests(unittest.TestCase):

@@ -192,7 +192,7 @@ def new_prefix_dialog(page: Page, task: TaskRunner, on_created, default_name: st
         external = str(target.parent) != str(page.cfg.wine_prefix_root)
 
         def done(rc: int) -> None:
-            if rc != 0 or not system.is_prefix(target):
+            if not system.is_prefix(target):
                 page.toast("Prefix-Erstellung fehlgeschlagen – siehe Protokoll.")
                 return
             R.set_prefix_settings(target, tool=tool_id, launch_options=opts_text, arch=a, registered=external)
@@ -593,7 +593,7 @@ class LaunchPage(Page):
                     break
             self._pending_prefix = None
             self._prefix_changed()
-        run_async(lambda: system.list_prefixes(self.cfg.wine_prefix_root, self.win.registry.registered_prefix_paths()), done)
+        run_async(self.win.prefix_list, done)
 
     def _selected_prefix(self) -> system.Prefix | None:
         i = self.prefix_row.get_selected()
@@ -725,7 +725,7 @@ class PrefixesPage(Page):
     def on_show(self) -> None:
         self._fill_locations()
         self.bgroup.set_description(f"{self.cfg.backup_dir} · tar.gz mit aufgelösten Symlinks")
-        run_async(lambda: system.list_prefixes(self.cfg.wine_prefix_root, self.win.registry.registered_prefix_paths()), self._fill)
+        run_async(self.win.prefix_list, self._fill)
         run_async(lambda: system.list_backups(self.cfg.backup_dir), self._fill_backups)
 
     def _clear(self, grp: Adw.PreferencesGroup, rows: list[Gtk.Widget]) -> None:
@@ -745,7 +745,7 @@ class PrefixesPage(Page):
                 continue
             row = PathRow("Weiterer Speicherort", loc, parent_getter=lambda: self.win)
             rb = icon_button(pick_icon("list-remove-symbolic", "edit-delete-symbolic"), "Aus der Liste entfernen (Dateien bleiben)", ["flat"],
-                             on_click=lambda l=loc: (self.win.registry.remove_location(l), self._fill_locations()))
+                             on_click=lambda l=loc: (self.win.registry.remove_location(l), self.on_show(), self.win.refresh_badges()))
             rb.set_valign(Gtk.Align.CENTER)
             row.add_suffix(rb)
             self.lgroup.add(row)
@@ -753,7 +753,7 @@ class PrefixesPage(Page):
 
     def _add_location(self) -> None:
         choose_folder(self.win, "Speicherort hinzufügen", str(self.cfg.wine_prefix_root),
-                      lambda p: (self.win.registry.add_location(p), self._fill_locations()))
+                      lambda p: (self.win.registry.add_location(p), self.on_show(), self.win.refresh_badges()))
 
     def _change_root(self, new: str) -> None:
         old = self.cfg.wine_prefix_root
@@ -787,7 +787,9 @@ class PrefixesPage(Page):
     def _fill(self, prefixes: list[system.Prefix]) -> None:
         self._clear(self.pgroup, self.rows)
         self.prefixes = prefixes
-        self.pgroup.set_description(f"{len(prefixes)} Prefixe · Standardordner {self.cfg.wine_prefix_root}")
+        n_loc = len([l for l in self.win.registry.locations if l != str(self.cfg.wine_prefix_root)])
+        self.pgroup.set_description(f"{len(prefixes)} Prefixe · Standardordner {self.cfg.wine_prefix_root}"
+                                    + (f" + {n_loc} weiterer Speicherort" if n_loc == 1 else f" + {n_loc} weitere Speicherorte" if n_loc else ""))
         if not prefixes:
             lbl = label("Keine Prefixe gefunden – oben rechts „Neuer Prefix“ oder auf der Startseite „Installieren …“.", css=["hint"])
             self.pgroup.add(lbl)
@@ -801,7 +803,7 @@ class PrefixesPage(Page):
             row.add_suffix(Tag(tool_name(L, ps.tool)[:28], "accent"))
             row.add_suffix(Tag(p.arch if p.layout == "wine" else "PROTON-PFX"))
             if p.external:
-                row.add_suffix(Tag("EXTERN", "warn"))
+                row.add_suffix(Tag("WEITERER ORT", "warn"))
 
             act = Adw.ActionRow(title="Aktionen")
             bb = Gtk.Box(spacing=6, valign=Gtk.Align.CENTER)
