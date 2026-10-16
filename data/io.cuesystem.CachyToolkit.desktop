@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Name=CachyOS Alltagstool
+Name[en]=CachyOS Daily Toolkit
+GenericName=Systemwerkzeug
+GenericName[en]=System tool
+Comment=Wine-Prefixe, Launcher-Migration, ProtonPlus, Laufwerke einbinden, GPU-Status, Logs, Shader-Caches, System-Update
+Comment[en]=Wine prefixes, launcher migration, ProtonPlus, mount drives, GPU status, logs, shader caches, system update
+Exec=cachy-toolkit %f
+Icon=io.cuesystem.CachyToolkit
+Terminal=false
+Categories=System;
+Keywords=Wine;Proton;fstab;NVMe;SATA;GPU;Journal;Update;DKMS;CachyOS;Shader;
+StartupNotify=true
+StartupWMClass=io.cuesystem.CachyToolkit

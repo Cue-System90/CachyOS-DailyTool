@@ -1,0 +1,10 @@
+check,ok,note
+syntax_ok,True,
+flatpak_steam_detection,True,
+flatpak_lutris_detection,True,
+flatpak_heroic_detection,True,
+flatpak_bottles_detection,True,
+prefix_name_filter_removed,True,
+drive_c_based_search,True,
+battlenet_ea_added,True,
+simulated_test_passed,True,"steam symlink + lutris/heroic flatpak + epic in non-""prefix""-named wine prefix all detected"
