@@ -70,6 +70,13 @@ Proton > umu-GE > Wine; Standard und „umu bevorzugen“ stehen in den Einstell
 | Proton direkt | `<proton>/proton waitforexitandrun <exe>` mit `STEAM_COMPAT_DATA_PATH`; SLR-Protons über `_v2-entry-point`, sonst Hinweis auf umu | `<prefix>/pfx` |
 | Wine | `<wine> <exe>` mit `WINEPREFIX` (`pfx/`, falls vorhanden) | Prefix-Ordner direkt |
 
+**GE-Proton/UMU-Proton „neueste Version“:** umu lädt diese Versionen über die GitHub-API. Ohne Anmeldung erlaubt GitHub
+60 Abfragen pro Stunde je Internetanschluss; ist das Limit erschöpft oder GitHub nicht erreichbar und noch keine Version
+lokal vorhanden, bricht umu ab. Das Tool prüft das vorher (über `api.github.com/rate_limit`, zählt nicht aufs Limit):
+liegt eine Version lokal in `~/.local/share/Steam/compatibilitytools.d`, wird sie genutzt; sonst weicht es automatisch auf
+das installierte Proton (proton-cachyos) aus und nennt den Grund im Protokoll. Startet eine Verknüpfung mit einem solchen
+Runner, obwohl er gerade nicht ladbar ist, erscheint eine klare Meldung statt eines stillen Abbruchs.
+
 Startoptionen werden wie bei Steam zusammengeführt: global (Einstellungen) + Prefix + Anwendung. Prefixe für umu/Proton entstehen per `wineboot -u` (sauberer Rückgabecode statt `umu-run ''`); ein Erstellungsschritt gilt als
 erfolgreich, sobald der Prefix vollständig vorhanden ist. Beim Anlegen eines
 Wine-Prefix wird `WINEDLLOVERRIDES=mscoree=d;mshtml=d` gesetzt, damit keine Mono-/Gecko-Dialoge erscheinen; danach

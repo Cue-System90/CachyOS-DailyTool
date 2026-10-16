@@ -40,11 +40,12 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
                 return
             prefix = Path(loc.get_path()) / pn
             newly = not system.is_prefix(prefix)
-        try:
-            create_steps = L.create_prefix_steps(prefix, tool, "win64") if newly else []
-        except LaunchError as exc:
-            page.toast(str(exc))
+        if tool is None and L.default_tool() is None:
+            page.toast("Kein Proton/Wine gefunden – bitte proton-cachyos, umu-launcher oder wine installieren.")
             return
+        # Runner steht erst zur Laufzeit fest (GE-Proton „neueste“ kann z. B. wegen des GitHub-Limits nicht ladbar sein)
+        holder: dict = {"tool": tool, "tool_id": tool_id}
+        create_steps = [L.ensure_runner_step(holder)] + ([L.runtime_create_step(prefix, holder, "win64")] if newly else [])
         opts_text = opts.get_text().strip()
         try:
             env = launch_options.parse_env_line(envrow.get_text())
@@ -63,7 +64,7 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
 
         external = str(prefix.parent) != str(page.cfg.wine_prefix_root)
         # Neuer Prefix: Runner wird Prefix-Einstellung. Vorhandener Prefix: ein ausdrücklich gewählter Runner gilt für den Launcher.
-        app_tool = tool_id if (not newly and tool_id != compat.AUTO_ID) else ""
+        app_tool = lambda: holder["tool_id"] if (not newly and holder["tool_id"] != compat.AUTO_ID) else ""  # noqa: E731
         # Das Wine-Verzeichnis (<prefix> oder <prefix>/pfx bei Proton direkt) steht erst nach der Erstellung fest → immer frisch ermitteln
         wdir = lambda: L.wine_prefix_dir(prefix)  # noqa: E731
         state: dict = {"installer": None, "app": None, "installed": False,
@@ -81,7 +82,7 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
 
         def prefix_ready_step(log, ctx) -> int:
             if newly and system.is_prefix(prefix):
-                R.set_prefix_settings(prefix, tool=tool_id, arch="win64", registered=external)
+                R.set_prefix_settings(prefix, tool=holder["tool_id"], arch="win64", registered=external)
                 if external:
                     R.add_location(str(prefix.parent))
                 log(f"Prefix bereit: {prefix}")
@@ -92,7 +93,7 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
 
         def install_step(log, ctx) -> int:
             inst = state["installer"]
-            plan = L.build_plan(prefix, inst, [], extra_env=env, tool=tool,
+            plan = L.build_plan(prefix, inst, [], extra_env=env, tool=holder["tool"],
                                 args=list(spec.install_args) + (list(spec.silent_args) if use_silent else []))
             log(f"$ {plan.shell_preview()}")
             if not use_silent:
@@ -112,7 +113,7 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
                 return
             state["app"] = "pending"
             run_async(lambda: register_app(win, name=spec.name, exe=str(exe), prefix=prefix, launcher_id=spec.id,
-                                           launch_options_text=opts_text, args=args_text, env=env, tool=app_tool,
+                                           launch_options_text=opts_text, args=args_text, env=env, tool=app_tool(),
                                            menu=want_menu, desktop=want_desktop),
                       registered, failed)
 
@@ -122,8 +123,10 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
             if task.busy:
                 task.log.append(f"{spec.name} läuft noch (hat sich nach der Installation geöffnet). Du kannst ihn nutzen; "
                                 "das Protokoll endet, sobald er geschlossen ist.")
+            note = (f" Hinweis: {holder['fallback']} – installiert mit {tool_name(L, holder['tool_id'])}; "
+                    "den Runner kannst du später unter „Einstellungen“ ändern.") if holder.get("fallback") else ""
             toast_with_start(page, app, f"{spec.name} ist eingerichtet" +
-                             (" – Verknüpfungen im Startmenü/auf dem Schreibtisch angelegt." if (want_menu or want_desktop) else "."))
+                             (" – Verknüpfungen im Startmenü/auf dem Schreibtisch angelegt." if (want_menu or want_desktop) else ".") + note)
             on_finished()
 
         def failed(exc: Exception) -> None:
@@ -173,12 +176,12 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
                 else:
                     page.toast(f"{spec.name} wurde nicht am erwarteten Ort gefunden – bitte das Hauptprogramm wählen.", 8)
                     choose_exe_dialog(page, cands, spec.name, prefix, opts_text, want_menu, want_desktop, on_finished,
-                                      env=env, args=args_text, launcher_id=spec.id, tool=app_tool)
+                                      env=env, args=args_text, launcher_id=spec.id, tool=app_tool())
             run_async(final, decided)
 
         steps = [download_step] + create_steps + [prefix_ready_step]
         if use_wt and spec.winetricks:
-            steps.append(L.winetricks_step(prefix, list(spec.winetricks), tool))
+            steps.append(lambda log, ctx: L.winetricks_step(prefix, list(spec.winetricks), holder["tool"])(log, ctx))
         steps.append(install_step)
         task.run_steps(steps, f"Installiere {spec.name} in {prefix} mit {tool_name(L, tool_id)} …", on_done=done)
         GLib.timeout_add_seconds(3, poll)

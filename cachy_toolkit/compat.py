@@ -23,7 +23,9 @@ class CompatTool:
 
     @property
     def label(self) -> str:
-        v = f" {self.version}" if self.version and self.version not in self.name else ""
+        core = re.search(r"\d[\d.\-]*\d", self.version or "")
+        dup = bool(self.version) and (self.version in self.name or (core is not None and core.group(0) in self.name))
+        v = f" {self.version}" if self.version and not dup else ""
         return f"{self.name}{v} · {self.source}" if self.source else f"{self.name}{v}"
 
     @property
@@ -298,6 +300,40 @@ def tool_needs_umu(tool: CompatTool) -> bool:
     if tool.kind == "proton" and tool.requires_runtime:
         return find_runtime(tool.requires_runtime) is None
     return False
+
+
+UMU_STEAM_COMPAT = HOME / ".local" / "share" / "Steam" / "compatibilitytools.d"   # dorthin lädt umu GE-/UMU-Proton
+UMU_OWN_COMPAT = HOME / ".local" / "share" / "umu" / "compatibilitytools"
+
+
+def local_umu_tool(token: str) -> Path | None:
+    """Neueste lokal vorhandene Version für einen umu-Token (GE-Proton → GE-Proton*, UMU-Proton → UMU-Proton*)."""
+    prefix = {"GE-Proton": "GE-Proton", "GE-Latest": "GE-Proton", "UMU-Proton": "UMU-Proton", "UMU-Latest": "UMU-Proton"}.get(token, token)
+    found: list[Path] = []
+    for base in (UMU_STEAM_COMPAT, UMU_OWN_COMPAT):
+        for d in _iter_dirs(base):
+            if d.name.startswith(prefix) and (d / "proton").is_file():
+                found.append(d)
+    found.sort(key=lambda d: _natural_key(d.name), reverse=True)
+    return found[0] if found else None
+
+
+def github_rate_limit(timeout: float = 8.0, opener=None) -> tuple[int, int] | None:
+    """(verbleibende Abfragen, Zeitpunkt der Freigabe) der GitHub-API für diese IP; None bei fehlender Verbindung.
+
+    Die Abfrage von /rate_limit zählt selbst nicht auf das Limit."""
+    import json as _json
+    import urllib.request as _ur
+    opener = opener or _ur.urlopen
+    try:
+        req = _ur.Request("https://api.github.com/rate_limit", headers={"Accept": "application/vnd.github+json",
+                                                                          "User-Agent": "cachy-toolkit"})
+        with opener(req, timeout=timeout) as resp:
+            data = _json.loads(resp.read().decode("utf-8", "replace"))
+        core = (data.get("resources") or {}).get("core") or data.get("rate") or {}
+        return int(core.get("remaining", 0)), int(core.get("reset", 0))
+    except Exception:
+        return None
 
 
 def wine_binary(tool: CompatTool | None) -> str | None:

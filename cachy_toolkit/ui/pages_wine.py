@@ -402,11 +402,11 @@ def new_prefix_dialog(page: Page, task: TaskRunner, on_created, default_name: st
         tool_id = ids[runner.get_selected()]
         tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
         a = "win32" if arch.get_selected() == 1 else "win64"
-        try:
-            steps = L.create_prefix_steps(target, tool, a)
-        except LaunchError as exc:
-            page.toast(str(exc))
+        if tool is None and L.default_tool() is None:
+            page.toast("Kein Proton/Wine gefunden – bitte proton-cachyos, umu-launcher oder wine installieren.")
             return
+        holder: dict = {"tool": tool, "tool_id": tool_id}
+        steps = [L.ensure_runner_step(holder), L.runtime_create_step(target, holder, a)]
         d.close()
         opts_text = opts.get_text().strip()
         external = str(target.parent) != str(page.cfg.wine_prefix_root)
@@ -415,7 +415,9 @@ def new_prefix_dialog(page: Page, task: TaskRunner, on_created, default_name: st
             if not system.is_prefix(target):
                 page.toast("Prefix-Erstellung fehlgeschlagen – siehe Protokoll.")
                 return
-            R.set_prefix_settings(target, tool=tool_id, launch_options=opts_text, arch=a, registered=external)
+            R.set_prefix_settings(target, tool=holder["tool_id"], launch_options=opts_text, arch=a, registered=external)
+            if holder.get("fallback"):
+                page.toast(f"Hinweis: {holder['fallback']} – Prefix mit {tool_name(L, holder['tool_id'])} angelegt.", 10)
             on_created(target)
         task.run_steps(steps, f"Erstelle Prefix „{n}“ mit {tool_name(L, tool_id)} …", on_done=done)
 
@@ -466,10 +468,11 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
         i = existing.get_selected()
         tool_id = ids[runner.get_selected()]
         a = "win32" if arch.get_selected() == 1 else "win64"
+        tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
+        holder: dict = {"tool": tool, "tool_id": tool_id}
         if i > 0:
             prefix = prefixes[i - 1].path
-            create_steps: list = []
-            tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
+            create_steps: list = [L.ensure_runner_step(holder)]
         else:
             pn = pname.get_text().strip().replace("/", "-") or slugify(app_name)
             err = system.prefix_name_error(pn)
@@ -477,29 +480,24 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
                 page.toast(err)
                 return
             prefix = Path(loc.get_path()) / pn
-            tool = compat.resolve(tool_id, L.tools()) if tool_id != compat.AUTO_ID else None
-            try:
-                create_steps = [] if system.is_prefix(prefix) else L.create_prefix_steps(prefix, tool, a)
-            except LaunchError as exc:
-                page.toast(str(exc))
-                return
+            create_steps = [L.ensure_runner_step(holder)] + ([] if system.is_prefix(prefix) else [L.runtime_create_step(prefix, holder, a)])
         opts_text = opts.get_text().strip()
         app_env = spec.env_dict if spec else {}
         try:
             # Der Installer selbst läuft ohne Wrapper (mangohud & Co. gelten erst für das installierte Programm)
-            plan = L.build_plan(prefix, installer, [], extra_env=app_env, tool=tool,
-                                args=(list(spec.install_args) if spec else []) +
-                                     (list(spec.silent_args) if (spec and silent is not None and silent.get_active()) else []))
+            plan_args = (list(spec.install_args) if spec else []) + \
+                (list(spec.silent_args) if (spec and silent is not None and silent.get_active()) else [])
+            plan = L.build_plan(prefix, installer, [], extra_env=app_env, tool=tool, args=plan_args)
         except LaunchError as exc:
             page.toast(str(exc))
             return
         d.close()
         before = scan_exes(L.wine_prefix_dir(prefix)) if system.is_prefix(prefix) else set()
         want_menu, want_desktop = menu.get_active(), desktop.get_active()
-        newly = bool(create_steps)
+        newly = len(create_steps) > 1
         external = str(prefix.parent) != str(page.cfg.wine_prefix_root)
         # Bei einem vorhandenen Prefix gilt der gewählte Runner (falls nicht „Automatisch“) für die Anwendung selbst
-        app_tool = tool_id if (not newly and tool_id != compat.AUTO_ID) else ""
+        app_tool_fn = lambda: holder["tool_id"] if (not newly and holder["tool_id"] != compat.AUTO_ID) else ""  # noqa: E731
         state: dict = {"app": None}
 
         def early_register(s2, exe: str) -> None:
@@ -507,7 +505,7 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
                 return
             state["app"] = "pending"
             run_async(lambda: register_app(win, name=s2.name, exe=exe, prefix=prefix, launcher_id=s2.id, launch_options_text=opts_text,
-                                           args=s2.launch_args, env=s2.env_dict, tool=app_tool, menu=want_menu, desktop=want_desktop),
+                                           args=s2.launch_args, env=s2.env_dict, tool=app_tool_fn(), menu=want_menu, desktop=want_desktop),
                       lambda app: (state.__setitem__("app", app), task.log.append(f"Verknüpfung angelegt: {app.name} → {app.exe}"),
                                    toast_with_start(page, app, f"„{app.name}“ eingerichtet – Verknüpfungen angelegt."), on_finished()),
                       lambda exc: (state.__setitem__("app", "failed"), page.toast(f"Verknüpfung fehlgeschlagen: {exc}", 8)))
@@ -522,7 +520,9 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
 
         def after(rc: int) -> None:
             if newly and system.is_prefix(prefix):
-                R.set_prefix_settings(prefix, tool=tool_id, arch=a, registered=external)
+                R.set_prefix_settings(prefix, tool=holder["tool_id"], arch=a, registered=external)
+            if holder.get("fallback"):
+                page.toast(f"Hinweis: {holder['fallback']} – installiert mit {tool_name(L, holder['tool_id'])}.", 10)
                 if external:
                     R.add_location(str(prefix.parent))
             if not system.is_prefix(prefix):
@@ -558,13 +558,13 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
             def found(res: tuple) -> None:
                 s2, exe = res
                 if not exe:
-                    choose_exe_dialog(page, cands, app_name, prefix, opts_text, want_menu, want_desktop, on_finished, tool=app_tool)
+                    choose_exe_dialog(page, cands, app_name, prefix, opts_text, want_menu, want_desktop, on_finished, tool=app_tool_fn())
                     return
                 nm = s2.name if s2 else app_name
                 env2 = s2.env_dict if s2 else {}
                 run_async(lambda: register_app(win, name=nm, exe=exe, prefix=prefix, launcher_id=s2.id if s2 else "",
                                                launch_options_text=opts_text, args=s2.launch_args if s2 else "", env=env2,
-                                               tool=app_tool, menu=want_menu, desktop=want_desktop),
+                                               tool=app_tool_fn(), menu=want_menu, desktop=want_desktop),
                           lambda app: (toast_with_start(page, app, f"„{app.name}“ eingerichtet – Programm {Path(app.exe).name}"
                                                         + (", Verknüpfungen angelegt." if (want_menu or want_desktop) else ".")
                                                         + ("" if s2 else " Falls falsch: unter „Prefixe verwalten“ ändern.")),
@@ -578,10 +578,12 @@ def install_dialog(page: Page, task: TaskRunner, installer: str, prefixes: list[
                     log(f"Empfohlene Einstellungen angelegt: {f}")
             return 0
         def install_step(log, ctx) -> int:
-            log("$ " + plan.shell_preview())
+            p2 = plan if holder["tool"] is tool else L.build_plan(prefix, installer, [], extra_env=app_env, tool=holder["tool"],
+                                                                  args=plan_args)
+            log("$ " + p2.shell_preview())
             if spec and spec.install_notes:
                 log(f"Hinweis: {spec.install_notes}")
-            rc = system.stream(plan.argv, log, env=plan.env, cwd=plan.cwd, on_start=ctx.on_start)
+            rc = system.stream(p2.argv, log, env=p2.env, cwd=p2.cwd, on_start=ctx.on_start)
             if ctx.cancelled():
                 return 130
             if rc != 0:

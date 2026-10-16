@@ -6,6 +6,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -72,6 +73,62 @@ class Launcher:
                     return t
                 log.warning("Kompatibilitätstool %s nicht gefunden – nutze Vorgabe", tool_id)
         return self.default_tool()
+
+    def fallback_tool(self) -> CompatTool | None:
+        """Runner ohne Download: System-Proton (proton-cachyos) > installiertes Proton > Wine."""
+        offline = [t for t in self.tools() if t.kind != "umu-latest"]
+        return compat.default_tool(offline, prefer_umu=False)
+
+    def umu_latest_problem(self, tool: CompatTool | None) -> str | None:
+        """Warum ein umu-„neueste Version“-Runner gerade nicht nutzbar ist (None = nutzbar). Lokale Kopie genügt."""
+        if tool is None or tool.kind != "umu-latest":
+            return None
+        if compat.local_umu_tool(tool.path):
+            return None
+        rl = compat.github_rate_limit()
+        if rl is None:
+            return f"{tool.path} ist nicht installiert und GitHub ist nicht erreichbar"
+        remaining, reset = rl
+        if remaining <= 0:
+            when = time.strftime("%H:%M", time.localtime(reset)) if reset else "später"
+            return f"{tool.path} ist nicht installiert und das GitHub-Abfragelimit dieser Internetverbindung ist erschöpft (wieder frei um {when} Uhr)"
+        return None
+
+    def ensure_runner_step(self, holder: dict):
+        """Python-Schritt vor Prefix-Erstellung/Installation: prüft „GE-/UMU-Proton (neueste)“ und weicht bei Bedarf aus.
+
+        holder: {"tool": CompatTool|None, "tool_id": str}; wird bei einem Ausweichen angepasst ("fallback" = Grund)."""
+        def step(log, ctx) -> int:
+            tool = holder.get("tool") or self.default_tool()
+            if tool is None or tool.kind != "umu-latest":
+                return 0
+            local = compat.local_umu_tool(tool.path)
+            if local:
+                log(f"{tool.path}: lokale Version {local.name} vorhanden – umu nutzt sie (oder eine neuere, falls verfügbar).")
+                return 0
+            problem = self.umu_latest_problem(tool)
+            if problem is None:
+                log(f"umu lädt {tool.path} einmalig herunter (rund 500 MB) – das kann einige Minuten dauern.")
+                return 0
+            fb = self.fallback_tool()
+            if fb is None:
+                log(f"{problem}. Es ist auch kein anderes Proton/Wine installiert – bitte später erneut versuchen.")
+                return 1
+            log(f"{problem}. Weiche aus auf {fb.label}.")
+            holder["tool"], holder["tool_id"], holder["fallback"] = fb, fb.id, problem
+            return 0
+        return step
+
+    def runtime_create_step(self, prefix: str | Path, holder: dict, arch: str = "win64"):
+        """Prefix-Erstellung als Python-Schritt: Befehle erst zur Laufzeit mit dem (ggf. ausgewichenen) Runner bauen."""
+        def step(log, ctx) -> int:
+            try:
+                steps = self.create_prefix_steps(prefix, holder.get("tool"), arch)
+            except LaunchError as exc:
+                log(str(exc))
+                return 1
+            return system.run_step_sequence(steps, log, cancelled=ctx.cancelled, on_start=ctx.on_start)
+        return step
 
     def runner_for(self, tool: CompatTool) -> str:
         if tool.kind == "umu-latest":
@@ -167,6 +224,10 @@ class Launcher:
                                extra_env=app.env, args=args, tool_override=app.tool)
 
     def launch(self, plan: LaunchPlan, logname: str) -> subprocess.Popen:
+        problem = self.umu_latest_problem(plan.tool)
+        if problem:
+            raise LaunchError(f"{problem}. Bitte unter „Einstellungen“ bzw. „Prefixe verwalten“ einen anderen Runner "
+                              "wählen (z. B. proton-cachyos) oder später erneut starten.")
         Path(plan.prefix).mkdir(parents=True, exist_ok=True)
         system.LOG_DIR.mkdir(parents=True, exist_ok=True)
         logfile = system.LOG_DIR / f"{system.re.sub(r'[^A-Za-z0-9_.-]+', '_', logname)}.log"

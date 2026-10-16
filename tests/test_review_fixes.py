@@ -150,3 +150,85 @@ class CandidateAndRegisterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UmuLatestPreflightTests(unittest.TestCase):
+    def _launcher(self, td: Path):
+        cfg = config.Config(td / "c.env")
+        reg = registry.Registry(td / "r.json")
+        L = launcher.Launcher(cfg, reg)
+        slr = compat.CompatTool("proton:/usr/share/steam/compatibilitytools.d/proton-cachyos-slr", "proton-cachyos", "proton",
+                                "/usr/share/steam/compatibilitytools.d/proton-cachyos-slr", "11", "System", "")
+        L._tools = [slr, compat.UMU_GE, compat.CompatTool("wine:/usr/bin/wine", "System-Wine", "wine", "/usr/bin/wine", "11", "System")]
+        return L, slr
+
+    def test_fallback_when_rate_limited_and_not_installed(self):
+        with tempfile.TemporaryDirectory() as td:
+            L, slr = self._launcher(Path(td))
+            holder = {"tool": compat.UMU_GE, "tool_id": compat.UMU_GE.id}
+            lines: list[str] = []
+            with mock.patch.object(compat, "local_umu_tool", return_value=None), \
+                 mock.patch.object(compat, "github_rate_limit", return_value=(0, 2000000000)):
+                rc = L.ensure_runner_step(holder)(lines.append, system.StepContext(cancelled=lambda: False))
+            self.assertEqual(rc, 0)
+            self.assertEqual(holder["tool"], slr)
+            self.assertEqual(holder["tool_id"], slr.id)
+            self.assertIn("Abfragelimit", holder["fallback"])
+            self.assertTrue(any("Weiche aus" in l for l in lines))
+
+    def test_offline_and_local_copy(self):
+        with tempfile.TemporaryDirectory() as td:
+            L, slr = self._launcher(Path(td))
+            # lokale Kopie vorhanden → kein Ausweichen, keine Netzabfrage
+            holder = {"tool": compat.UMU_GE, "tool_id": compat.UMU_GE.id}
+            with mock.patch.object(compat, "local_umu_tool", return_value=Path("/x/GE-Proton10-34")), \
+                 mock.patch.object(compat, "github_rate_limit", side_effect=AssertionError("keine Abfrage erwartet")):
+                self.assertEqual(L.ensure_runner_step(holder)(lambda l: None, system.StepContext(cancelled=lambda: False)), 0)
+            self.assertIs(holder["tool"], compat.UMU_GE)
+            # offline, nichts lokal → Ausweichen mit passender Begründung
+            holder = {"tool": compat.UMU_GE, "tool_id": compat.UMU_GE.id}
+            with mock.patch.object(compat, "local_umu_tool", return_value=None), mock.patch.object(compat, "github_rate_limit", return_value=None):
+                L.ensure_runner_step(holder)(lambda l: None, system.StepContext(cancelled=lambda: False))
+            self.assertIn("nicht erreichbar", holder["fallback"])
+            # Limit frei → umu darf laden, kein Ausweichen
+            holder = {"tool": compat.UMU_GE, "tool_id": compat.UMU_GE.id}
+            lines: list[str] = []
+            with mock.patch.object(compat, "local_umu_tool", return_value=None), mock.patch.object(compat, "github_rate_limit", return_value=(57, 0)):
+                L.ensure_runner_step(holder)(lines.append, system.StepContext(cancelled=lambda: False))
+            self.assertIs(holder["tool"], compat.UMU_GE)
+            self.assertTrue(any("einmalig herunter" in l for l in lines))
+
+    def test_launch_refuses_unavailable_umu_latest(self):
+        with tempfile.TemporaryDirectory() as td:
+            L, _slr = self._launcher(Path(td))
+            plan = launcher.LaunchPlan(argv=["true"], env={}, cwd=td, tool=compat.UMU_GE, prefix=td, runner="umu", description="umu")
+            with mock.patch.object(compat, "local_umu_tool", return_value=None), \
+                 mock.patch.object(compat, "github_rate_limit", return_value=(0, 2000000000)):
+                with self.assertRaises(launcher.LaunchError) as cm:
+                    L.launch(plan, "test")
+            self.assertIn("anderen Runner", str(cm.exception))
+
+    def test_local_umu_tool_and_rate_limit_parsing(self):
+        import io as _io
+        import json as _json
+        with tempfile.TemporaryDirectory() as td:
+            base = Path(td) / "compat"
+            for n in ("GE-Proton9-20", "GE-Proton10-4", "GE-Proton10-34", "UMU-Proton-9.0-4e"):
+                (base / n).mkdir(parents=True)
+                (base / n / "proton").write_text("")
+            with mock.patch.object(compat, "UMU_STEAM_COMPAT", base), mock.patch.object(compat, "UMU_OWN_COMPAT", Path(td) / "nix"):
+                self.assertEqual(compat.local_umu_tool("GE-Proton").name, "GE-Proton10-34")
+                self.assertEqual(compat.local_umu_tool("UMU-Proton").name, "UMU-Proton-9.0-4e")
+
+        class R(_io.BytesIO):
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+        body = _json.dumps({"resources": {"core": {"limit": 60, "remaining": 0, "reset": 1792174416}}}).encode()
+        self.assertEqual(compat.github_rate_limit(opener=lambda req, timeout=0: R(body)), (0, 1792174416))
+
+        def boom(req, timeout=0):
+            raise OSError("offline")
+        self.assertIsNone(compat.github_rate_limit(opener=boom))
