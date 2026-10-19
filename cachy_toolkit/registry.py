@@ -20,6 +20,7 @@ class PrefixSettings:
     env: dict[str, str] = field(default_factory=dict)
     arch: str = "win64"
     registered: bool = False        # außerhalb des Standardordners ausdrücklich eingetragen
+    wayland_driver: str = ""        # "" = globale Vorgabe, "on" / "off": Proton-Wayland-Treiber statt XWayland
 
 
 @dataclass
@@ -37,6 +38,7 @@ class AppEntry:
     desktop: bool = False
     created: float = 0.0
     launcher: str = ""              # Kennung aus launchers.CATALOG, wenn es ein bekannter Launcher ist
+    wayland_driver: str = ""        # "" = Einstellung des Prefix, "on" / "off": Proton-Wayland-Treiber statt XWayland
 
 
 def slugify(text: str) -> str:

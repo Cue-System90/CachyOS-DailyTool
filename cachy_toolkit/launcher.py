@@ -10,7 +10,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from . import compat, launch_options, system
+from . import compat, launch_options, launchers, system
 from .compat import CompatTool
 from .registry import AppEntry, Registry
 
@@ -194,9 +194,48 @@ class Launcher:
         return runner, [tool.path, *exe_argv]
 
     # ------------------------------------------------------------------ Plan
+    def wayland_default(self) -> bool:
+        return self.cfg.get("WAYLAND_DRIVER", "1") == "1"
+
+    # Eigener Wine-Desktop für Programme mit Wayland-Treiber neben einem laufenden XWayland-Programm im selben Prefix.
+    # Wine lädt den Grafiktreiber je Windows-Desktop (explorer.exe trägt ihn ein, jeder Prozess des Desktops übernimmt
+    # ihn), Kindprozesse erben den Desktop. Läuft z. B. ein Store-Launcher (CEF, nur unter XWayland bedienbar) auf dem
+    # Standard-Desktop, stirbt ein direkt mit PROTON_ENABLE_WAYLAND=1 gestartetes Spiel („no driver could be loaded“).
+    # Auf „root“ (Wines Desktop ohne virtuelle Fläche) bekommt es den Wayland-Treiber. Belegt am 2026-10-17 mit
+    # proton-cachyos 11 (Sandbox): siehe reference/wayland-test-2026-10-17/zweiter-desktop.txt.
+    WAYLAND_DESKTOP_ARG = "/desktop=root,1920x1080,wayland"     # Größe ist bei „root“ ohne Wirkung, aber nötig
+    START_EXE_WIN = r"C:\windows\system32\start.exe"
+
+    def windows_path(self, prefix: str | Path, path: str | Path) -> str:
+        """Linux-Pfad -> Windows-Pfad: unter drive_c als C:\\…, sonst über Z: (zeigt in jedem Prefix auf /)."""
+        p = Path(os.path.abspath(Path(path).expanduser()))
+        drive_c = self.wine_prefix_dir(prefix) / "drive_c"
+        for base in (drive_c, drive_c.resolve() if drive_c.exists() else drive_c):
+            try:
+                rel = p.relative_to(base)
+                return "C:\\" + "\\".join(rel.parts)
+            except ValueError:
+                continue
+        return "Z:" + str(p).replace("/", "\\")
+
+    def prefix_running(self, prefix: str | Path) -> bool:
+        """wineserver des Prefix läuft (z. B. ein Launcher) – erkannt über /proc, ohne Wine zu starten."""
+        try:
+            return bool(system.prefix_wineserver_pids(self.wine_prefix_dir(prefix)))
+        except Exception:  # noqa: BLE001 – Erkennung ist Komfort
+            return False
+
+    def wayland_desktop_argv(self, prefix: str | Path, exe: str | Path, args: list[str] | None = None) -> list[str]:
+        """explorer.exe /desktop=root,…,wayland start.exe /d <Ordner> <Exe> [Argumente] – ohne leeren Titel ("" wäre für
+        start.exe das Programm, es bekommt argv bereits ohne Anführungszeichen)."""
+        exe_p = Path(exe)
+        explorer = self.wine_prefix_dir(prefix) / "drive_c" / "windows" / "explorer.exe"
+        return [str(explorer), self.WAYLAND_DESKTOP_ARG, self.START_EXE_WIN, "/d",
+                self.windows_path(prefix, exe_p.parent), self.windows_path(prefix, exe_p), *(args or [])]
+
     def build_plan(self, prefix: str | Path, exe: str | Path, option_texts: list[str] | None = None,
                    extra_env: dict[str, str] | None = None, args: list[str] | None = None,
-                   tool: CompatTool | None = None, tool_override: str = "") -> LaunchPlan:
+                   tool: CompatTool | None = None, tool_override: str = "", wayland_driver: str = "") -> LaunchPlan:
         prefix_p = Path(os.path.expanduser(str(prefix)))
         exe_p = Path(os.path.expanduser(str(exe)))
         if not exe_p.is_file():
@@ -206,22 +245,68 @@ class Launcher:
             raise LaunchError("Kein Proton/Wine gefunden. Bitte proton-cachyos, umu-launcher oder wine installieren.")
         env = self._base_env(prefix_p, extra_env)
         exe_argv: list[str] = [str(exe_p), *(args or [])]
-        if exe_p.suffix.lower() == ".msi":
+        is_msi = exe_p.suffix.lower() == ".msi"
+        if is_msi:
             exe_argv = ["msiexec", "/i", str(exe_p), *(args or [])]
-        runner, base = self._runner_env_argv(prefix_p, tool, exe_argv, env)
+        runner = self.runner_for(tool)
+        ps = self.reg.prefix_settings(prefix_p)
+        if runner in ("umu", "proton") and "PROTON_ENABLE_WAYLAND" not in {**ps.env, **(extra_env or {})}:
+            # Wayland-Treiber: Spiele, die im Fenstermodus starten und erst dann auf Vollbild wechseln, behalten unter
+            # XWayland den weißen Wine-Fensterrahmen im Bild (z. B. Surviving Mars Relaunched). Vorrang: Anwendung,
+            # dann Prefix, dann globale Vorgabe; eine eigene Variable (Umgebung oder Startoptionen) gewinnt immer.
+            mode = wayland_driver or ps.wayland_driver
+            if mode == "on" or (mode != "off" and self.wayland_default()):
+                env["PROTON_ENABLE_WAYLAND"] = "1"
+            elif mode == "off":
+                env["PROTON_ENABLE_WAYLAND"] = "0"
         texts = [t for t in (option_texts or []) if t and t.strip()]
         opts_text = launch_options.merge(*texts) if len(texts) > 1 else (texts[0] if texts else "")
         opts = launch_options.parse(opts_text)
+        # Läuft der Prefix schon (z. B. der Launcher), würde „waitforexitandrun“ bis zu dessen Ende warten. Dann
+        # „runinprefix“ (neuer Container, derselbe wineserver – Lutris-Muster) und für den Wayland-Treiber den eigenen
+        # Desktop, weil der Standard-Desktop schon den Treiber des ersten Programms hat.
+        proton_like = runner in ("umu", "proton")
+        busy = proton_like and self.prefix_running(prefix_p)
+        wayland = proton_like and opts.env.get("PROTON_ENABLE_WAYLAND", env.get("PROTON_ENABLE_WAYLAND", "")) == "1"
+        separate = busy and wayland and not is_msi
+        if separate:
+            exe_argv = self.wayland_desktop_argv(prefix_p, exe_p, args)
+        runner, base = self._runner_env_argv(prefix_p, tool, exe_argv, env,
+                                             verb="runinprefix" if busy else "waitforexitandrun")
         env.update(opts.env)
         argv = [*opts.wrapper, *base, *opts.args]
+        desc = f"{runner} · {tool.name}"
+        if separate:
+            desc += " · KDE-Wayland auf eigenem Desktop (Prefix läuft bereits)"
+        elif busy:
+            desc += " · neben laufendem Prefix (runinprefix)"
         return LaunchPlan(argv=argv, env=env, cwd=str(exe_p.parent), tool=tool, prefix=str(prefix_p), runner=runner,
-                          description=f"{runner} · {tool.name}")
+                          description=desc)
 
     def app_plan(self, app: AppEntry) -> LaunchPlan:
         ps = self.reg.prefix_settings(app.prefix)
         args = shlex.split(app.args) if app.args else []
+        extra_env = dict(app.env)
+        if self.lift_catalog_xwayland(app, extra_env):
+            # Store-Launcher bekommen aus dem Katalog PROTON_ENABLE_WAYLAND=0 (weißes CEF-Fenster). Belegte Ausnahmen gelten
+            # auch für bestehende Einträge: dann gilt die normale Wayland-Vorgabe, und Spiele, die der Launcher startet
+            # (Kindprozesse, gleicher Wine-Desktop), laufen ebenfalls unter KDE-Wayland.
+            extra_env.pop("PROTON_ENABLE_WAYLAND", None)
         return self.build_plan(app.prefix, app.exe, [self.cfg.get("LAUNCH_OPTIONS", ""), ps.launch_options, app.launch_options],
-                               extra_env=app.env, args=args, tool_override=app.tool)
+                               extra_env=extra_env, args=args, tool_override=app.tool, wayland_driver=app.wayland_driver)
+
+    def lift_catalog_xwayland(self, app: AppEntry, env: dict[str, str]) -> bool:
+        """PROTON_ENABLE_WAYLAND=0 eines Katalog-Launchers weglassen? Ja, wenn der Launcher unter dem Wayland-Treiber belegt
+        zeichnet: LauncherSpec.wayland_ok "any" (z. B. GOG Galaxy; ältere Katalogversionen setzten dort noch 0) oder "ge"
+        mit GE-Proton ab 11-6. XWayland erzwingt man an der Anwendung mit „Aus (XWayland)“ (wayland_driver "off")."""
+        if app.wayland_driver == "off" or not app.launcher or env.get("PROTON_ENABLE_WAYLAND") != "0":
+            return False
+        spec = launchers.get(app.launcher)
+        if spec is None or not spec.wayland_ok:
+            return False
+        if spec.wayland_ok == "any":
+            return True
+        return spec.wayland_ok == "ge" and compat.cef_wayland_ok(self.resolve_tool(app.prefix, app.tool))
 
     def launch(self, plan: LaunchPlan, logname: str) -> subprocess.Popen:
         problem = self.umu_latest_problem(plan.tool)
@@ -231,11 +316,18 @@ class Launcher:
         Path(plan.prefix).mkdir(parents=True, exist_ok=True)
         system.LOG_DIR.mkdir(parents=True, exist_ok=True)
         logfile = system.LOG_DIR / f"{system.re.sub(r'[^A-Za-z0-9_.-]+', '_', logname)}.log"
+        try:
+            dpi = self.auto_dpi(plan.prefix)
+        except Exception:  # noqa: BLE001 – DPI ist Komfort, darf den Start nie verhindern
+            log.exception("Automatische DPI fehlgeschlagen")
+            dpi = None
         with open(logfile, "ab") as lf:
             lf.write(f"\n===== Start ({plan.description}) =====\n{plan.shell_preview()}\n".encode())
-        fh = open(logfile, "ab")
-        return subprocess.Popen(plan.argv, env=plan.env, cwd=plan.cwd, stdout=fh, stderr=subprocess.STDOUT,
-                                stdin=subprocess.DEVNULL, start_new_session=True)
+            if dpi:
+                lf.write(f"Windows-DPI des Prefix auf {dpi} gesetzt (passend zur Desktop-Skalierung).\n".encode())
+        with open(logfile, "ab") as fh:        # das Kind erbt eine eigene Kopie des Dateideskriptors
+            return subprocess.Popen(plan.argv, env=plan.env, cwd=plan.cwd, stdout=fh, stderr=subprocess.STDOUT,
+                                    stdin=subprocess.DEVNULL, start_new_session=True)
 
     # ------------------------------------------------------------------ Im Prefix ausführen
     def prefix_command(self, prefix: str | Path, exe_argv: list[str], tool: CompatTool | None = None,
@@ -258,8 +350,8 @@ class Launcher:
         env = self._base_env(prefix_p)
         env["WINEPREFIX"] = str(self.wine_prefix_dir(prefix_p))
         env.setdefault("WINEDEBUG", "-all")
-        if tool and tool.kind == "proton":
-            files = Path(tool.path) / ("files" if (Path(tool.path) / "files").is_dir() else "dist")
+        files = Path(wine).parent.parent
+        if files.name in ("files", "dist"):           # Wine aus einem Proton (auch lokal von umu geladenes GE-Proton)
             env["WINESERVER"] = str(files / "bin" / "wineserver")
             env["PATH"] = f"{files / 'bin'}:{env.get('PATH', '')}"
             env["LD_LIBRARY_PATH"] = f"{files / 'lib64'}:{files / 'lib'}:{env.get('LD_LIBRARY_PATH', '')}"
@@ -340,9 +432,41 @@ class Launcher:
         return step
 
     def set_dpi(self, prefix: str | Path, dpi: int) -> subprocess.CompletedProcess:
+        """Windows-DPI setzen: Prefix ruht → direkt in user.reg (schnell, kein Runner nötig, keine Prefix-Aktualisierung durch
+        eine fremde Wine-Version); läuft dort gerade etwas → reg.exe des Runners über den laufenden wineserver."""
+        wdir = self.wine_prefix_dir(prefix)
+        if (wdir / "user.reg").is_file() and not system.prefix_wineserver_pids(wdir):
+            try:
+                system.write_prefix_dpi(wdir, dpi)
+            except OSError as exc:
+                return subprocess.CompletedProcess(["user.reg"], 1, "", str(exc))
+            return subprocess.CompletedProcess(["user.reg"], 0, "", "")
         argv, env = self.wine_command(prefix, ["reg", "add", r"HKCU\Control Panel\Desktop", "/v", "LogPixels", "/t", "REG_DWORD",
                                                "/d", str(int(dpi)), "/f"])
         return subprocess.run(argv, env=env, text=True, capture_output=True, timeout=180)
+
+    def auto_dpi(self, prefix: str | Path, wait: float = 0.0) -> int | None:
+        """Windows-DPI eines Prefix an die Desktop-Skalierung anpassen, solange dort keine eigene DPI gesetzt ist.
+
+        Ohne LogPixels rendert Wine mit 96 DPI – auf skalierten Bildschirmen (z. B. 4K mit 225 %) erscheinen Launcher dann
+        winzig. wait: so lange auf das Ende eines noch laufenden wineserver warten (nach Prefix-Erstellung).
+        Rückgabe: gesetzte DPI oder None."""
+        if self.cfg.get("AUTO_DPI", "1") != "1":
+            return None
+        wdir = self.wine_prefix_dir(prefix)
+        if not (wdir / "user.reg").is_file() or system.prefix_dpi(wdir) is not None:
+            return None
+        dpi = system.wine_dpi_for_desktop()
+        if not dpi or dpi <= 96:
+            return None
+        deadline = time.monotonic() + wait
+        while time.monotonic() < deadline and system.prefix_wineserver_pids(wdir):
+            time.sleep(0.5)
+        r = self.set_dpi(prefix, dpi)
+        if r.returncode != 0:
+            log.warning("DPI %s für %s nicht gesetzt: %s", dpi, prefix, (r.stderr or r.stdout).strip()[:200])
+            return None
+        return dpi
 
     def create_prefix_steps(self, prefix: str | Path, tool: CompatTool | None, arch: str = "win64") -> list[tuple]:
         """Schritte zum Anlegen eines Prefix (für TaskRunner.run_steps): (argv, env, prüfung).
@@ -362,19 +486,26 @@ class Launcher:
             # erst beim Ausführen anlegen – schlägt ein früherer Schritt (z. B. Download) fehl, bleibt kein leerer Ordner zurück
             prefix_p.mkdir(parents=True, exist_ok=True)
             return 0
+
+        def dpi_step(log, ctx) -> int:
+            if ready():
+                dpi = self.auto_dpi(prefix_p, wait=20)
+                if dpi:
+                    log(f"Windows-DPI auf {dpi} gesetzt (passend zur Desktop-Skalierung) – sonst erscheinen Fenster winzig.")
+            return 0
         if runner == "umu":
             # „umu-run ''“ legt den Prefix zwar an, startet danach aber ein leeres Programm und endet mit Code 1
             # („ShellExecuteEx fehlgeschlagen“). wineboot -u erzeugt denselben Prefix und endet sauber.
             env = self._base_env(prefix_p)
             env.update({"WINEPREFIX": str(prefix_p), "PROTONPATH": tool.path, "GAMEID": f"umu-{prefix_p.name}", "STORE": "none",
                         "PROTON_VERB": "run"})
-            return [mkdir_step, ([compat.umu_path() or "umu-run", "wineboot", "-u"], env, ready)]
+            return [mkdir_step, ([compat.umu_path() or "umu-run", "wineboot", "-u"], env, ready), dpi_step]
         if runner == "proton":
             argv, env = self.prefix_command(prefix_p, ["wineboot", "-u"], tool, verb="run")
-            return [mkdir_step, (argv, env, ready)]
+            return [mkdir_step, (argv, env, ready), dpi_step]
         wine_argv, env = self.wine_command(prefix_p, ["wineboot", "--init"], tool)
         env["WINEARCH"] = arch if arch in ("win32", "win64") else "win64"
         env["WINEDLLOVERRIDES"] = "mscoree=d;mshtml=d"
         wineserver = str(Path(wine_argv[0]).parent / "wineserver") if (Path(wine_argv[0]).parent / "wineserver").exists() else (shutil.which("wineserver") or "wineserver")
         wineboot_end = [wine_argv[0], "wineboot", "--end-session"]
-        return [mkdir_step, (wine_argv, env, ready), (wineboot_end, env, ready), ([wineserver, "-w"], env, ready)]
+        return [mkdir_step, (wine_argv, env, ready), (wineboot_end, env, ready), ([wineserver, "-w"], env, ready), dpi_step]

@@ -36,6 +36,30 @@ class CompatTool:
 UMU_GE = CompatTool("umu:GE-Proton", "GE-Proton (neueste Version, Download über umu)", "umu-latest", "GE-Proton", "", "umu")
 UMU_UMU = CompatTool("umu:UMU-Proton", "UMU-Proton (neueste Version, Download über umu)", "umu-latest", "UMU-Proton", "", "umu")
 
+# Ab GE-Proton 11-6 zeichnen Chromium-/CEF-Launcher (Ubisoft Connect, Rockstar Games Launcher) auch mit dem
+# Wayland-Treiber (prozessübergreifendes Rendern per DMA-BUF, Release-Notes GE-Proton11-6). Belegt am 2026-10-17 mit
+# GE-Proton11-9 auf dem Desktop (RTX 4090): beide Anmeldefenster als native Wayland-Fenster, scharf bei 216 DPI –
+# mit proton-cachyos 11.0-20261005 dagegen rein weiß. Bilder: reference/wayland-test-2026-10-17/*-ge-proton-11-9-*.png
+CEF_WAYLAND_MIN_GE = (11, 6)
+_GE_RE = re.compile(r"GE-Proton(\d+)-(\d+)", re.I)
+
+
+def cef_wayland_ok(tool: "CompatTool | None") -> bool:
+    """Zeichnen CEF-Launcher mit diesem Runner unter dem Wayland-Treiber? GE-Proton ab 11-6 (auch „neueste Version“
+    über umu), sonst nein (proton-cachyos 11, Valve-Proton, UMU-Proton, Wine: weißes Fenster bzw. ungeprüft)."""
+    if tool is None:
+        return False
+    if tool.kind == "umu-latest":
+        return (tool.path or "").lower() == "ge-proton"
+    if tool.kind != "proton":
+        return False
+    for text in (tool.version, tool.name, Path(tool.path).name if tool.path else ""):
+        m = _GE_RE.search(text or "")
+        if m:
+            return (int(m.group(1)), int(m.group(2))) >= CEF_WAYLAND_MIN_GE
+    return False
+
+
 HOME = Path.home()
 STEAM_ROOT_CANDIDATES = [
     HOME / ".steam" / "root", HOME / ".steam" / "steam", HOME / ".local" / "share" / "Steam",
@@ -337,13 +361,20 @@ def github_rate_limit(timeout: float = 8.0, opener=None) -> tuple[int, int] | No
 
 
 def wine_binary(tool: CompatTool | None) -> str | None:
-    """Wine-Binary des Tools (für reg/winecfg/wineboot): Proton → files/bin/wine, Wine → Binary, umu → System-Wine."""
-    if tool is None or tool.kind == "umu-latest":
+    """Wine-Binary des Tools (für reg/winecfg/wineboot): Proton → files/bin/wine, Wine → Binary,
+    umu → Wine der lokal geladenen Proton-Version (sonst System-Wine)."""
+    if tool is None:
         return shutil.which("wine")
     if tool.kind == "wine":
         return tool.path
+    base = Path(tool.path)
+    if tool.kind == "umu-latest":
+        local = local_umu_tool(tool.path)
+        if local is None:
+            return shutil.which("wine")
+        base = local
     for sub in ("files", "dist"):
-        w = Path(tool.path) / sub / "bin" / "wine"
+        w = base / sub / "bin" / "wine"
         if w.is_file():
             return str(w)
     return shutil.which("wine")

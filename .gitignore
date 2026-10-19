@@ -1,4 +1,6 @@
 __pycache__/
 *.pyc
 *.tar.gz
-/dist/*.pkg.tar.zst.sig
+*.pkg.tar.*
+/dist/
+/reference/

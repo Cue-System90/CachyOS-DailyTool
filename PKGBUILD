@@ -1,7 +1,7 @@
 # Maintainer: CueSystem (lokal, CachyOS)
 # Reines Python-Paket ohne Build-Werkzeuge: Quellen werden direkt nach site-packages installiert.
 pkgname=cachy-toolkit
-pkgver=5.0.0
+pkgver=5.0.4
 pkgrel=1
 pkgdesc="CachyOS Alltagstool – GTK4/libadwaita-Oberfläche für Wine-Prefixe, Launcher-Migration, ProtonPlus, Laufwerke (fstab), GPU-Status, Journal, Shader-Caches und System-Update"
 arch=('any')

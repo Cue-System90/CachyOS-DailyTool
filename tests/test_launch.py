@@ -103,6 +103,144 @@ class LauncherPlanTests(unittest.TestCase):
         self.assertEqual(steps[1][0][1:], ["wineboot", "--end-session"])
         self.assertTrue(steps[2][0][0].endswith("wineserver"))
 
+    def _umu_plan(self, **kw):
+        with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"), \
+             mock.patch.object(compat, "find_runtime", return_value=None):
+            return self.L.build_plan(self.prefix, self.exe, kw.pop("options", []), tool_override="proton:/opt/proton-slr", **kw)
+
+    @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
+    def test_wayland_default_and_override(self):
+        del os.environ["PROTON_ENABLE_WAYLAND"]
+        self.assertEqual(self._umu_plan().env.get("PROTON_ENABLE_WAYLAND"), "1")                  # Vorgabe: KDE-Wayland
+        self.reg.set_prefix_settings(self.prefix, wayland_driver="off")
+        self.assertEqual(self._umu_plan().env.get("PROTON_ENABLE_WAYLAND"), "0")                  # Prefix: XWayland
+        self.assertEqual(self._umu_plan(wayland_driver="on").env.get("PROTON_ENABLE_WAYLAND"), "1")  # Anwendung schlägt Prefix
+        self.reg.set_prefix_settings(self.prefix, wayland_driver="")
+        self.assertEqual(self._umu_plan(wayland_driver="off").env.get("PROTON_ENABLE_WAYLAND"), "0")
+        self.cfg.set("WAYLAND_DRIVER", "0", save=False)
+        self.assertNotIn("PROTON_ENABLE_WAYLAND", self._umu_plan().env)                           # global aus: Proton-Standard
+        self.assertEqual(self._umu_plan(wayland_driver="on").env.get("PROTON_ENABLE_WAYLAND"), "1")
+        self.cfg.set("WAYLAND_DRIVER", "1", save=False)
+        # eigene Variable gewinnt immer: Anwendungs-/Prefix-Umgebung und Startoptionen
+        self.assertEqual(self._umu_plan(wayland_driver="on", extra_env={"PROTON_ENABLE_WAYLAND": "0"}).env["PROTON_ENABLE_WAYLAND"], "0")
+        self.reg.set_prefix_settings(self.prefix, env={"PROTON_ENABLE_WAYLAND": "0"})
+        self.assertEqual(self._umu_plan().env["PROTON_ENABLE_WAYLAND"], "0")
+        self.reg.set_prefix_settings(self.prefix, env={})
+        self.assertEqual(self._umu_plan(options=["PROTON_ENABLE_WAYLAND=0 %command%"]).env["PROTON_ENABLE_WAYLAND"], "0")
+        # reines Wine: kein Proton-Schalter
+        plan = self.L.build_plan(self.prefix, self.exe, [], tool_override="wine:/usr/bin/wine")
+        self.assertNotIn("PROTON_ENABLE_WAYLAND", plan.env)
+
+    @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
+    def test_running_prefix_uses_runinprefix_and_wayland_desktop(self):
+        """Läuft der Prefix (z. B. ein Launcher unter XWayland), startet ein Wayland-Programm per runinprefix auf dem
+        eigenen Wine-Desktop „root“; ein XWayland-Programm per runinprefix direkt (kein Warten bis zum Launcher-Ende)."""
+        del os.environ["PROTON_ENABLE_WAYLAND"]
+        # Prefix ruht: unverändert waitforexitandrun mit der Exe selbst
+        with mock.patch.object(system, "prefix_wineserver_pids", return_value=[]):
+            plan = self._umu_plan(options=["%command% -windowed"])
+        self.assertEqual(plan.env["PROTON_VERB"], "waitforexitandrun")
+        self.assertEqual(plan.argv, ["/usr/bin/umu-run", str(self.exe), "-windowed"])
+        # Prefix läuft + Wayland: eigener Desktop, Arbeitsordner und Exe als Windows-Pfade, Argumente ans Spiel
+        with mock.patch.object(system, "prefix_wineserver_pids", return_value=[4711]):
+            plan = self._umu_plan(options=["%command% -windowed"])
+        self.assertEqual(plan.env["PROTON_VERB"], "runinprefix")
+        self.assertEqual(plan.env["PROTON_ENABLE_WAYLAND"], "1")
+        explorer = str(self.prefix / "drive_c" / "windows" / "explorer.exe")
+        self.assertEqual(plan.argv, ["/usr/bin/umu-run", explorer, "/desktop=root,1920x1080,wayland",
+                                     r"C:\windows\system32\start.exe", "/d", r"C:\Game", r"C:\Game\Gothic.exe",
+                                     "-windowed"])
+        self.assertNotIn("", plan.argv)                       # kein leerer Titel für start.exe
+        self.assertIn("eigenem Desktop", plan.description)
+        # Prefix läuft + XWayland: runinprefix, Exe direkt
+        with mock.patch.object(system, "prefix_wineserver_pids", return_value=[4711]):
+            plan = self._umu_plan(wayland_driver="off")
+        self.assertEqual(plan.env["PROTON_VERB"], "runinprefix")
+        self.assertEqual(plan.argv, ["/usr/bin/umu-run", str(self.exe)])
+        # Startoptionen schalten Wayland ab -> kein eigener Desktop
+        with mock.patch.object(system, "prefix_wineserver_pids", return_value=[4711]):
+            plan = self._umu_plan(options=["PROTON_ENABLE_WAYLAND=0 %command%"])
+        self.assertEqual(plan.argv, ["/usr/bin/umu-run", str(self.exe)])
+        # Proton direkt (ohne umu) nutzt dasselbe Verb
+        self.cfg.set("PREFER_UMU", "0", save=False)
+        with mock.patch.object(compat, "umu_available", return_value=False), \
+                mock.patch.object(compat, "steam_root", return_value=None), \
+                mock.patch.object(system, "prefix_wineserver_pids", return_value=[4711]):
+            plan = self.L.build_plan(self.prefix, self.exe, [], tool_override="proton:/opt/proton-x")
+        self.assertEqual(plan.argv[:4], ["/opt/proton-x/proton", "runinprefix", explorer, "/desktop=root,1920x1080,wayland"])
+
+    def test_windows_path(self):
+        self.assertEqual(self.L.windows_path(self.prefix, self.exe), r"C:\Game\Gothic.exe")
+        self.assertEqual(self.L.windows_path(self.prefix, "/mnt/Spiele/Mein Spiel/x.exe"), r"Z:\mnt\Spiele\Mein Spiel\x.exe")
+
+    @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
+    def test_app_wayland_setting_and_catalog_exception(self):
+        del os.environ["PROTON_ENABLE_WAYLAND"]
+        from cachy_toolkit import launchers
+        self.reg.add_app(registry.AppEntry(id="spiel", name="Spiel", exe=str(self.exe), prefix=str(self.prefix),
+                                           tool="proton:/opt/proton-slr", wayland_driver="off"))
+        rs = launchers.get("rockstar")
+        self.reg.add_app(registry.AppEntry(id="rs", name="Rockstar", exe=str(self.exe), prefix=str(self.prefix),
+                                           tool="proton:/opt/proton-slr", env=rs.env_dict, launcher="rockstar"))
+        with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"), \
+             mock.patch.object(compat, "find_runtime", return_value=None):
+            self.assertEqual(self.L.app_plan(self.reg.get_app("spiel")).env["PROTON_ENABLE_WAYLAND"], "0")
+            self.reg.update_app("spiel", wayland_driver="")
+            self.assertEqual(self.L.app_plan(self.reg.get_app("spiel")).env["PROTON_ENABLE_WAYLAND"], "1")
+            self.assertEqual(self.L.app_plan(self.reg.get_app("rs")).env["PROTON_ENABLE_WAYLAND"], "0")   # CEF-Launcher: XWayland
+        reloaded = registry.Registry(self.reg.path)
+        self.assertEqual(reloaded.get_app("spiel").wayland_driver, "")
+        self.assertEqual(registry.Registry(self.reg.path).prefix_settings(self.prefix).wayland_driver, "")
+
+    def test_cef_wayland_ok(self):
+        ge = compat.CompatTool("proton:/x/GE-Proton11-9-x86_64", "GE-Proton11-9-x86_64", "proton", "/x/GE-Proton11-9-x86_64", "GE-Proton11-9", "compatibilitytools.d", "")
+        old = compat.CompatTool("proton:/x/GE-Proton11-5", "GE-Proton11-5", "proton", "/x/GE-Proton11-5", "", "compatibilitytools.d", "")
+        ten = compat.CompatTool("proton:/x/GE-Proton10-34", "GE-Proton10-34", "proton", "/x/GE-Proton10-34", "GE-Proton10-34", "compatibilitytools.d", "")
+        cachy = compat.CompatTool("proton:/x/proton-cachyos-slr", "proton-cachyos-11.0", "proton", "/x/proton-cachyos-slr", "cachyos-11.0-20261005-slr", "System", "")
+        self.assertTrue(compat.cef_wayland_ok(ge))
+        self.assertTrue(compat.cef_wayland_ok(compat.UMU_GE))
+        for t in (old, ten, cachy, compat.UMU_UMU, None):
+            self.assertFalse(compat.cef_wayland_ok(t))
+
+    @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
+    def test_catalog_launcher_on_wayland_with_ge_proton(self):
+        del os.environ["PROTON_ENABLE_WAYLAND"]
+        from cachy_toolkit import launchers
+        ge = compat.CompatTool("proton:/opt/GE-Proton11-9", "GE-Proton11-9", "proton", "/opt/GE-Proton11-9", "GE-Proton11-9", "compatibilitytools.d", "")
+        self.L._tools = _fake_tools() + [ge]
+        for spec_id in ("rockstar", "ea-app"):
+            spec = launchers.get(spec_id)
+            self.reg.add_app(registry.AppEntry(id=spec_id, name=spec.name, exe=str(self.exe), prefix=str(self.prefix),
+                                               tool=ge.id, env=spec.env_dict, launcher=spec_id))
+        # eigene Abschaltung ohne Katalog-Launcher bleibt unangetastet
+        self.reg.add_app(registry.AppEntry(id="own", name="Eigenes", exe=str(self.exe), prefix=str(self.prefix),
+                                           tool=ge.id, env={"PROTON_ENABLE_WAYLAND": "0"}))
+        wl = lambda app_id: self.L.app_plan(self.reg.get_app(app_id)).env["PROTON_ENABLE_WAYLAND"]
+        with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"), \
+             mock.patch.object(compat, "find_runtime", return_value=None), \
+             mock.patch.object(system, "prefix_wineserver_pids", return_value=[]):
+            self.assertEqual(wl("rockstar"), "1")                                   # belegt: Wayland mit GE-Proton 11-9
+            self.assertEqual(self.reg.get_app("rockstar").env["PROTON_ENABLE_WAYLAND"], "0")   # Eintrag selbst unverändert
+            self.assertEqual(wl("ea-app"), "0")                                     # ungeprüft: bleibt XWayland
+            self.assertEqual(wl("own"), "0")
+            self.reg.update_app("rockstar", wayland_driver="off")
+            self.assertEqual(wl("rockstar"), "0")
+            self.reg.update_app("rockstar", wayland_driver="", tool="umu:GE-Proton")
+            self.assertEqual(wl("rockstar"), "1")
+            for tool in ("umu:UMU-Proton", "proton:/opt/proton-slr"):
+                self.reg.update_app("rockstar", tool=tool)
+                self.assertEqual(wl("rockstar"), "0")
+            self.assertEqual(launchers.get("ubisoft-connect").wayland_ok, "ge")
+            # GOG Galaxy zeichnet mit jedem getesteten Proton: neue Einträge ohne 0, alte Einträge (Katalog setzte 0) heben ab
+            gog = launchers.get("gog-galaxy")
+            self.assertNotIn("PROTON_ENABLE_WAYLAND", gog.env_dict)
+            self.reg.add_app(registry.AppEntry(id="gog", name=gog.name, exe=str(self.exe), prefix=str(self.prefix), tool="proton:/opt/proton-slr",
+                                               env={"PROTON_ENABLE_WAYLAND": "0", "WINEDLLOVERRIDES": "libglesv2=d"}, launcher="gog-galaxy"))
+            self.assertEqual(wl("gog"), "1")
+            self.assertIn("libglesv2=d", self.L.app_plan(self.reg.get_app("gog")).env["WINEDLLOVERRIDES"])
+            self.reg.update_app("gog", wayland_driver="off")
+            self.assertEqual(wl("gog"), "0")
+
     def test_app_plan_merges_global_prefix_and_app_options(self):
         self.cfg.set("LAUNCH_OPTIONS", "gamemoderun %command%", save=False)
         self.reg.set_prefix_settings(self.prefix, tool="wine:/usr/bin/wine", launch_options="mangohud %command%")
@@ -192,14 +330,81 @@ class StepSequenceTests(unittest.TestCase):
             target = Path(td) / "pfx" / "ubi-connect"
             with mock.patch.object(compat, "umu_available", return_value=True), mock.patch.object(compat, "umu_path", return_value="/usr/bin/umu-run"):
                 steps = L.create_prefix_steps(target, compat.UMU_GE)
-            self.assertEqual(len(steps), 2)
+            self.assertEqual(len(steps), 3)
             self.assertTrue(callable(steps[0]))
+            self.assertTrue(callable(steps[2]))       # Windows-DPI an die Desktop-Skalierung anpassen
             argv, env, check = steps[1]
             self.assertEqual(argv, ["/usr/bin/umu-run", "wineboot", "-u"])
             self.assertEqual(env["WINEPREFIX"], str(target))
             self.assertFalse(check())
             (target / "drive_c").mkdir(parents=True)
             self.assertTrue(check())
+
+
+USER_REG = """WINE REGISTRY Version 2
+;; All keys relative to REGISTRY\\\\User\\\\S-1-5-21-0-0-0-1000
+
+#arch=win64
+
+[Control Panel\\\\Desktop] 1792223717
+#time=1dd5e0cd99de928
+"ActiveWndTrackTimeout"=dword:00000000
+
+[Software\\\\Wine\\\\Fonts] 1792223715
+#time=1dd5e0cd99de928
+"LogPixels"=dword:00000060
+"""
+
+
+class AutoDpiTests(unittest.TestCase):
+    def setUp(self):
+        self.td = tempfile.TemporaryDirectory()
+        base = Path(self.td.name)
+        self.cfg = config.Config(base / "config.env")
+        self.reg = registry.Registry(base / "registry.json")
+        self.L = launcher.Launcher(self.cfg, self.reg)
+        self.L._tools = _fake_tools()
+        self.prefix = base / "rockstar"
+        (self.prefix / "drive_c").mkdir(parents=True)
+        (self.prefix / "user.reg").write_text(USER_REG)
+        p = mock.patch.object(system, "prefix_wineserver_pids", return_value=[])
+        p.start()
+        self.addCleanup(p.stop)
+
+    def tearDown(self):
+        self.td.cleanup()
+
+    def test_sets_desktop_dpi_when_unset(self):
+        self.assertIsNone(system.prefix_dpi(self.prefix))      # Fonts-Wert (96) zählt nicht als gesetzt
+        with mock.patch.object(system, "wine_dpi_for_desktop", return_value=216):
+            self.assertEqual(self.L.auto_dpi(self.prefix), 216)
+            self.assertEqual(system.prefix_dpi(self.prefix), 216)
+            self.assertIsNone(self.L.auto_dpi(self.prefix))    # nur einmal – danach gilt der Wert des Prefix
+
+    def test_keeps_own_dpi_and_respects_switch(self):
+        system.write_prefix_dpi(self.prefix, 120)
+        with mock.patch.object(system, "wine_dpi_for_desktop", return_value=216):
+            self.assertIsNone(self.L.auto_dpi(self.prefix))
+            self.assertEqual(system.prefix_dpi(self.prefix), 120)
+        (self.prefix / "user.reg").write_text(USER_REG)
+        self.cfg.set("AUTO_DPI", "0", save=False)
+        with mock.patch.object(system, "wine_dpi_for_desktop", return_value=216):
+            self.assertIsNone(self.L.auto_dpi(self.prefix))
+        self.assertIsNone(system.prefix_dpi(self.prefix))
+
+    def test_no_change_at_100_percent(self):
+        with mock.patch.object(system, "wine_dpi_for_desktop", return_value=96):
+            self.assertIsNone(self.L.auto_dpi(self.prefix))
+        self.assertIsNone(system.prefix_dpi(self.prefix))
+
+    def test_launch_applies_dpi_before_start(self):
+        plan = launcher.LaunchPlan(argv=["true"], env=dict(os.environ), cwd=str(self.prefix), tool=None,
+                                   prefix=str(self.prefix), runner="wine", description="test")
+        logs = Path(self.td.name) / "logs"
+        with mock.patch.object(system, "wine_dpi_for_desktop", return_value=216), mock.patch.object(system, "LOG_DIR", logs):
+            self.L.launch(plan, "app-rockstar").wait(10)
+        self.assertEqual(system.prefix_dpi(self.prefix), 216)
+        self.assertIn("Windows-DPI des Prefix auf 216", (logs / "app-rockstar.log").read_text())
 
 
 class ShortcutTests(unittest.TestCase):

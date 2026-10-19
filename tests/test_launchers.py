@@ -107,6 +107,16 @@ class PathTests(unittest.TestCase):
             for wp in s.exe_paths:
                 self.assertRegex(wp, r"^([A-Za-z]:\\|%[A-Z()0-9]+%\\)", s.id)
 
+    def test_chromium_launchers_stay_on_xwayland(self):
+        """Bewusste Ausnahme von der Wayland-Vorgabe: Store-Launcher (Chromium/CEF) bleiben weiß unter dem
+        Proton-Wayland-Treiber (Echttest Ubisoft Connect/Rockstar 2026-10-17, GE-Proton #188 für die EA App).
+        GOG Galaxy zeichnet mit jedem getesteten Proton (wayland_ok "any") und bekommt die Vorgabe nicht mehr."""
+        for s in launchers.CATALOG:
+            self.assertIn(s.wayland_ok, ("", "ge", "any"), s.id)
+            want = None if s.wayland_ok == "any" else "0"
+            self.assertEqual(s.env_dict.get("PROTON_ENABLE_WAYLAND"), want, s.id)
+        self.assertEqual({s.id for s in launchers.CATALOG if s.wayland_ok}, {"ubisoft-connect", "rockstar", "gog-galaxy"})
+
 
 class DownloadTests(unittest.TestCase):
     def test_download_progress_cache_and_validation(self):

@@ -347,7 +347,7 @@ class CachePage(Page):
 class ScalingPage(Page):
     key = "scaling"
     title = "Skalierung"
-    subtitle = "Globale Desktop-Skalierung (KDE/GNOME) und Windows-DPI je Wine-Prefix."
+    subtitle = "Desktop-Skalierung (unter Plasma Wayland je Bildschirm) und Windows-DPI je Wine-Prefix."
     icons = ("preferences-desktop-display-symbolic", "zoom-in-symbolic", "video-display-symbolic")
 
     def build(self) -> None:
@@ -355,6 +355,11 @@ class ScalingPage(Page):
         g = group("Desktop-Skalierung")
         self.cur_row = action_row("Aktueller Wert", "…", pick_icon("preferences-desktop-display-symbolic"))
         g.add(self.cur_row)
+        self.screens: list[system.ScreenScale] = []
+        self.screen_row = Adw.ComboRow(title="Bildschirm", visible=False)
+        self.screen_row.set_model(Gtk.StringList.new([]))
+        self.screen_row.connect("notify::selected", lambda *_: self._sync_scale())
+        g.add(self.screen_row)
         sr = Adw.ActionRow(title="Neue Skalierung")
         self.scale = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, 100, 250, 5)
         self.scale.set_draw_value(True)
@@ -372,11 +377,15 @@ class ScalingPage(Page):
         bar.append(button("Anzeige-Einstellungen öffnen", ["btn-secondary"], icon=pick_icon("preferences-desktop-display-symbolic"),
                           on_click=lambda: system.open_display_settings() or self.toast("Keine Anzeige-Einstellungen gefunden.")))
         self.content.append(bar)
-        self.content.append(label("Hinweis: Unter Plasma Wayland wird die Skalierung je Bildschirm in den Anzeige-Einstellungen festgelegt; "
-                                  "der globale Wert hier (kdeglobals) gilt vor allem für X11-Anwendungen und wird nach Ab-/Anmelden wirksam.",
-                                  css=["hint"], wrap=True))
+        self.hint = label("", css=["hint"], wrap=True)
+        self.content.append(self.hint)
 
         g2 = group("Windows-DPI je Wine-Prefix", "Für unscharfe oder zu kleine Oberflächen in Windows-Programmen (LogPixels).")
+        self.auto_dpi = Adw.SwitchRow(title="Automatisch an die Desktop-Skalierung anpassen",
+                                      subtitle="Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start.",
+                                      active=self.cfg.get("AUTO_DPI", "1") == "1")
+        self.auto_dpi.connect("notify::active", lambda r, _p: self.cfg.set("AUTO_DPI", "1" if r.get_active() else "0"))
+        g2.add(self.auto_dpi)
         self.prefix_row = Adw.ComboRow(title="Prefix")
         self.prefix_row.set_model(Gtk.StringList.new([]))
         self.prefix_row.connect("notify::selected", lambda *_: self._sync_dpi())
@@ -400,12 +409,36 @@ class ScalingPage(Page):
         self.content.append(g3)
 
     def on_show(self) -> None:
+        def read():
+            screens = system.screen_scales()
+            return screens, (None if screens else system.desktop_scale_get())
+
         def done(res) -> None:
-            val, be = res
-            name = {"kde": "KDE Plasma (kdeglobals)", "gnome": "GNOME (text-scaling-factor)", "other": "GDK_SCALE"}[be]
+            screens, legacy = res
+            self.screens = screens
+            if screens:
+                self.cur_row.set_subtitle(", ".join(f"{s.percent} % · {s.label}" for s in screens) + " · Plasma Wayland (je Bildschirm)")
+                keep = self.screen_row.get_selected()
+                self.screen_row.set_model(Gtk.StringList.new([s.label for s in screens]))
+                self.screen_row.set_selected(keep if 0 <= keep < len(screens) else 0)
+                self.screen_row.set_visible(len(screens) > 1)
+                self.hint.set_label("„Anwenden“ setzt die Skalierung des Bildschirms sofort – wie in den Anzeige-Einstellungen. "
+                                    "X11-Programme und Wine bekommen sie über Xft.dpi; Wine-Prefixe ohne eigene DPI passt das Tool "
+                                    "beim nächsten Start an.")
+                self._sync_scale()
+                return
+            val, be = legacy
+            name = {"kde": "KDE Plasma (kdeglobals)", "gnome": "GNOME (text-scaling-factor)", "other": "GDK_SCALE"}.get(be, be)
             self.cur_row.set_subtitle(f"{val} % · {name}" if val else f"nicht gesetzt (100 %) · {name}")
+            self.screen_row.set_visible(False)
+            self.hint.set_label("Hinweis: Der globale Wert (kdeglobals/GNOME/GDK_SCALE) wird nach Ab- und Anmelden wirksam.")
             self.scale.set_value(val or 100)
-        run_async(system.desktop_scale_get, done)
+        run_async(read, done)
+
+        def done_dpi(dpi: int | None) -> None:
+            base = "Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start."
+            self.auto_dpi.set_subtitle(f"{base} Passend zum Desktop: {dpi} DPI." if dpi else base)
+        run_async(system.wine_dpi_for_desktop, done_dpi)
 
         def done_p(prefixes: list[system.Prefix]) -> None:
             self.prefixes = prefixes
@@ -418,9 +451,16 @@ class ScalingPage(Page):
         if 0 <= i < len(self.prefixes):
             self.dpi.set_value(self.prefixes[i].dpi or 96)
 
+    def _sync_scale(self) -> None:
+        i = self.screen_row.get_selected()
+        if 0 <= i < len(self.screens):
+            self.scale.set_value(self.screens[i].percent)
+
     def _apply(self) -> None:
         pct = int(self.scale.get_value())
-        run_async(lambda: system.desktop_scale_set(pct), lambda msg: (self.toast(msg, 8), self.on_show()))
+        i = self.screen_row.get_selected()
+        screen = self.screens[i].name if 0 <= i < len(self.screens) else ""
+        run_async(lambda: system.desktop_scale_set(pct, screen), lambda msg: (self.toast(msg, 8), self.on_show()))
 
     def _apply_dpi(self) -> None:
         i = self.prefix_row.get_selected()

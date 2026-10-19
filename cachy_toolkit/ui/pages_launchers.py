@@ -89,6 +89,10 @@ def launcher_install_dialog(page: Page, task: TaskRunner, spec: LauncherSpec, pr
             if system.is_prefix(prefix):
                 for f in launchers.write_post_install(spec, wdir()):
                     log(f"Empfohlene Einstellungen angelegt: {f}")
+                dpi = L.auto_dpi(prefix, wait=20)     # vorhandener Prefix ohne DPI (neue bekommen sie schon beim Anlegen)
+                if dpi:
+                    log(f"Windows-DPI auf {dpi} gesetzt (passend zur Desktop-Skalierung) – sonst erscheinen Installer und "
+                        "Launcher winzig.")
             return 0
 
         def install_step(log, ctx) -> int:

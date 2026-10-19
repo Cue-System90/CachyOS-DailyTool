@@ -143,6 +143,46 @@ class PrefixTests(unittest.TestCase):
             self.assertEqual(prefixes[0].arch, "win64")
             self.assertEqual(prefixes[0].dpi, 120)
 
+    def test_write_prefix_dpi_only_touches_desktop_key(self):
+        reg = ('WINE REGISTRY Version 2\n\n#arch=win64\n\n'
+               '[Control Panel\\\\Desktop] 1792223717\n#time=1dd5e0cd99de928\n"CaretWidth"=dword:00000001\n\n'
+               '[Control Panel\\\\Desktop\\\\WindowMetrics] 1792223717\n"LogPixels"=dword:00000060\n\n'
+               '[Software\\\\Wine\\\\Fonts] 1792223715\n"LogPixels"=dword:00000060\n')
+        with tempfile.TemporaryDirectory() as td:
+            w = Path(td)
+            (w / "user.reg").write_text(reg)
+            self.assertIsNone(system.prefix_dpi(w))
+            system.write_prefix_dpi(w, 216)
+            self.assertEqual(system.prefix_dpi(w), 216)
+            text = (w / "user.reg").read_text()
+            self.assertIn('#time=1dd5e0cd99de928\n"LogPixels"=dword:000000d8\n"CaretWidth"', text)
+            system.write_prefix_dpi(w, 144)
+            text = (w / "user.reg").read_text()
+            self.assertEqual(system.prefix_dpi(w), 144)
+            self.assertEqual(text.count('"LogPixels"='), 3)       # Desktop + WindowMetrics + Fonts, keine Dublette
+            self.assertEqual(text.count('"LogPixels"=dword:00000060'), 2)
+
+    def test_write_prefix_dpi_adds_missing_key(self):
+        with tempfile.TemporaryDirectory() as td:
+            w = Path(td)
+            (w / "user.reg").write_text("WINE REGISTRY Version 2\n\n#arch=win64\n")
+            system.write_prefix_dpi(w, 192)
+            self.assertEqual(system.prefix_dpi(w), 192)
+
+    def test_wine_dpi_for_desktop_sources(self):
+        def fake_run(argv, **kw):
+            out = {"xrdb": "Xft.antialias:\t1\nXft.dpi:\t216\n", "kreadconfig6": "2.25\n"}.get(argv[0], "")
+            return subprocess.CompletedProcess(argv, 0, out, "")
+        with mock.patch.object(system, "run", side_effect=fake_run), mock.patch.object(system, "have", return_value=True):
+            with mock.patch.dict(os.environ, {"DISPLAY": ":0", "XDG_SESSION_TYPE": "wayland"}):
+                self.assertEqual(system.wine_dpi_for_desktop(), 216)
+            with mock.patch.dict(os.environ, {"DISPLAY": "", "XDG_SESSION_TYPE": "wayland"}):
+                self.assertEqual(system.wine_dpi_for_desktop(), 216)      # kwinrc [Xwayland] Scale=2.25
+        none = lambda argv, **kw: subprocess.CompletedProcess(argv, 0, "", "")  # noqa: E731
+        with mock.patch.object(system, "run", side_effect=none), mock.patch.object(system, "have", return_value=True), \
+             mock.patch.dict(os.environ, {"DISPLAY": ":0", "XDG_SESSION_TYPE": "wayland"}):
+            self.assertIsNone(system.wine_dpi_for_desktop())
+
     def test_backup_argv_dereferences_symlinks(self):
         argv = system.backup_argv(Path("/r"), "p", Path("/b/p.tar.gz"))
         self.assertEqual(argv, ["tar", "-czhf", "/b/p.tar.gz", "-C", "/r", "p"])
@@ -211,6 +251,53 @@ class JournalTests(unittest.TestCase):
         with mock.patch.object(system, "have", return_value=True), \
              mock.patch.object(system, "run", return_value=_cp("linux 1 -> 2\nmesa 1 -> 2\n", rc=0)):
             self.assertEqual(len(system.pending_updates(max_age=0)[0]), 2)
+
+
+KSCREEN_JSON = json.dumps({"outputs": [
+    {"id": 2, "name": "eDP-1", "enabled": True, "connected": True, "scale": 1.5, "priority": 2, "currentModeId": "3",
+     "modes": [{"id": "3", "size": {"width": 2560, "height": 1600}}]},
+    {"id": 1, "name": "HDMI-A-1", "enabled": True, "connected": True, "scale": 2.25, "priority": 1, "currentModeId": "10",
+     "modes": [{"id": "10", "size": {"width": 3840, "height": 2160}}], "size": {"width": 3840, "height": 2160}},
+    {"id": 3, "name": "DP-1", "enabled": False, "connected": True, "scale": 1, "priority": 0},
+    {"id": 4, "name": "DP-2", "enabled": True, "connected": False, "scale": 1},
+]})
+
+
+class ScreenScaleTests(unittest.TestCase):
+    def test_parse_kscreen_json_active_outputs_primary_first(self):
+        screens = system.parse_kscreen_json(KSCREEN_JSON)
+        self.assertEqual([(s.name, s.percent, s.label) for s in screens],
+                         [("HDMI-A-1", 225, "HDMI-A-1 (3840×2160)"), ("eDP-1", 150, "eDP-1 (2560×1600)")])
+        self.assertEqual(system.parse_kscreen_json("kein json"), [])
+        self.assertEqual(system.parse_kscreen_json('{"outputs": [{"name": "X", "enabled": true, "connected": true, "scale": 1}]}')[0].label, "X")
+
+    def test_wayland_reads_and_sets_per_screen(self):
+        calls: list[list[str]] = []
+
+        def fake_run(argv, **kw):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv, 0, KSCREEN_JSON if argv[:2] == ["kscreen-doctor", "-j"] else "", "")
+        with mock.patch.object(system, "run", side_effect=fake_run), mock.patch.object(system, "have", return_value=True), \
+             mock.patch.dict(os.environ, {"XDG_CURRENT_DESKTOP": "KDE", "XDG_SESSION_TYPE": "wayland"}):
+            self.assertEqual(system.desktop_scale_get(), (225, "kde-wayland"))
+            msg = system.desktop_scale_set(200, "HDMI-A-1")
+            self.assertIn(["kscreen-doctor", "output.HDMI-A-1.scale.2"], calls)
+            system.desktop_scale_set(125, "eDP-1")
+            self.assertIn(["kscreen-doctor", "output.eDP-1.scale.1.25"], calls)
+        self.assertIn("sofort wirksam", msg)
+        self.assertFalse(any(c[0] == "kwriteconfig6" for c in calls))
+
+    def test_x11_session_keeps_kdeglobals(self):
+        calls: list[list[str]] = []
+
+        def fake_run(argv, **kw):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv, 0, "1.5\n" if argv[0] == "kreadconfig6" else "", "")
+        with mock.patch.object(system, "run", side_effect=fake_run), mock.patch.object(system, "have", return_value=True), \
+             mock.patch.dict(os.environ, {"XDG_CURRENT_DESKTOP": "KDE", "XDG_SESSION_TYPE": "x11"}):
+            self.assertEqual(system.screen_scales(), [])
+            self.assertEqual(system.desktop_scale_get(), (150, "kde"))
+        self.assertFalse(any(c[0] == "kscreen-doctor" for c in calls))
 
 
 class ConfigTests(unittest.TestCase):

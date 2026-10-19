@@ -172,6 +172,19 @@ class FormDialog(Adw.Dialog):
 
 
 # ----------------------------------------------------------------------------- Gemeinsame Abläufe
+WAYLAND_MODES = ("", "on", "off")
+WAYLAND_LABELS = {"": "", "on": "an", "off": "aus (XWayland)"}
+WAYLAND_SUBTITLE = "Behebt Vollbild-Probleme wie weiße Ränder unter XWayland"
+
+
+def wayland_row(inherit_label: str, mode: str) -> Adw.ComboRow:
+    """Auswahl Proton-Wayland-Treiber: erben / An / Aus (XWayland)."""
+    row = Adw.ComboRow(title="Wayland-Treiber von Proton", subtitle=WAYLAND_SUBTITLE)
+    row.set_model(Gtk.StringList.new([inherit_label, "An", "Aus (XWayland)"]))
+    row.set_selected(WAYLAND_MODES.index(mode) if mode in WAYLAND_MODES else 0)
+    return row
+
+
 def register_app(win, *, name: str, exe: str, prefix: str | Path, launcher_id: str = "", launch_options_text: str = "",
                  args: str = "", env: dict[str, str] | None = None, tool: str = "", menu: bool = True, desktop: bool = False,
                  keep_existing: bool = False) -> AppEntry:
@@ -723,6 +736,7 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
             page.toast("Name und Programm sind erforderlich.")
             return
         tool_id = ids[runner.get_selected()]
+        wl_mode = WAYLAND_MODES[wl.get_selected()]
         want_menu, want_desktop = menu.get_active(), desktop.get_active()
         d.close()
 
@@ -739,6 +753,7 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
             entry.launch_options = opts.get_text().strip()
             entry.env = launch_options.parse_env_line(envrow.get_text())
             entry.tool = tool_id
+            entry.wayland_driver = wl_mode
             entry.menu, entry.desktop = want_menu, want_desktop
             if not entry.icon or not Path(entry.icon).exists():
                 entry.icon = shortcuts.extract_icon(entry.exe, entry.id) or ""
@@ -772,6 +787,15 @@ def app_dialog(page: Page, prefix: system.Prefix, app: AppEntry | None, on_saved
     g2.add(opts)
     envrow = Adw.EntryRow(title="Umgebungsvariablen (KEY=WERT …)",
                           text=launch_options.format_env(app.env if app else preset.get("env", {})))
+    pfx_on = ps.wayland_driver == "on" or (ps.wayland_driver != "off" and L.wayland_default())
+    wl = wayland_row(f"Wie Prefix ({'an' if pfx_on else 'aus'})", app.wayland_driver if app else "")
+
+    def wl_hint(*_: object) -> None:
+        own = "PROTON_ENABLE_WAYLAND" in launch_options.parse_env_line(envrow.get_text())
+        wl.set_subtitle("Variable PROTON_ENABLE_WAYLAND hat Vorrang" if own else WAYLAND_SUBTITLE)
+    envrow.connect("changed", wl_hint)
+    wl_hint()
+    g2.add(wl)
     g2.add(envrow)
     dlg.add_group(g2)
 
@@ -1140,6 +1164,9 @@ class PrefixesPage(Page):
             select_id(runner, ids, ps.tool)
             runner.connect("notify::selected", lambda r, _pp, pp=p, ids_=ids: self._set_tool(pp, ids_[r.get_selected()]))
             row.add_row(runner)
+            wl = wayland_row(f"Globale Vorgabe ({'an' if L.wayland_default() else 'aus'})", ps.wayland_driver)
+            wl.connect("notify::selected", lambda r, _pp, pp=p: self._set_wayland(pp, WAYLAND_MODES[r.get_selected()]))
+            row.add_row(wl)
             opts = Adw.EntryRow(title="Startoptionen für alle Programme im Prefix", text=ps.launch_options, show_apply_button=True)
             opts.connect("apply", lambda r, pp=p: (R.set_prefix_settings(pp.path, launch_options=r.get_text().strip()), self.toast("Startoptionen gespeichert.")))
             add_goverlay_buttons(opts, self)
@@ -1227,6 +1254,10 @@ class PrefixesPage(Page):
             system.detach(argv, env={k: v for k, v in env.items() if os.environ.get(k) != v}, logname=f"{mode}-{p.name}")
         except LaunchError as exc:
             self.toast(str(exc))
+
+    def _set_wayland(self, p: system.Prefix, mode: str) -> None:
+        self.win.registry.set_prefix_settings(p.path, wayland_driver=mode)
+        self.toast(f"Wayland-Treiber für „{p.name}“: {WAYLAND_LABELS[mode] or 'globale Vorgabe'}")
 
     def _set_tool(self, p: system.Prefix, tool_id: str) -> None:
         self.win.registry.set_prefix_settings(p.path, tool=tool_id)

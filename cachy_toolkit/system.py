@@ -691,13 +691,82 @@ def _prefix_arch(path: Path) -> str:
     return "?"
 
 
-def _prefix_dpi(path: Path) -> int | None:
+_DESKTOP_KEY_RE = re.compile(r"^\[Control Panel\\\\Desktop\](?:[ \t]+\d+)?[ \t]*(?:\n|\Z)", re.M | re.I)
+_LOGPIXELS_RE = re.compile(r'^"LogPixels"=dword:([0-9a-fA-F]{1,8})[ \t]*$', re.M | re.I)
+
+
+def _reg_section(text: str, header: re.Pattern) -> tuple[int, int] | None:
+    """(Anfang, Ende) der Wertzeilen eines Schlüssels in einer Wine-.reg-Datei – ohne Kopfzeile."""
+    m = header.search(text)
+    if not m:
+        return None
+    nxt = re.compile(r"^\[", re.M).search(text, m.end())
+    return m.end(), (nxt.start() if nxt else len(text))
+
+
+def prefix_dpi(wine_dir: Path) -> int | None:
+    """Windows-DPI (HKCU\\Control Panel\\Desktop\\LogPixels); None = nie gesetzt, Wine nimmt dann 96.
+
+    Nur dieser Schlüssel zählt – unter Software\\Wine\\Fonts legt Wine einen gleichnamigen Wert (96) für den Schriftcache an."""
     try:
-        text = (path / "user.reg").read_text(encoding="utf-8", errors="replace")
+        text = (Path(wine_dir) / "user.reg").read_text(encoding="latin-1")
     except OSError:
         return None
-    m = re.search(r'^"LogPixels"=dword:([0-9a-fA-F]{8})', text, re.M)
+    sec = _reg_section(text, _DESKTOP_KEY_RE)
+    m = _LOGPIXELS_RE.search(text, *sec) if sec else None
     return int(m.group(1), 16) if m else None
+
+
+def write_prefix_dpi(wine_dir: Path, dpi: int) -> None:
+    """LogPixels direkt in user.reg schreiben. Nur bei beendetem wineserver des Prefix aufrufen – er hält die Registry
+    im Speicher und überschreibt die Datei beim Beenden (siehe prefix_wineserver_pids)."""
+    reg = Path(wine_dir) / "user.reg"
+    text = reg.read_text(encoding="latin-1")          # Wine schreibt ASCII mit Escapes; latin-1 erhält jedes Byte
+    line = f'"LogPixels"=dword:{int(dpi):08x}'
+    sec = _reg_section(text, _DESKTOP_KEY_RE)
+    if sec is None:
+        text += ("" if text.endswith("\n") else "\n") + f"\n[Control Panel\\\\Desktop] {int(time.time())}\n{line}\n"
+    else:
+        start, end = sec
+        body = text[start:end]
+        if _LOGPIXELS_RE.search(body):
+            body = _LOGPIXELS_RE.sub(line, body, count=1)
+        else:
+            pos = 0                                    # nach den #time=/#class=-Zeilen des Schlüssels einfügen
+            for ln in body.splitlines(keepends=True):
+                if not ln.startswith("#"):
+                    break
+                pos += len(ln)
+            body = body[:pos] + line + "\n" + body[pos:]
+        if not text[:start].endswith("\n"):         # Kopfzeile ganz am Dateiende ohne Zeilenumbruch
+            body = "\n" + body
+        text = text[:start] + body + text[end:]
+    tmp = reg.with_name(reg.name + ".cachy-tmp")
+    tmp.write_text(text, encoding="latin-1")
+    shutil.copymode(reg, tmp)
+    os.replace(tmp, reg)
+
+
+def prefix_wineserver_pids(wine_dir: Path) -> list[int]:
+    """Laufende wineserver dieses Prefix (auch aus Proton/umu-Containern): wineserver arbeitet im Ordner
+    /tmp/.wine-<uid>/server-<st_dev>-<st_ino> des Prefix-Verzeichnisses."""
+    try:
+        st = Path(wine_dir).stat()
+        pids = [d for d in os.listdir("/proc") if d.isdigit()]
+    except OSError:
+        return []
+    tag = f"server-{st.st_dev:x}-{st.st_ino:x}"
+    found: list[int] = []
+    for pid in pids:
+        try:
+            if not Path(f"/proc/{pid}/comm").read_text().startswith("wineserver"):
+                continue
+            cwd = os.readlink(f"/proc/{pid}/cwd")
+        except OSError:
+            continue
+        if os.path.basename(cwd.removesuffix(" (deleted)").rstrip("/")) == tag:
+            found.append(int(pid))
+    return found
 
 
 def prefix_layout(path: Path) -> str | None:
@@ -724,7 +793,7 @@ def describe_prefix(path: Path, external: bool = False) -> Prefix | None:
         mtime = path.stat().st_mtime
     except OSError:
         mtime = 0.0
-    return Prefix(name=path.name, path=path, arch=_prefix_arch(wine_dir), mtime=mtime, dpi=_prefix_dpi(wine_dir),
+    return Prefix(name=path.name, path=path, arch=_prefix_arch(wine_dir), mtime=mtime, dpi=prefix_dpi(wine_dir),
                   layout=layout, external=external)
 
 
@@ -1385,8 +1454,59 @@ def desktop_backend() -> str:
     return "other"
 
 
+@dataclass
+class ScreenScale:
+    name: str
+    scale: float
+    width: int = 0
+    height: int = 0
+
+    @property
+    def percent(self) -> int:
+        return int(round(self.scale * 100))
+
+    @property
+    def label(self) -> str:
+        return f"{self.name} ({self.width}×{self.height})" if self.width and self.height else self.name
+
+
+def kde_wayland() -> bool:
+    """Plasma-Wayland-Sitzung: Skalierung gilt je Bildschirm (kscreen-doctor), kdeglobals ist dort wirkungslos."""
+    return desktop_backend() == "kde" and os.environ.get("XDG_SESSION_TYPE") == "wayland" and have("kscreen-doctor")
+
+
+def parse_kscreen_json(text: str) -> list[ScreenScale]:
+    """Aktive Bildschirme aus `kscreen-doctor -j`, Hauptbildschirm (priority 1) zuerst."""
+    try:
+        data = json.loads(text or "")
+    except ValueError:
+        return []
+    found: list[tuple[int, ScreenScale]] = []
+    for o in (data.get("outputs") or []) if isinstance(data, dict) else []:
+        scale = o.get("scale")
+        if not (o.get("enabled") and o.get("connected")) or not isinstance(scale, (int, float)) or scale <= 0:
+            continue
+        mode = next((m for m in o.get("modes") or [] if str(m.get("id")) == str(o.get("currentModeId"))), {})
+        size = mode.get("size") or o.get("size") or {}
+        prio = o.get("priority") or (1 if o.get("primary") else 99)
+        found.append((prio, ScreenScale(str(o.get("name") or o.get("id")), float(scale),
+                                        int(size.get("width") or 0), int(size.get("height") or 0))))
+    return [s for _prio, s in sorted(found, key=lambda t: t[0])]
+
+
+def screen_scales() -> list[ScreenScale]:
+    """Skalierung je Bildschirm unter Plasma Wayland; leer in anderen Sitzungen."""
+    if not kde_wayland():
+        return []
+    return parse_kscreen_json(run(["kscreen-doctor", "-j"], timeout=10).stdout)
+
+
 def desktop_scale_get() -> tuple[int | None, str]:
     be = desktop_backend()
+    if be == "kde":
+        screens = screen_scales()
+        if screens:
+            return screens[0].percent, "kde-wayland"
     if be == "kde" and have("kreadconfig6"):
         r = run(["kreadconfig6", "--file", "kdeglobals", "--group", "KScreen", "--key", "ScaleFactor"], timeout=10)
         f = _to_float(r.stdout)
@@ -1399,9 +1519,37 @@ def desktop_scale_get() -> tuple[int | None, str]:
     return (int(round(f * 100)) if f else None), be
 
 
-def desktop_scale_set(percent: int) -> str:
+def wine_dpi_for_desktop() -> int | None:
+    """Windows-DPI passend zur Desktop-Skalierung (None = unbekannt).
+
+    Wine läuft über X11/XWayland – Xft.dpi ist genau die DPI, mit der X11-Programme selbst skalieren (KDE „Legacy-
+    Anwendungen skalieren sich selbst“: 96 × Faktor). Skaliert KWin sie stattdessen hoch, steht dort 96 – dann darf Wine
+    nicht zusätzlich vergrößern."""
+    if os.environ.get("DISPLAY") and have("xrdb"):
+        m = re.search(r"^Xft\.dpi:\s*([0-9.]+)", run(["xrdb", "-query"], timeout=5).stdout or "", re.M)
+        f = _to_float(m.group(1)) if m else None
+        if f:
+            return max(96, min(480, int(round(f))))
+    if have("kreadconfig6"):
+        f = _to_float(run(["kreadconfig6", "--file", "kwinrc", "--group", "Xwayland", "--key", "Scale"], timeout=5).stdout)
+        if f:
+            return max(96, min(480, int(round(96 * f))))
+    if os.environ.get("XDG_SESSION_TYPE") == "wayland":
+        return None                 # globaler Faktor sagt unter Wayland nichts darüber, ob X11-Programme selbst skalieren
+    pct, _be = desktop_scale_get()
+    return max(96, min(480, int(round(96 * pct / 100)))) if pct else None
+
+
+def desktop_scale_set(percent: int, screen: str = "") -> str:
+    """Skalierung setzen. Plasma Wayland: je Bildschirm über kscreen-doctor, sofort wirksam (screen = Ausgangsname)."""
     factor = f"{percent / 100:.2f}"
     be = desktop_backend()
+    if screen and kde_wayland():
+        r = run(["kscreen-doctor", f"output.{screen}.scale.{percent / 100:g}"], timeout=30)
+        if r.returncode == 0:
+            return (f"Skalierung von {screen} auf {percent} % gesetzt – sofort wirksam. Windows-Programme in Prefixen mit "
+                    "eigener DPI behalten ihre Größe (unter „Windows-DPI je Wine-Prefix“ anpassbar).")
+        return (r.stderr or r.stdout).strip()[:300] or "kscreen-doctor fehlgeschlagen"
     if be == "kde" and have("kwriteconfig6"):
         r = run(["kwriteconfig6", "--file", "kdeglobals", "--group", "KScreen", "--key", "ScaleFactor", factor], timeout=10)
         if r.returncode == 0:

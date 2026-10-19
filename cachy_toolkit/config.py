@@ -20,6 +20,8 @@ DEFAULTS: dict[str, str] = {
     "LAUNCH_OPTIONS": "",
     "DEFAULT_TOOL": "auto",
     "PREFER_UMU": "1",
+    "AUTO_DPI": "1",                # Windows-DPI neuer/unveränderter Prefixe an die Desktop-Skalierung anpassen
+    "WAYLAND_DRIVER": "1",          # Proton-Wayland-Treiber (PROTON_ENABLE_WAYLAND=1) als Vorgabe – KDE-Wayland ist Standard
 }
 
 

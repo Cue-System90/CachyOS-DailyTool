@@ -48,6 +48,13 @@ class PreferencesDialog(Adw.PreferencesDialog):
         umu.set_sensitive(compat.umu_available())
         umu.connect("notify::active", lambda r, _p: self._set("PREFER_UMU", "1" if r.get_active() else "0", quiet=True))
         g3.add(umu)
+        wl = Adw.SwitchRow(title="Wayland-Treiber von Proton als Vorgabe",
+                           subtitle="Programme laufen direkt unter Wayland statt XWayland (PROTON_ENABLE_WAYLAND=1); "
+                                    "je Prefix und Anwendung abschaltbar. Store-Launcher bleiben auf XWayland (weißes Fenster) – "
+                                    "außer GOG Galaxy sowie Ubisoft Connect und Rockstar mit GE-Proton ab 11-6.",
+                           active=cfg.get("WAYLAND_DRIVER", "1") == "1")
+        wl.connect("notify::active", lambda r, _p: self._set("WAYLAND_DRIVER", "1" if r.get_active() else "0", quiet=True))
+        g3.add(wl)
         page.add(g3)
         self.add(page)
 

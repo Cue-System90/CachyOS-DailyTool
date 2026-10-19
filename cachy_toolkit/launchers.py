@@ -45,6 +45,8 @@ class LauncherSpec:
     uninstall_match: tuple[str, ...] = ()   # Teile des Anzeigenamens in der Windows-Programmliste
     install_notes: str = ""
     known_issues: tuple[str, ...] = ()
+    wayland_ok: str = ""                    # Wayland-Treiber belegt: "any" (jedes getestete Proton), "ge" (GE-Proton ab 11-6),
+                                            # "" = nur XWayland (weißes CEF-Fenster); siehe Launcher.lift_catalog_xwayland
 
     @property
     def env_dict(self) -> dict[str, str]:
@@ -56,7 +58,22 @@ class LauncherSpec:
         return d
 
 
-NO_WAYLAND = (("PROTON_ENABLE_WAYLAND", "0"),)   # CEF-Oberflächen der Launcher laufen unter XWayland stabiler (Faugus, GE-Proton #188)
+# Ausnahme von der Wayland-Vorgabe (config WAYLAND_DRIVER) – nur für Launcher mit Chromium-/CEF-Oberfläche, belegt:
+# Echttest 2026-10-17 (Desktop RTX 4090, proton-cachyos 11.0-20261005-slr, umu, LogPixels 216): mit
+# PROTON_ENABLE_WAYLAND=1 bleiben die Fenster von Ubisoft Connect (CEF 135, 32 Bit) und Rockstar Games Launcher
+# (Social Club, CEF, 64 Bit) dauerhaft rein weiß, umu meldet „egl: failed to create dri2 screen“; unter XWayland
+# erscheint im selben Prefix sofort die Anmeldeseite. Normale Wine-Fenster (Notepad/GDI) und Spiele (DXVK/Vulkan)
+# laufen mit dem Wayland-Treiber einwandfrei. EA App: GE-Proton #188 (Fenster rendert nur mit PROTON_ENABLE_WAYLAND=0).
+# Epic, Battle.net und Amazon nutzen denselben Chromium-Renderweg (CEF bzw. Electron), einzeln ungetestet.
+# Bilder/Logs: reference/wayland-test-2026-10-17/. Spiele aus dem Launcher erben den Grafiktreiber des Launchers
+# (gleicher wineserver). Pro Anwendung lässt sich die Variable in den Umgebungsvariablen entfernen.
+# Nachtest 2026-10-17 mit GE-Proton11-9 (ab 11-6 prozessübergreifendes CEF-Rendern per DMA-BUF): Ubisoft Connect und
+# Rockstar Games Launcher erscheinen als native Wayland-Fenster mit Anmeldeseite (wayland_ok="ge"). Dann lässt
+# Launcher.app_plan PROTON_ENABLE_WAYLAND=0 weg – Launcher und die Spiele, die er startet, laufen unter KDE-Wayland.
+# GOG Galaxy 2.1.10.56 (Qt WebEngine, --in-process-gpu, libglesv2=d) zeichnet mit GE-Proton11-9 UND proton-cachyos 11
+# unter dem Wayland-Treiber vollständig (wayland_ok="any", kein NO_WAYLAND mehr). EA App, Epic, Battle.net und Amazon
+# sind ungetestet und bleiben bis zum Beleg auf XWayland.
+NO_WAYLAND = (("PROTON_ENABLE_WAYLAND", "0"),)
 GE = "umu:GE-Proton"
 
 UBISOFT_SETTINGS = """overlay:
@@ -79,7 +96,7 @@ CATALOG: tuple[LauncherSpec, ...] = (
         exe_paths=(r"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\UbisoftConnect.exe",
                    r"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\upc.exe",
                    r"C:\Program Files (x86)\Ubisoft\Ubisoft Game Launcher\Uplay.exe"),
-        exe_names=("UbisoftConnect.exe", "upc.exe", "Uplay.exe"), env=NO_WAYLAND, uninstall_match=("Ubisoft Connect", "Uplay"),
+        exe_names=("UbisoftConnect.exe", "upc.exe", "Uplay.exe"), env=NO_WAYLAND, wayland_ok="ge", uninstall_match=("Ubisoft Connect", "Uplay"),
         recommended_tool=GE, runner_note="Am besten belegt mit GE-Proton (half 2025 gegen „unsolvable error“).",
         post_install_files=((r"%LOCALAPPDATA%\Ubisoft Game Launcher\settings.yaml", UBISOFT_SETTINGS),),
         install_notes="Beim ersten Start aktualisiert sich Ubisoft Connect selbst und startet ggf. neu; erst danach erscheint die Anmeldung. "
@@ -123,7 +140,7 @@ CATALOG: tuple[LauncherSpec, ...] = (
         silent_args=("/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-"), silent_default=True,
         exe_paths=(r"C:\Program Files\GOG Galaxy\GalaxyClient.exe", r"C:\Program Files (x86)\GOG Galaxy\GalaxyClient.exe"),
         exe_names=("GalaxyClient.exe",), launch_args="--in-process-gpu /runWithoutUpdating /deelevated",
-        env=NO_WAYLAND + (("WINEDLLOVERRIDES", "libglesv2=d"),), winetricks=("corefonts", "mfc140"),
+        env=(("WINEDLLOVERRIDES", "libglesv2=d"),), wayland_ok="any", winetricks=("corefonts", "mfc140"),
         uninstall_match=("GOG GALAXY", "GOG Galaxy"), recommended_tool=GE,
         runner_note="Belegt mit GE-Proton (Lutris). Bei Flackern/hoher CPU-Last mit Proton 10 ein anderes Proton testen.",
         install_notes="Lädt den vollständigen Offline-Installer (rund 340 MB, MD5-geprüft). Beim ersten Start einen Spiele-Ordner "
@@ -151,8 +168,10 @@ CATALOG: tuple[LauncherSpec, ...] = (
         filename="Rockstar-Games-Launcher.exe",
         exe_paths=(r"C:\Program Files\Rockstar Games\Launcher\Launcher.exe", r"C:\Program Files (x86)\Rockstar Games\Launcher\Launcher.exe",
                    r"C:\ProgramData\Rockstar Games\Launcher\Launcher.exe"),
-        exe_names=("Launcher.exe",), search_hint="Rockstar Games", env=NO_WAYLAND, winetricks=(),
-        uninstall_match=("Rockstar Games Launcher",), runner_note="Belegt mit Valve-Proton 10/11 – proton-cachyos passt.",
+        exe_names=("Launcher.exe",), search_hint="Rockstar Games", env=NO_WAYLAND, wayland_ok="ge", winetricks=(),
+        uninstall_match=("Rockstar Games Launcher",),
+        runner_note="Belegt mit Valve-Proton 10/11 – proton-cachyos passt (Launcher unter XWayland). "
+                    "Mit GE-Proton ab 11-6 laufen Launcher und Spiele unter KDE-Wayland.",
         install_notes="Interaktive Installation: Standardpfad beibehalten und am Ende „Launcher starten“ abwählen; "
                       "startet er trotzdem, das Fenster schließen.",
         known_issues=("Spiele mit BattlEye (GTA Online) laufen unter Linux nicht.",),
