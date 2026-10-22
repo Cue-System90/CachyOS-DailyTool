@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=CachyOS DailyTool
+GenericName=System tool
+GenericName[de]=Systemwerkzeug
+Comment=Wine prefixes, launcher migration, ProtonPlus, X3D core assignment (CCD), mount drives, GPU status, logs, shader caches, system update
+Comment[de]=Wine-Prefixe, Launcher-Migration, ProtonPlus, X3D-Kernzuteilung (CCD), Laufwerke einbinden, GPU-Status, Logs, Shader-Caches, System-Update
+Exec=cachyos-dailytool %f
+Icon=io.cuesystem.CachyOSDailyTool
+Terminal=false
+Categories=System;
+Keywords=Wine;Proton;fstab;NVMe;SATA;GPU;Journal;Update;DKMS;CachyOS;Shader;X3D;CCD;3D V-Cache;
+StartupNotify=true
+StartupWMClass=io.cuesystem.CachyOSDailyTool

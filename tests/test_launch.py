@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from cachy_toolkit import compat, config, launch_options, launcher, registry, shortcuts, system
+from cachyos_dailytool import compat, config, launch_options, launcher, registry, shortcuts, system
 
 
 class LaunchOptionsTests(unittest.TestCase):
@@ -176,7 +176,7 @@ class LauncherPlanTests(unittest.TestCase):
     @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
     def test_app_wayland_setting_and_catalog_exception(self):
         del os.environ["PROTON_ENABLE_WAYLAND"]
-        from cachy_toolkit import launchers
+        from cachyos_dailytool import launchers
         self.reg.add_app(registry.AppEntry(id="spiel", name="Spiel", exe=str(self.exe), prefix=str(self.prefix),
                                            tool="proton:/opt/proton-slr", wayland_driver="off"))
         rs = launchers.get("rockstar")
@@ -205,7 +205,7 @@ class LauncherPlanTests(unittest.TestCase):
     @mock.patch.dict(os.environ, {"PROTON_ENABLE_WAYLAND": ""})
     def test_catalog_launcher_on_wayland_with_ge_proton(self):
         del os.environ["PROTON_ENABLE_WAYLAND"]
-        from cachy_toolkit import launchers
+        from cachyos_dailytool import launchers
         ge = compat.CompatTool("proton:/opt/GE-Proton11-9", "GE-Proton11-9", "proton", "/opt/GE-Proton11-9", "GE-Proton11-9", "compatibilitytools.d", "")
         self.L._tools = _fake_tools() + [ge]
         for spec_id in ("rockstar", "ea-app"):
@@ -415,10 +415,10 @@ class ShortcutTests(unittest.TestCase):
             desk.mkdir()
             app = registry.AppEntry(id="ubi", name="Ubisoft Connect", exe="/p/drive_c/u.exe", prefix="/p", icon="")
             with mock.patch.object(shortcuts, "APPS_DIR", apps), mock.patch.object(shortcuts, "desktop_dir", return_value=desk), \
-                 mock.patch.object(shortcuts, "launcher_command", return_value="/usr/bin/cachy-toolkit"), \
+                 mock.patch.object(shortcuts, "launcher_command", return_value="/usr/bin/cachyos-dailytool"), \
                  mock.patch.object(shortcuts, "_refresh_menu", lambda: None):
                 content = shortcuts.desktop_entry(app)
-                self.assertIn("Exec=/usr/bin/cachy-toolkit --run ubi", content)
+                self.assertIn("Exec=/usr/bin/cachyos-dailytool --run ubi", content)
                 self.assertIn("Name=Ubisoft Connect", content)
                 written = shortcuts.create(app, menu=True, desktop=True)
                 self.assertEqual(len(written), 2)

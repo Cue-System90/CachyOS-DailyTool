@@ -1,5 +1,0 @@
-#!/bin/sh
-# Startskript für die Benutzer-Installation (install.sh ohne --system)
-PREFIX="${CACHY_TOOLKIT_HOME:-$HOME/.local/lib/cachy-toolkit}"
-export PYTHONPATH="$PREFIX${PYTHONPATH:+:$PYTHONPATH}"
-exec python3 -m cachy_toolkit "$@"

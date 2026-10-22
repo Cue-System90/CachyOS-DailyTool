@@ -1,0 +1,3750 @@
+# CachyOS DailyTool – Übersetzung der Oberfläche
+# Quelltexte: Deutsch. Pflege mit scripts/i18n-update.py
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: en\n"
+
+#: cachyos_dailytool/__main__.py:22
+msgid "CachyOS DailyTool (GTK4/libadwaita)"
+msgstr "CachyOS DailyTool (GTK4/libadwaita)"
+
+#: cachyos_dailytool/__main__.py:23
+msgid "DATEI"
+msgstr "FILE"
+
+#: cachyos_dailytool/__main__.py:23
+msgid ".exe/.msi direkt mit Prefix-Auswahl öffnen"
+msgstr "open an .exe/.msi directly with prefix selection"
+
+#: cachyos_dailytool/__main__.py:24
+msgid "ANWENDUNG"
+msgstr "APPLICATION"
+
+#: cachyos_dailytool/__main__.py:24
+msgid "registrierte Anwendung (Verknüpfung) ohne Oberfläche starten"
+msgstr "launch a registered application (shortcut) without the UI"
+
+#: cachyos_dailytool/__main__.py:25
+msgid "SEITE"
+msgstr "PAGE"
+
+#: cachyos_dailytool/__main__.py:25
+msgid "mit dieser Seite starten (z. B. prefixes)"
+msgstr "start on this page (e.g. prefixes)"
+
+#: cachyos_dailytool/__main__.py:28
+msgid "X3D-Kernzuteilung als Hintergrunddienst ausführen (ohne Oberfläche)"
+msgstr "run the X3D core assignment as a background service (no UI)"
+
+#: cachyos_dailytool/__main__.py:29
+msgid "wie --x3d-daemon, aber nur protokollieren (keine Zuweisung)"
+msgstr "like --x3d-daemon, but only log (no assignment)"
+
+#: cachyos_dailytool/__main__.py:30
+msgid "Topologie, Rangfolge und erkannte Spiele ausgeben"
+msgstr "print topology, core preference and detected games"
+
+#: cachyos_dailytool/__main__.py:70
+msgid "{0} Verknüpfungen erneuert"
+msgstr "{0} shortcuts updated"
+
+#: cachyos_dailytool/__main__.py:88
+msgid "Anwendung „{0}“ ist nicht registriert."
+msgstr "Application “{0}” is not registered."
+
+#: cachyos_dailytool/__main__.py:95 cachyos_dailytool/ui/pages_launchers.py:411 cachyos_dailytool/ui/pages_wine.py:241
+msgid "Start fehlgeschlagen: {0}"
+msgstr "Launch failed: {0}"
+
+#: cachyos_dailytool/compat.py:38
+msgid "GE-Proton (neueste Version, Download über umu)"
+msgstr "GE-Proton (latest version, downloaded via umu)"
+
+#: cachyos_dailytool/compat.py:39
+msgid "UMU-Proton (neueste Version, Download über umu)"
+msgstr "UMU-Proton (latest version, downloaded via umu)"
+
+#: cachyos_dailytool/compat.py:295 cachyos_dailytool/compat.py:297
+msgid "manuell"
+msgstr "manual"
+
+#: cachyos_dailytool/compat.py:249
+msgid "System-Wine ({0})"
+msgstr "System Wine ({0})"
+
+#: cachyos_dailytool/goverlay.py:89
+msgid "MangoHud (GOverlay-Standard)"
+msgstr "MangoHud (GOverlay default)"
+
+#: cachyos_dailytool/goverlay.py:90
+msgid "MangoHud + vkBasalt"
+msgstr "MangoHud + vkBasalt"
+
+#: cachyos_dailytool/goverlay.py:91
+msgid "MangoHud + GameMode"
+msgstr "MangoHud + GameMode"
+
+#: cachyos_dailytool/goverlay.py:92
+msgid "MangoHud nur per Variable"
+msgstr "MangoHud via variable only"
+
+#: cachyos_dailytool/goverlay.py:93
+msgid "Gamescope Vollbild + MangoHud"
+msgstr "Gamescope fullscreen + MangoHud"
+
+#: cachyos_dailytool/goverlay.py:94
+msgid "Proton-Log aktivieren"
+msgstr "Enable Proton log"
+
+#: cachyos_dailytool/goverlay.py:95
+msgid "DXVK-HUD (FPS)"
+msgstr "DXVK HUD (FPS)"
+
+#: cachyos_dailytool/goverlay.py:96
+msgid "Wayland nativ (Proton 9+)"
+msgstr "Native Wayland (Proton 9+)"
+
+#: cachyos_dailytool/goverlay.py:97
+msgid "Wine-Debug-Ausgabe aus"
+msgstr "Wine debug output off"
+
+#: cachyos_dailytool/goverlay.py:98
+msgid "Keine Startoptionen"
+msgstr "No launch options"
+
+#: cachyos_dailytool/i18n.py:22
+msgid "Automatisch (Systemsprache)"
+msgstr "Automatic (system language)"
+
+#: cachyos_dailytool/launch_options.py:49
+msgid "Startoptionen ungültig: {0}"
+msgstr "Invalid launch options: {0}"
+
+#: cachyos_dailytool/launcher.py:248 cachyos_dailytool/launcher.py:499
+msgid "Kein Proton/Wine gefunden. Bitte proton-cachyos, umu-launcher oder wine installieren."
+msgstr "No Proton/Wine found. Please install proton-cachyos, umu-launcher or wine."
+
+#: cachyos_dailytool/launcher.py:283
+msgid "KDE-Wayland auf eigenem Desktop (Prefix läuft bereits)"
+msgstr "KDE Wayland on a separate desktop (prefix already running)"
+
+#: cachyos_dailytool/launcher.py:356 cachyos_dailytool/launcher.py:382
+msgid "Kein Proton/Wine verfügbar."
+msgstr "No Proton/Wine available."
+
+#: cachyos_dailytool/launcher.py:367
+msgid "Kein Wine-Binary gefunden (weder im Runner noch im System)."
+msgstr "No Wine binary found (neither in the runner nor on the system)."
+
+#: cachyos_dailytool/launcher.py:390
+msgid "winetricks ist nicht installiert."
+msgstr "winetricks is not installed."
+
+#: cachyos_dailytool/launcher.py:91
+msgid "{0} ist nicht installiert und GitHub ist nicht erreichbar"
+msgstr "{0} is not installed and GitHub is unreachable"
+
+#: cachyos_dailytool/launcher.py:97
+msgid "{0} ist nicht installiert und das GitHub-Abfragelimit dieser Internetverbindung ist erschöpft"
+msgstr "{0} is not installed and the GitHub rate limit of this internet connection is exhausted"
+
+#: cachyos_dailytool/launcher.py:171
+msgid "umu-run nicht gefunden (Paket umu-launcher)."
+msgstr "umu-run not found (package umu-launcher)."
+
+#: cachyos_dailytool/launcher.py:285
+msgid "neben laufendem Prefix (runinprefix)"
+msgstr "alongside the running prefix (runinprefix)"
+
+#: cachyos_dailytool/launcher.py:95
+msgid "{0} ist nicht installiert und das GitHub-Abfragelimit dieser Internetverbindung ist erschöpft (wieder frei um {1} Uhr)"
+msgstr "{0} is not installed and the GitHub rate limit of this internet connection is exhausted (available again at {1})"
+
+#: cachyos_dailytool/launcher.py:120
+msgid "{0}. Weiche aus auf {1}."
+msgstr "{0}. Falling back to {1}."
+
+#: cachyos_dailytool/launcher.py:245
+msgid "Startdatei nicht gefunden: {0}"
+msgstr "Executable not found: {0}"
+
+#: cachyos_dailytool/launcher.py:332
+msgid "{0}. Bitte unter „Einstellungen“ bzw. „Prefixe verwalten“ einen anderen Runner wählen (z. B. proton-cachyos) oder später erneut starten."
+msgstr "{0}. Please choose a different runner under “Settings” or “Manage prefixes” (e.g. proton-cachyos) or try again later."
+
+#: cachyos_dailytool/launcher.py:417
+msgid "Windows-Programmliste nicht lesbar (Code {0}): {1}"
+msgstr "Could not read the Windows program list (code {0}): {1}"
+
+#: cachyos_dailytool/launcher.py:110
+msgid "{0}: lokale Version {1} vorhanden – umu nutzt sie (oder eine neuere, falls verfügbar)."
+msgstr "{0}: local version {1} available – umu uses it (or a newer one if available)."
+
+#: cachyos_dailytool/launcher.py:114
+msgid "umu lädt {0} einmalig herunter (rund 500 MB) – das kann einige Minuten dauern."
+msgstr "umu downloads {0} once (about 500 MB) – this may take a few minutes."
+
+#: cachyos_dailytool/launcher.py:118
+msgid "{0}. Es ist auch kein anderes Proton/Wine installiert – bitte später erneut versuchen."
+msgstr "{0}. No other Proton/Wine is installed either – please try again later."
+
+#: cachyos_dailytool/launcher.py:448
+msgid "winetricks endete mit Code {0} – Installation wird trotzdem fortgesetzt."
+msgstr "winetricks exited with code {0} – the installation continues anyway."
+
+#: cachyos_dailytool/launcher.py:190
+msgid "{0} benötigt die Steam Linux Runtime (AppID {1}). Bitte umu-launcher installieren oder ein anderes Proton wählen."
+msgstr "{0} requires the Steam Linux Runtime (AppID {1}). Please install umu-launcher or choose a different Proton."
+
+#: cachyos_dailytool/launcher.py:443
+msgid "winetricks übersprungen: {0}"
+msgstr "winetricks skipped: {0}"
+
+#: cachyos_dailytool/launcher.py:512
+msgid "Windows-DPI auf {0} gesetzt (passend zur Desktop-Skalierung) – sonst erscheinen Fenster winzig."
+msgstr "Windows DPI set to {0} (matching the desktop scaling) – otherwise windows appear tiny."
+
+#: cachyos_dailytool/launchers.py:95
+msgid "Ubisofts Launcher (früher Uplay) für Assassin's Creed, Far Cry, Anno und weitere."
+msgstr "Ubisoft's launcher (formerly Uplay) for Assassin's Creed, Far Cry, Anno and more."
+
+#: cachyos_dailytool/launchers.py:102
+msgid "Am besten belegt mit GE-Proton (half 2025 gegen „unsolvable error“)."
+msgstr "Best documented with GE-Proton (helped against the “unsolvable error” in 2025)."
+
+#: cachyos_dailytool/launchers.py:104
+msgid "Beim ersten Start aktualisiert sich Ubisoft Connect selbst und startet ggf. neu; erst danach erscheint die Anmeldung. Overlay ist abgeschaltet, Schließen beendet den Client (statt im Tray weiterzulaufen)."
+msgstr "On first launch, Ubisoft Connect updates itself and may restart; only then does the login appear. The overlay is disabled, and closing quits the client (instead of keeping it running in the tray)."
+
+#: cachyos_dailytool/launchers.py:111
+msgid "Electronic Arts' Launcher (Nachfolger von Origin) für Battlefield, Die Sims, EA Sports FC u. a."
+msgstr "Electronic Arts' launcher (successor to Origin) for Battlefield, The Sims, EA Sports FC and others."
+
+#: cachyos_dailytool/launchers.py:117
+msgid "Belegt mit GE-Proton 10 (Lutris nutzt dwproton)."
+msgstr "Documented with GE-Proton 10 (Lutris uses dwproton)."
+
+#: cachyos_dailytool/launchers.py:118
+msgid "Der Installer lädt die eigentliche App während der Installation aus dem Netz. Rückgabecode 768 ist unter Wine normal."
+msgstr "The installer downloads the actual app from the internet during installation. Exit code 768 is normal under Wine."
+
+#: cachyos_dailytool/launchers.py:124
+msgid "Epic Games Store mit wöchentlichen Gratisspielen und Unreal-Titeln (Spiele mit Anti-Cheat laufen meist nicht)."
+msgstr "Epic Games Store with weekly free games and Unreal titles (games with anti-cheat usually do not run)."
+
+#: cachyos_dailytool/launchers.py:133
+msgid "Am besten belegt mit GE-Proton über umu (umu-README, Lutris)."
+msgstr "Best documented with GE-Proton via umu (umu README, Lutris)."
+
+#: cachyos_dailytool/launchers.py:134
+msgid "Nach der stillen Installation öffnet sich der Launcher von selbst; die Verknüpfung wird dann schon angelegt. Das Protokoll endet, wenn du den Launcher schließt."
+msgstr "After the silent installation the launcher opens by itself; the shortcut is created at that point. The log ends when you close the launcher."
+
+#: cachyos_dailytool/launchers.py:139
+msgid "Offizieller GOG-Client unter Proton (Alternative zum nativen galaxy-linux)."
+msgstr "Official GOG client under Proton (alternative to the native galaxy-linux)."
+
+#: cachyos_dailytool/launchers.py:147
+msgid "Belegt mit GE-Proton (Lutris). Bei Flackern/hoher CPU-Last mit Proton 10 ein anderes Proton testen."
+msgstr "Documented with GE-Proton (Lutris). If you see flickering/high CPU load with Proton 10, try a different Proton."
+
+#: cachyos_dailytool/launchers.py:148
+msgid "Lädt den vollständigen Offline-Installer (rund 340 MB, MD5-geprüft). Beim ersten Start einen Spiele-Ordner außerhalb von drive_c wählen."
+msgstr "Downloads the full offline installer (about 340 MB, MD5-verified). On first launch, choose a games folder outside drive_c."
+
+#: cachyos_dailytool/launchers.py:155
+msgid "Blizzards Launcher für Diablo, Overwatch, World of Warcraft, StarCraft und Call of Duty."
+msgstr "Blizzard's launcher for Diablo, Overwatch, World of Warcraft, StarCraft and Call of Duty."
+
+#: cachyos_dailytool/launchers.py:161
+msgid "Proton ab Version 10 verwenden (proton-cachyos oder GE-Proton 10+)."
+msgstr "Use Proton 10 or newer (proton-cachyos or GE-Proton 10+)."
+
+#: cachyos_dailytool/launchers.py:162
+msgid "Kein echter Silent-Modus: Nach der Installation öffnet sich das Anmeldefenster – die Verknüpfung wird dann schon angelegt; das Protokoll endet, wenn du es schließt."
+msgstr "No real silent mode: after the installation the login window opens – the shortcut is created at that point; the log ends when you close it."
+
+#: cachyos_dailytool/launchers.py:168
+msgid "Rockstars Launcher für GTA V, Red Dead Redemption 2 und L.A. Noire."
+msgstr "Rockstar's launcher for GTA V, Red Dead Redemption 2 and L.A. Noire."
+
+#: cachyos_dailytool/launchers.py:175
+msgid "Belegt mit Valve-Proton 10/11 – proton-cachyos passt (Launcher unter XWayland). Mit GE-Proton ab 11-6 laufen Launcher und Spiele unter KDE-Wayland."
+msgstr "Documented with Valve Proton 10/11 – proton-cachyos works (launcher under XWayland). With GE-Proton 11-6 or newer, launcher and games run under KDE Wayland."
+
+#: cachyos_dailytool/launchers.py:177
+msgid "Interaktive Installation: Standardpfad beibehalten und am Ende „Launcher starten“ abwählen; startet er trotzdem, das Fenster schließen."
+msgstr "Interactive installation: keep the default path and untick “Start launcher” at the end; if it starts anyway, close the window."
+
+#: cachyos_dailytool/launchers.py:183
+msgid "Amazon-Launcher für Prime-Gaming-Titel."
+msgstr "Amazon's launcher for Prime Gaming titles."
+
+#: cachyos_dailytool/launchers.py:188
+msgid "Belegt mit proton-cachyos über umu (Faugus Launcher)."
+msgstr "Documented with proton-cachyos via umu (Faugus Launcher)."
+
+#: cachyos_dailytool/launchers.py:189
+msgid "Der Installer lädt die App online nach und öffnet am Ende das Anmeldefenster – die Verknüpfung wird dann schon angelegt; das Protokoll endet, wenn du es schließt."
+msgstr "The installer downloads the app and opens the login window at the end – the shortcut is created at that point; the log ends when you close it."
+
+#: cachyos_dailytool/launchers.py:495
+msgid "Die heruntergeladene Datei ist kein Windows-Installer (Server lieferte vermutlich eine Webseite)."
+msgstr "The downloaded file is not a Windows installer (the server probably returned a web page)."
+
+#: cachyos_dailytool/launchers.py:501
+msgid "MD5-Prüfsumme stimmt."
+msgstr "MD5 checksum matches."
+
+#: cachyos_dailytool/launchers.py:106
+msgid "Weißes Fenster oder „unsolvable error“: anderes Proton wählen (GE-Proton) bzw. den Prefix neu anlegen."
+msgstr "White window or “unsolvable error”: choose a different Proton (GE-Proton) or recreate the prefix."
+
+#: cachyos_dailytool/launchers.py:107
+msgid "Spiele nicht unter /run/media installieren (dort meldet der Client zu wenig Platz) – besser im Prefix oder unter /mnt."
+msgstr "Do not install games under /run/media (the client reports insufficient space there) – better inside the prefix or under /mnt."
+
+#: cachyos_dailytool/launchers.py:119
+msgid "Prefix nicht auf NTFS anlegen – die Installation bricht dort ab (WRITE_OWNER)."
+msgstr "Do not create the prefix on NTFS – the installation aborts there (WRITE_OWNER)."
+
+#: cachyos_dailytool/launchers.py:120
+msgid "Bei manchen Versionen liegt EALauncher.exe in einem Versionsordner; das Tool sucht ihn dann automatisch."
+msgstr "In some versions EALauncher.exe is located in a version folder; the tool then searches for it automatically."
+
+#: cachyos_dailytool/launchers.py:150
+msgid "Schwarzes Fenster: libglesv2 ist deaktiviert und corefonts wird installiert (WineHQ-Bug 50212)."
+msgstr "Black window: libglesv2 is disabled and corefonts gets installed (WineHQ bug 50212)."
+
+#: cachyos_dailytool/launchers.py:151
+msgid "Bei aktivierten Cloud-Speicherständen kann GalaxyCommunication.exe viel RAM belegen."
+msgstr "With cloud saves enabled, GalaxyCommunication.exe can use a lot of RAM."
+
+#: cachyos_dailytool/launchers.py:164
+msgid "Battle.net Launcher.exe stürzt mit Proton 9 ab – deshalb startet die Verknüpfung Battle.net.exe."
+msgstr "Battle.net Launcher.exe crashes with Proton 9 – that is why the shortcut launches Battle.net.exe."
+
+#: cachyos_dailytool/launchers.py:179
+msgid "Spiele mit BattlEye (GTA Online) laufen unter Linux nicht."
+msgstr "Games with BattlEye (GTA Online) do not run on Linux."
+
+#: cachyos_dailytool/launchers.py:453
+msgid "Lade {0}-Installer von {1} …"
+msgstr "Downloading {0} installer from {1}…"
+
+#: cachyos_dailytool/launchers.py:503
+msgid "Download fertig: {0} ({1:.1f} MiB)"
+msgstr "Download finished: {0} ({1:.1f} MiB)"
+
+#: cachyos_dailytool/launchers.py:492
+msgid "Download unvollständig ({0} von {1} Bytes)."
+msgstr "Download incomplete ({0} of {1} bytes)."
+
+#: cachyos_dailytool/launchers.py:457
+msgid "Download fehlgeschlagen: {0}"
+msgstr "Download failed: {0}"
+
+#: cachyos_dailytool/launchers.py:461
+msgid "Server antwortete mit HTTP {0}"
+msgstr "Server responded with HTTP {0}"
+
+#: cachyos_dailytool/launchers.py:467
+msgid "Installer aus dem Zwischenspeicher: {0} ({1:.1f} MiB)"
+msgstr "Installer from cache: {0} ({1:.1f} MiB)"
+
+#: cachyos_dailytool/launchers.py:477
+msgid "Download abgebrochen."
+msgstr "Download cancelled."
+
+#: cachyos_dailytool/launchers.py:500
+msgid "Prüfsumme stimmt nicht (MD5 {0}, erwartet {1})."
+msgstr "Checksum mismatch (MD5 {0}, expected {1})."
+
+#: cachyos_dailytool/launchers.py:432
+msgid "Aktuelle Version laut GOG: {0}"
+msgstr "Current version according to GOG: {0}"
+
+#: cachyos_dailytool/launchers.py:435
+msgid "GOG-Versionsabfrage fehlgeschlagen ({0}) – nutze bekannte Version."
+msgstr "GOG version query failed ({0}) – using the known version."
+
+#: cachyos_dailytool/launchers.py:487
+msgid "Download {0} % ({1:.1f} / {2:.1f} MiB)"
+msgstr "Download {0} % ({1:.1f} / {2:.1f} MiB)"
+
+#: cachyos_dailytool/launchers.py:489
+msgid "Download {0:.1f} MiB"
+msgstr "Download {0:.1f} MiB"
+
+#: cachyos_dailytool/shortcuts.py:93
+msgid "Prefix in CachyOS DailyTool öffnen"
+msgstr "Open prefix in CachyOS DailyTool"
+
+#: cachyos_dailytool/shortcuts.py:87
+msgid "Über CachyOS DailyTool starten ({0})"
+msgstr "Launch via CachyOS DailyTool ({0})"
+
+#: cachyos_dailytool/system.py:582
+msgid "ext4 (empfohlen für Linux-Daten)"
+msgstr "ext4 (recommended for Linux data)"
+
+#: cachyos_dailytool/system.py:582
+msgid "btrfs (Snapshots, Kompression)"
+msgstr "btrfs (snapshots, compression)"
+
+#: cachyos_dailytool/system.py:583
+msgid "xfs (große Dateien)"
+msgstr "xfs (large files)"
+
+#: cachyos_dailytool/system.py:583
+msgid "exFAT (Austausch mit Windows/macOS)"
+msgstr "exFAT (sharing with Windows/macOS)"
+
+#: cachyos_dailytool/system.py:1049
+msgid "Mit Wine-Prefix starten"
+msgstr "Launch with Wine prefix"
+
+#: cachyos_dailytool/system.py:1050
+msgid "Wählt oder erstellt einen Wine-Prefix vor dem Start einer .exe/.msi"
+msgstr "Chooses or creates a Wine prefix before launching an .exe/.msi"
+
+#: cachyos_dailytool/system.py:844
+msgid "Bitte einen Namen eingeben."
+msgstr "Please enter a name."
+
+#: cachyos_dailytool/system.py:1361
+msgid "Aktueller Boot – alles"
+msgstr "Current boot – everything"
+
+#: cachyos_dailytool/system.py:1362
+msgid "Nur Warnungen und Fehler"
+msgstr "Warnings and errors only"
+
+#: cachyos_dailytool/system.py:1363
+msgid "Kernel-Meldungen (dmesg)"
+msgstr "Kernel messages (dmesg)"
+
+#: cachyos_dailytool/system.py:1382
+msgid "Keine passenden Einträge gefunden."
+msgstr "No matching entries found."
+
+#: cachyos_dailytool/system.py:1436
+msgid "dkms ist nicht installiert (bei CachyOS-Kerneln mit fertigen Modulpaketen normal)."
+msgstr "dkms is not installed (normal for CachyOS kernels with prebuilt module packages)."
+
+#: cachyos_dailytool/system.py:1438
+msgid "Keine DKMS-Module registriert."
+msgstr "No DKMS modules registered."
+
+#: cachyos_dailytool/system.py:160
+msgid "Weder pkexec noch sudo gefunden – Root-Aktionen sind nicht möglich."
+msgstr "Neither pkexec nor sudo found – root actions are not possible."
+
+#: cachyos_dailytool/system.py:1136
+msgid "Steam Compat-Tools (Proton-GE u. a.)"
+msgstr "Steam compat tools (Proton-GE etc.)"
+
+#: cachyos_dailytool/system.py:1177
+msgid "Ziel und Quelle sind identisch"
+msgstr "Target and source are identical"
+
+#: cachyos_dailytool/system.py:1220
+msgid "Steam – eigene Compat-Tools"
+msgstr "Steam – custom compat tools"
+
+#: cachyos_dailytool/system.py:1221
+msgid "Steam (Flatpak) – Compat-Tools"
+msgstr "Steam (Flatpak) – compat tools"
+
+#: cachyos_dailytool/system.py:1222
+msgid "System – proton-cachyos u. a."
+msgstr "System – proton-cachyos etc."
+
+#: cachyos_dailytool/system.py:1225
+msgid "Lutris – Wine-Runner"
+msgstr "Lutris – Wine runners"
+
+#: cachyos_dailytool/system.py:1226
+msgid "Bottles – Runner"
+msgstr "Bottles – runners"
+
+#: cachyos_dailytool/system.py:1228 cachyos_dailytool/system.py:1345 cachyos_dailytool/system.py:1242
+msgid "Wine-Prefix-Root"
+msgstr "Wine prefix root"
+
+#: cachyos_dailytool/system.py:1286
+msgid "Steam Shader-Cache"
+msgstr "Steam shader cache"
+
+#: cachyos_dailytool/system.py:1286
+msgid "steamapps/shadercache (nativ und Flatpak)"
+msgstr "steamapps/shadercache (native and Flatpak)"
+
+#: cachyos_dailytool/system.py:1289
+msgid "DXVK / VKD3D-Caches"
+msgstr "DXVK / VKD3D caches"
+
+#: cachyos_dailytool/system.py:1292
+msgid "Mesa Shader-Cache"
+msgstr "Mesa shader cache"
+
+#: cachyos_dailytool/system.py:1294
+msgid "~/.cache/nvidia/GLCache und ~/.nv/GLCache"
+msgstr "~/.cache/nvidia/GLCache and ~/.nv/GLCache"
+
+#: cachyos_dailytool/system.py:1346 cachyos_dailytool/ui/dialogs.py:18 cachyos_dailytool/ui/pages_launcher.py:25
+msgid "Gaming-Zielordner"
+msgstr "Gaming target folder"
+
+#: cachyos_dailytool/system.py:1347 cachyos_dailytool/ui/dialogs.py:19
+msgid "Prefix-Backups"
+msgstr "Prefix backups"
+
+#: cachyos_dailytool/system.py:1376
+msgid "journalctl lieferte keine Daten."
+msgstr "journalctl returned no data."
+
+#: cachyos_dailytool/system.py:1423 cachyos_dailytool/system.py:1425
+msgid "pacman -Qu (lokale Datenbank, evtl. veraltet)"
+msgstr "pacman -Qu (local database, possibly outdated)"
+
+#: cachyos_dailytool/system.py:1426
+msgid "pacman -Qu fehlgeschlagen"
+msgstr "pacman -Qu failed"
+
+#: cachyos_dailytool/system.py:1558
+msgid "kscreen-doctor fehlgeschlagen"
+msgstr "kscreen-doctor failed"
+
+#: cachyos_dailytool/system.py:1564
+msgid "kwriteconfig6 fehlgeschlagen"
+msgstr "kwriteconfig6 failed"
+
+#: cachyos_dailytool/system.py:1571
+msgid "Kein KDE/GNOME erkannt – GDK_SCALE={0} wurde in ~/.profile eingetragen."
+msgstr "No KDE/GNOME detected – GDK_SCALE={0} was added to ~/.profile."
+
+#: cachyos_dailytool/system.py:43
+msgid "Zeitüberschreitung"
+msgstr "Timed out"
+
+#: cachyos_dailytool/system.py:261
+msgid "{0} T {1} h {2} min"
+msgstr "{0} d {1} h {2} min"
+
+#: cachyos_dailytool/system.py:846
+msgid "„{0}“ ist als Ordnername nicht erlaubt (kein Punkt am Anfang, kein „/“)."
+msgstr "“{0}” is not allowed as a folder name (no leading dot, no “/”)."
+
+#: cachyos_dailytool/system.py:857
+msgid "{0} ist kein Wine-Prefix – Löschen verweigert."
+msgstr "{0} is not a Wine prefix – deletion refused."
+
+#: cachyos_dailytool/system.py:935
+msgid "rsync {0}/ → {1}/ (anderes Dateisystem)"
+msgstr "rsync {0}/ → {1}/ (different file system)"
+
+#: cachyos_dailytool/system.py:940
+msgid "Quelle entfernt: {0}"
+msgstr "Source removed: {0}"
+
+#: cachyos_dailytool/system.py:1120 cachyos_dailytool/system.py:1124 cachyos_dailytool/system.py:1127
+msgid "Nativ"
+msgstr "Native"
+
+#: cachyos_dailytool/system.py:1120
+msgid "Nativ (~/.steam/steam)"
+msgstr "Native (~/.steam/steam)"
+
+#: cachyos_dailytool/system.py:1183
+msgid "Entferne Quelle {0} …"
+msgstr "Removing source {0} …"
+
+#: cachyos_dailytool/system.py:1186
+msgid "Symlink gesetzt: {0} → {1}"
+msgstr "Symlink created: {0} → {1}"
+
+#: cachyos_dailytool/system.py:1420
+msgid "checkupdates fehlgeschlagen"
+msgstr "checkupdates failed"
+
+#: cachyos_dailytool/system.py:855
+msgid "{0} ist nicht erreichbar."
+msgstr "{0} is not reachable."
+
+#: cachyos_dailytool/system.py:866
+msgid "{0} ist ein Speicherort oder enthält einen – Löschen verweigert."
+msgstr "{0} is a location or contains one – deletion refused."
+
+#: cachyos_dailytool/system.py:918
+msgid "{0} laufende Prozesse des Prefix beendet."
+msgstr "Stopped {0} running processes of the prefix."
+
+#: cachyos_dailytool/system.py:925
+msgid "Ziel existiert bereits: {0}"
+msgstr "Target already exists: {0}"
+
+#: cachyos_dailytool/system.py:927
+msgid "Quelle fehlt: {0}"
+msgstr "Source missing: {0}"
+
+#: cachyos_dailytool/system.py:931
+msgid "Verschoben: {0} → {1}"
+msgstr "Moved: {0} → {1}"
+
+#: cachyos_dailytool/system.py:938 cachyos_dailytool/system.py:1182
+msgid "rsync fehlgeschlagen (Code {0}); Quelle blieb unverändert"
+msgstr "rsync failed (code {0}); source left unchanged"
+
+#: cachyos_dailytool/system.py:1173
+msgid "{0} ist bereits ein Symlink → {1}"
+msgstr "{0} is already a symlink → {1}"
+
+#: cachyos_dailytool/system.py:1175
+msgid "{0} existiert nicht"
+msgstr "{0} does not exist"
+
+#: cachyos_dailytool/system.py:1290
+msgid "*.dxvk-cache und *.vkd3d-proton.cache unter {0} und {1}"
+msgstr "*.dxvk-cache and *.vkd3d-proton.cache in {0} and {1}"
+
+#: cachyos_dailytool/system.py:1556
+msgid "Skalierung von {0} auf {1} % gesetzt – sofort wirksam. Windows-Programme in Prefixen mit eigener DPI behalten ihre Größe (unter „Windows-DPI je Wine-Prefix“ anpassbar)."
+msgstr "Scaling of {0} set to {1} % – effective immediately. Windows programs in prefixes with their own DPI keep their size (adjustable under “Windows DPI per Wine prefix”)."
+
+#: cachyos_dailytool/system.py:1562
+msgid "KDE-Skalierung auf {0} % gesetzt (kdeglobals/KScreen). Wirkt nach Ab- und Anmelden. Unter Plasma Wayland zählt zusätzlich die Skalierung je Bildschirm in den Anzeige-Einstellungen."
+msgstr "KDE scaling set to {0} % (kdeglobals/KScreen). Takes effect after logging out and back in. Under Plasma Wayland, the per-screen scaling in the display settings also applies."
+
+#: cachyos_dailytool/system.py:1567
+msgid "GNOME-Textskalierung auf Faktor {0} gesetzt."
+msgstr "GNOME text scaling set to factor {0}."
+
+#: cachyos_dailytool/system.py:41 cachyos_dailytool/system.py:63
+msgid "Programm nicht gefunden: {0}"
+msgstr "Program not found: {0}"
+
+#: cachyos_dailytool/system.py:1384
+msgid "… {0} ältere Zeilen ausgeblendet …"
+msgstr "… {0} older lines hidden …"
+
+#: cachyos_dailytool/system.py:143
+msgid "Rückgabecode {0} ignoriert – das Ergebnis ist vollständig vorhanden."
+msgstr "Exit code {0} ignored – the result is complete."
+
+#: cachyos_dailytool/system.py:124 cachyos_dailytool/ui/pages_launchers.py:426 cachyos_dailytool/ui/pages_system.py:488
+msgid "Fehler: {0}"
+msgstr "Error: {0}"
+
+#: cachyos_dailytool/system.py:1165
+msgid "Wine-Prefix: {0}"
+msgstr "Wine prefix: {0}"
+
+#: cachyos_dailytool/ui/app.py:138 cachyos_dailytool/ui/pages_drives.py:241 cachyos_dailytool/ui/pages_wine.py:332
+msgid "Abbrechen"
+msgstr "Cancel"
+
+#: cachyos_dailytool/ui/app.py:139 cachyos_dailytool/ui/pages_wine.py:333 cachyos_dailytool/ui/pages_wine.py:286
+msgid "Deinstallieren"
+msgstr "Uninstall"
+
+#: cachyos_dailytool/ui/app.py:162
+msgid "Programm beenden"
+msgstr "Quit program"
+
+#: cachyos_dailytool/ui/app.py:234
+msgid "Konfiguration"
+msgstr "Configuration"
+
+#: cachyos_dailytool/ui/app.py:96
+msgid "Sprache wechseln und neu starten?"
+msgstr "Switch language and restart?"
+
+#: cachyos_dailytool/ui/app.py:99
+msgid "Neu starten"
+msgstr "Restart"
+
+#: cachyos_dailytool/ui/app.py:131
+msgid "Einstellungen und Protokolle ebenfalls löschen"
+msgstr "Also delete settings and logs"
+
+#: cachyos_dailytool/ui/app.py:133
+msgid "CachyOS DailyTool deinstallieren?"
+msgstr "Uninstall CachyOS DailyTool?"
+
+#: cachyos_dailytool/ui/app.py:134
+msgid "Entfernt das Programm (pacman-Paket und/oder ~/.local), den Menüeintrag, die Icons, die .exe/.msi-Verknüpfung und Reste der alten Bash-Version. Wine-Prefixe, Backups und Spiele bleiben erhalten. Für ein installiertes Paket fragt pkexec nach dem Passwort."
+msgstr "Removes the program (pacman package and/or ~/.local), the menu entry, the icons, the .exe/.msi file association and leftovers of the old Bash version. Wine prefixes, backups and games are kept. For an installed package, pkexec asks for the password."
+
+#: cachyos_dailytool/ui/app.py:156
+msgid "Deinstallation fehlgeschlagen"
+msgstr "Uninstall failed"
+
+#: cachyos_dailytool/ui/app.py:159
+msgid "Deinstallation abgeschlossen"
+msgstr "Uninstall complete"
+
+#: cachyos_dailytool/ui/app.py:159
+msgid "Deinstallation mit Resten"
+msgstr "Uninstall finished with leftovers"
+
+#: cachyos_dailytool/ui/app.py:160
+msgid "Keine Ausgabe."
+msgstr "No output."
+
+#: cachyos_dailytool/ui/app.py:230
+msgid "Alltagswerkzeug für CachyOS: Wine-Prefixe, Launcher-Migration, ProtonPlus, X3D-Kernzuteilung (CCD) für Spiele, Laufwerke per fstab einbinden, GPU-Status, Journal, Shader-Caches, System-Update mit DKMS-Prüfung und Skalierung – in einer Oberfläche."
+msgstr "Everyday tool for CachyOS: Wine prefixes, launcher migration, ProtonPlus, X3D core assignment (CCD) for games, mounting drives via fstab, GPU status, journal, shader caches, system update with DKMS check and scaling – in one interface."
+
+#: cachyos_dailytool/ui/app.py:97
+msgid "Gerade läuft noch eine Aufgabe ({0}). Nach dem Neustart erscheint ihre Ausgabe nicht mehr im Protokoll, und ein laufender Befehl kann abbrechen."
+msgstr "A task is still running ({0}). After the restart its output no longer appears in the log, and a running command may be aborted."
+
+#: cachyos_dailytool/ui/app.py:129
+msgid "Deinstallationsskript nicht gefunden: {0}"
+msgstr "Uninstall script not found: {0}"
+
+#: cachyos_dailytool/ui/app.py:120
+msgid "Neustart fehlgeschlagen: {0}"
+msgstr "Restart failed: {0}"
+
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_x3d.py:15 cachyos_dailytool/ui/pages_x3d.py:19
+msgid "Cache-CCD"
+msgstr "Cache CCD"
+
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:15
+msgid "Frequenz-CCD"
+msgstr "Frequency CCD"
+
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/x3d.py:49
+msgid "keine Zuweisung"
+msgstr "no assignment"
+
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_system.py:123
+msgid "Automatisch"
+msgstr "Automatic"
+
+#: cachyos_dailytool/ui/dashboard.py:19
+msgid "Übersicht"
+msgstr "Overview"
+
+#: cachyos_dailytool/ui/dashboard.py:28
+msgid "Arbeitsspeicher"
+msgstr "Memory"
+
+#: cachyos_dailytool/ui/dashboard.py:29
+msgid "Laufzeit"
+msgstr "Uptime"
+
+#: cachyos_dailytool/ui/dashboard.py:30
+msgid "Paket-Updates"
+msgstr "Package updates"
+
+#: cachyos_dailytool/ui/dashboard.py:31
+msgid "Wine-Prefixe"
+msgstr "Wine prefixes"
+
+#: cachyos_dailytool/ui/dashboard.py:32
+msgid "Zusätzliche Laufwerke"
+msgstr "Additional drives"
+
+#: cachyos_dailytool/ui/dashboard.py:40
+msgid "Schnellzugriff"
+msgstr "Quick access"
+
+#: cachyos_dailytool/ui/dashboard.py:54 cachyos_dailytool/ui/pages_launchers.py:391
+msgid "Hinweise"
+msgstr "Notes"
+
+#: cachyos_dailytool/ui/dashboard.py:59 cachyos_dailytool/ui/dashboard.py:149
+msgid "System"
+msgstr "System"
+
+#: cachyos_dailytool/ui/dashboard.py:102
+msgid "seit dem letzten Start"
+msgstr "since last boot"
+
+#: cachyos_dailytool/ui/dashboard.py:43
+msgid "Launcher installieren"
+msgstr "Install launcher"
+
+#: cachyos_dailytool/ui/dashboard.py:44 cachyos_dailytool/ui/pages_wine.py:837
+msgid "Programm starten"
+msgstr "Run program"
+
+#: cachyos_dailytool/ui/dashboard.py:45
+msgid "Laufwerk einbinden"
+msgstr "Mount drive"
+
+#: cachyos_dailytool/ui/dashboard.py:46
+msgid "System-Update"
+msgstr "System update"
+
+#: cachyos_dailytool/ui/dashboard.py:47 cachyos_dailytool/ui/pages_system.py:225
+msgid "Logs & Diagnose"
+msgstr "Logs & diagnostics"
+
+#: cachyos_dailytool/ui/dashboard.py:48
+msgid "Shader-Cache"
+msgstr "Shader cache"
+
+#: cachyos_dailytool/ui/dashboard.py:96 cachyos_dailytool/ui/pages_system.py:194
+msgid "Keine GPU-Daten"
+msgstr "No GPU data"
+
+#: cachyos_dailytool/ui/dashboard.py:96
+msgid "nvidia-smi/sysfs nicht verfügbar"
+msgstr "nvidia-smi/sysfs not available"
+
+#: cachyos_dailytool/ui/dashboard.py:107
+msgid "alle dauerhaft eingebunden"
+msgstr "all mounted permanently"
+
+#: cachyos_dailytool/ui/dashboard.py:149
+msgid "Rechner"
+msgstr "Computer"
+
+#: cachyos_dailytool/ui/dashboard.py:149
+msgid "Kernel"
+msgstr "Kernel"
+
+#: cachyos_dailytool/ui/dashboard.py:150
+msgid "Desktop"
+msgstr "Desktop"
+
+#: cachyos_dailytool/ui/dashboard.py:150 cachyos_dailytool/ui/pages_x3d.py:97
+msgid "Prozessor"
+msgstr "Processor"
+
+#: cachyos_dailytool/ui/dashboard.py:152
+msgid "Grafik"
+msgstr "Graphics"
+
+#: cachyos_dailytool/ui/dashboard.py:81
+msgid "{0} · {1} · Kernel {2} · {3} ({4})"
+msgstr "{0} · {1} · Kernel {2} · {3} ({4})"
+
+#: cachyos_dailytool/ui/dashboard.py:118
+msgid "Ein neuer Kernel wurde installiert, läuft aber noch nicht – Neustart empfohlen."
+msgstr "A new kernel has been installed but is not running yet – restart recommended."
+
+#: cachyos_dailytool/ui/dashboard.py:127
+msgid "Noch kein Wine-Prefix vorhanden – beim ersten Programmstart anlegen."
+msgstr "No Wine prefix yet – create one when you first run a program."
+
+#: cachyos_dailytool/ui/dashboard.py:129
+msgid "ProtonPlus ist nicht installiert (verwaltet Proton-GE, Wine-GE und weitere Runner)."
+msgstr "ProtonPlus is not installed (manages Proton-GE, Wine-GE and other runners)."
+
+#: cachyos_dailytool/ui/dashboard.py:131
+msgid "Weniger als 10 % Arbeitsspeicher frei."
+msgstr "Less than 10 % of memory free."
+
+#: cachyos_dailytool/ui/dashboard.py:134
+msgid "X3D-Prozessor mit zwei CCDs: Der Dienst für die automatische Kernzuteilung von Spielen läuft nicht."
+msgstr "X3D processor with two CCDs: the service for automatic core assignment of games is not running."
+
+#: cachyos_dailytool/ui/dashboard.py:171
+msgid "Alles in Ordnung – keine Hinweise."
+msgstr "All good – no notes."
+
+#: cachyos_dailytool/ui/dashboard.py:195 cachyos_dailytool/ui/pages_system.py:72
+msgid "System ist aktuell"
+msgstr "System is up to date"
+
+#: cachyos_dailytool/ui/dashboard.py:100
+msgid "{0} belegt"
+msgstr "{0} used"
+
+#: cachyos_dailytool/ui/dashboard.py:100
+msgid "von {0} ({1:.0f} %)"
+msgstr "of {0} ({1:.0f} %)"
+
+#: cachyos_dailytool/ui/dashboard.py:107
+msgid "{0} ohne fstab-Eintrag"
+msgstr "{0} without fstab entry"
+
+#: cachyos_dailytool/ui/dashboard.py:148
+msgid " · bevorzugt: {0}"
+msgstr " · preferred: {0}"
+
+#: cachyos_dailytool/ui/dashboard.py:183 cachyos_dailytool/ui/pages_launcher.py:91 cachyos_dailytool/ui/pages_launcher.py:200
+msgid "Öffnen"
+msgstr "Open"
+
+#: cachyos_dailytool/ui/dashboard.py:90
+msgid "{0:.0f} % Last"
+msgstr "{0:.0f} % load"
+
+#: cachyos_dailytool/ui/dashboard.py:192
+msgid "verfügbar ({0})"
+msgstr "available ({0})"
+
+#: cachyos_dailytool/ui/dashboard.py:121
+msgid "{0} ({1}) ist nur temporär unter {2} eingebunden."
+msgstr "{0} ({1}) is only temporarily mounted at {2}."
+
+#: cachyos_dailytool/ui/dashboard.py:138
+msgid "Spiel auf dem {0}: {1}"
+msgstr "Game on the {0}: {1}"
+
+#: cachyos_dailytool/ui/dashboard.py:193
+msgid "{0} Paket-Updates verfügbar."
+msgstr "{0} package updates available."
+
+#: cachyos_dailytool/ui/dashboard.py:124
+msgid "{0} ({1}, {2}) ist nicht eingebunden."
+msgstr "{0} ({1}, {2}) is not mounted."
+
+#: cachyos_dailytool/ui/dialogs.py:17
+msgid "Verzeichnisse"
+msgstr "Folders"
+
+#: cachyos_dailytool/ui/dialogs.py:23
+msgid "Vorgaben"
+msgstr "Defaults"
+
+#: cachyos_dailytool/ui/dialogs.py:36 cachyos_dailytool/ui/pages_launchers.py:226 cachyos_dailytool/ui/pages_wine.py:463
+msgid "Runner (Proton/Wine)"
+msgstr "Runner (Proton/Wine)"
+
+#: cachyos_dailytool/ui/dialogs.py:36
+msgid "Vorgabe für neue Prefixe und für Prefixe mit Runner „Automatisch“."
+msgstr "Default for new prefixes and for prefixes with the “Automatic” runner."
+
+#: cachyos_dailytool/ui/dialogs.py:12 cachyos_dailytool/ui/pages_launchers.py:373
+msgid "Einstellungen"
+msgstr "Settings"
+
+#: cachyos_dailytool/ui/dialogs.py:15
+msgid "Pfade & Vorgaben"
+msgstr "Paths & defaults"
+
+#: cachyos_dailytool/ui/dialogs.py:24
+msgid "Basisverzeichnis für neue Mountpoints"
+msgstr "Base directory for new mount points"
+
+#: cachyos_dailytool/ui/dialogs.py:27
+msgid "Standard-Startoptionen (Steam-Syntax)"
+msgstr "Default launch options (Steam syntax)"
+
+#: cachyos_dailytool/ui/dialogs.py:30
+msgid "GPU-Status automatisch aktualisieren"
+msgstr "Refresh GPU status automatically"
+
+#: cachyos_dailytool/ui/dialogs.py:30
+msgid "Alle 2 Sekunden, solange die GPU-Seite offen ist"
+msgstr "Every 2 seconds while the GPU page is open"
+
+#: cachyos_dailytool/ui/dialogs.py:41
+msgid "Standard-Runner"
+msgstr "Default runner"
+
+#: cachyos_dailytool/ui/dialogs.py:47
+msgid "umu-launcher bevorzugen"
+msgstr "Prefer umu-launcher"
+
+#: cachyos_dailytool/ui/dialogs.py:48
+msgid "Proton über umu starten (nötig für proton-cachyos-slr ohne Steam-Runtime)"
+msgstr "Start Proton through umu (required for proton-cachyos-slr without the Steam Runtime)"
+
+#: cachyos_dailytool/ui/dialogs.py:53
+msgid "Wayland-Treiber von Proton als Vorgabe"
+msgstr "Proton Wayland driver by default"
+
+#: cachyos_dailytool/ui/dialogs.py:54
+msgid "Programme laufen direkt unter Wayland statt XWayland (PROTON_ENABLE_WAYLAND=1); je Prefix und Anwendung abschaltbar. Store-Launcher bleiben auf XWayland (weißes Fenster) – außer GOG Galaxy sowie Ubisoft Connect und Rockstar mit GE-Proton ab 11-6."
+msgstr "Programs run natively on Wayland instead of XWayland (PROTON_ENABLE_WAYLAND=1); can be disabled per prefix and application. Store launchers stay on XWayland (white window) – except GOG Galaxy, and Ubisoft Connect and Rockstar with GE-Proton 11-6 or newer."
+
+#: cachyos_dailytool/ui/dialogs.py:69
+msgid "Gespeichert."
+msgstr "Saved."
+
+#: cachyos_dailytool/ui/dialogs.py:17
+msgid "Änderungen werden sofort gespeichert ({0})."
+msgstr "Changes are saved immediately ({0})."
+
+#: cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_wine.py:45
+msgid "Automatisch ({0})"
+msgstr "Automatic ({0})"
+
+#: cachyos_dailytool/ui/pages_drives.py:12
+msgid "ntfs3 (Kernel-Treiber, empfohlen)"
+msgstr "ntfs3 (kernel driver, recommended)"
+
+#: cachyos_dailytool/ui/pages_drives.py:12
+msgid "ntfs-3g (FUSE, ältere Kompatibilität)"
+msgstr "ntfs-3g (FUSE, legacy compatibility)"
+
+#: cachyos_dailytool/ui/pages_drives.py:17
+msgid "Laufwerke einbinden"
+msgstr "Mount drives"
+
+#: cachyos_dailytool/ui/pages_drives.py:18
+msgid "Zusätzliche NVMe-/SATA-/USB-Partitionen per UUID dauerhaft in /etc/fstab eintragen. Das Systemlaufwerk ist ausgeblendet."
+msgstr "Add additional NVMe/SATA/USB partitions to /etc/fstab permanently by UUID. The system drive is hidden."
+
+#: cachyos_dailytool/ui/pages_drives.py:267
+msgid "Ordner anlegen"
+msgstr "Create folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:268
+msgid "Ordner auf einem eingebundenen Laufwerk mit dir als Besitzer anlegen (statt root) oder den Besitz eines Ordners übernehmen."
+msgstr "Create folders on a mounted drive with you as the owner (instead of root), or take ownership of a folder."
+
+#: cachyos_dailytool/ui/pages_drives.py:22
+msgid "Laufwerke neu einlesen"
+msgstr "Rescan drives"
+
+#: cachyos_dailytool/ui/pages_drives.py:34
+msgid "Partitionen"
+msgstr "Partitions"
+
+#: cachyos_dailytool/ui/pages_drives.py:42
+msgid "Einbinden"
+msgstr "Mount"
+
+#: cachyos_dailytool/ui/pages_drives.py:42 cachyos_dailytool/ui/pages_drives.py:142
+msgid "Zuerst oben eine Partition wählen."
+msgstr "Choose a partition above first."
+
+#: cachyos_dailytool/ui/pages_drives.py:44
+msgid "UUID kopieren"
+msgstr "Copy UUID"
+
+#: cachyos_dailytool/ui/pages_drives.py:48
+msgid "Dateisystem"
+msgstr "File system"
+
+#: cachyos_dailytool/ui/pages_drives.py:61
+msgid "Mountpoint"
+msgstr "Mount point"
+
+#: cachyos_dailytool/ui/pages_drives.py:66
+msgid "fstab-Zeile"
+msgstr "fstab line"
+
+#: cachyos_dailytool/ui/pages_drives.py:72
+msgid "IN FSTAB EINTRAGEN UND MOUNTEN"
+msgstr "ADD TO FSTAB AND MOUNT"
+
+#: cachyos_dailytool/ui/pages_drives.py:78 cachyos_dailytool/ui/pages_drives.py:242
+msgid "Formatieren"
+msgstr "Format"
+
+#: cachyos_dailytool/ui/pages_drives.py:78
+msgid "Löscht ALLE Daten auf der gewählten Partition. Danach kann sie oben eingebunden werden."
+msgstr "Erases ALL data on the selected partition. Afterwards it can be mounted above."
+
+#: cachyos_dailytool/ui/pages_drives.py:84
+msgid "Formatieren …"
+msgstr "Format …"
+
+#: cachyos_dailytool/ui/pages_drives.py:226
+msgid "Eintragen und mounten"
+msgstr "Add and mount"
+
+#: cachyos_dailytool/ui/pages_drives.py:272
+msgid "Mountpoints neu einlesen"
+msgstr "Rescan mount points"
+
+#: cachyos_dailytool/ui/pages_drives.py:276
+msgid "Neuer Ordner"
+msgstr "New folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:280 cachyos_dailytool/ui/pages_wine.py:130
+msgid "Anderen Ordner wählen"
+msgstr "Choose another folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:287
+msgid "Ergebnis"
+msgstr "Result"
+
+#: cachyos_dailytool/ui/pages_drives.py:291
+msgid "ORDNER ANLEGEN"
+msgstr "CREATE FOLDER"
+
+#: cachyos_dailytool/ui/pages_drives.py:295 cachyos_dailytool/ui/pages_drives.py:303
+msgid "Besitz übernehmen"
+msgstr "Take ownership"
+
+#: cachyos_dailytool/ui/pages_drives.py:295
+msgid "Macht dich rekursiv zum Besitzer eines vorhandenen Ordners (chown -R), z. B. nach einem Mount als root."
+msgstr "Recursively makes you the owner of an existing folder (chown -R), e.g. after mounting as root."
+
+#: cachyos_dailytool/ui/pages_drives.py:296
+msgid "Ordner"
+msgstr "Folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:297 cachyos_dailytool/ui/pages_drives.py:375 cachyos_dailytool/ui/widgets.py:317
+msgid "Ordner wählen"
+msgstr "Choose folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:352
+msgid "Basisordner wählen"
+msgstr "Choose base folder"
+
+#: cachyos_dailytool/ui/pages_drives.py:382
+msgid "Besitz übernehmen?"
+msgstr "Take ownership?"
+
+#: cachyos_dailytool/ui/pages_drives.py:383 cachyos_dailytool/ui/pages_wine.py:704
+msgid "Übernehmen"
+msgstr "Apply"
+
+#: cachyos_dailytool/ui/pages_drives.py:27
+msgid "Systemlaufwerk anzeigen (nur Ansicht)"
+msgstr "Show system drive (view only)"
+
+#: cachyos_dailytool/ui/pages_drives.py:30
+msgid "Systemlaufwerk anzeigen"
+msgstr "Show system drive"
+
+#: cachyos_dailytool/ui/pages_drives.py:50
+msgid "NTFS-Treiber"
+msgstr "NTFS driver"
+
+#: cachyos_dailytool/ui/pages_drives.py:55
+msgid "Basisverzeichnis"
+msgstr "Base directory"
+
+#: cachyos_dailytool/ui/pages_drives.py:58 cachyos_dailytool/ui/pages_drives.py:284
+msgid "Ordnername"
+msgstr "Folder name"
+
+#: cachyos_dailytool/ui/pages_drives.py:63
+msgid "Mount-Optionen"
+msgstr "Mount options"
+
+#: cachyos_dailytool/ui/pages_drives.py:79
+msgid "Neues Dateisystem"
+msgstr "New file system"
+
+#: cachyos_dailytool/ui/pages_drives.py:82
+msgid "Datenträgerbezeichnung (Label)"
+msgstr "Volume label"
+
+#: cachyos_dailytool/ui/pages_drives.py:91
+msgid "Ausgabe der Root-Befehle (pkexec) erscheint hier."
+msgstr "Output of the root commands (pkexec) appears here."
+
+#: cachyos_dailytool/ui/pages_drives.py:113
+msgid "kein Dateisystem"
+msgstr "no file system"
+
+#: cachyos_dailytool/ui/pages_drives.py:159
+msgid "unbekannt"
+msgstr "unknown"
+
+#: cachyos_dailytool/ui/pages_drives.py:160
+msgid "kein Dateisystem – unten formatieren"
+msgstr "no file system – format below"
+
+#: cachyos_dailytool/ui/pages_drives.py:198
+msgid "Für diese UUID existiert bereits ein fstab-Eintrag."
+msgstr "An fstab entry already exists for this UUID."
+
+#: cachyos_dailytool/ui/pages_drives.py:277
+msgid "Laufwerk / Mountpoint"
+msgstr "Drive / mount point"
+
+#: cachyos_dailytool/ui/pages_drives.py:309
+msgid "Ausgabe der Root-Befehle erscheint hier."
+msgstr "Output of the root commands appears here."
+
+#: cachyos_dailytool/ui/pages_drives.py:104
+msgid "Keine zusätzlichen Partitionen gefunden"
+msgstr "No additional partitions found"
+
+#: cachyos_dailytool/ui/pages_drives.py:105
+msgid "Unpartitionierte Laufwerke zuerst mit KDE-Partitionsverwaltung/gparted partitionieren."
+msgstr "Partition unpartitioned drives with KDE Partition Manager/gparted first."
+
+#: cachyos_dailytool/ui/pages_drives.py:226
+msgid "{0} dauerhaft einbinden?"
+msgstr "Mount {0} permanently?"
+
+#: cachyos_dailytool/ui/pages_drives.py:367
+msgid "Lege {0} an …"
+msgstr "Creating {0} …"
+
+#: cachyos_dailytool/ui/pages_drives.py:383
+msgid "chown -R {0}:{1} {2}\n\nAlle Dateien darunter gehören danach dir."
+msgstr "chown -R {0}:{1} {2}\n\nAll files below it will then belong to you."
+
+#: cachyos_dailytool/ui/pages_drives.py:118
+msgid "SYSTEMLAUFWERK"
+msgstr "SYSTEM DRIVE"
+
+#: cachyos_dailytool/ui/pages_drives.py:157
+msgid "{0} – aktuell unter {1}"
+msgstr "{0} – currently mounted at {1}"
+
+#: cachyos_dailytool/ui/pages_drives.py:158
+msgid "{0} – derzeit nicht gemountet"
+msgstr "{0} – currently not mounted"
+
+#: cachyos_dailytool/ui/pages_drives.py:210
+msgid "Diese Zeile wird an /etc/fstab angehängt (Backup /etc/fstab.bak.<Zeit> wird angelegt):\n\n{line}\n\nDanach: systemctl daemon-reload, mount {mp}"
+msgstr "This line will be appended to /etc/fstab (a backup /etc/fstab.bak.<time> is created):\n\n{line}\n\nThen: systemctl daemon-reload, mount {mp}"
+
+#: cachyos_dailytool/ui/pages_drives.py:213
+msgid ".\nDie temporäre Einbindung unter {0} wird vorher gelöst."
+msgstr ".\nThe temporary mount at {0} is released first."
+
+#: cachyos_dailytool/ui/pages_drives.py:222
+msgid "Binde {0} unter {1} ein …"
+msgstr "Mounting {0} at {1} …"
+
+#: cachyos_dailytool/ui/pages_drives.py:235
+msgid "Zur Bestätigung „{0}“ eingeben"
+msgstr "Enter “{0}” to confirm"
+
+#: cachyos_dailytool/ui/pages_drives.py:236
+msgid "{0} wirklich formatieren?"
+msgstr "Really format {0}?"
+
+#: cachyos_dailytool/ui/pages_drives.py:237
+msgid "ALLE DATEN auf {path} ({size}, {fs}{label}) werden unwiderruflich gelöscht.\n\nBefehl: {cmd}"
+msgstr "ALL DATA on {path} ({size}, {fs}{label}) will be irreversibly erased.\n\nCommand: {cmd}"
+
+#: cachyos_dailytool/ui/pages_drives.py:257
+msgid "Formatiere {0} als {1} …"
+msgstr "Formatting {0} as {1} …"
+
+#: cachyos_dailytool/ui/pages_drives.py:316
+msgid "{0}  ({1}, {2} frei)"
+msgstr "{0}  ({1}, {2} free)"
+
+#: cachyos_dailytool/ui/pages_drives.py:360
+msgid "{0} ist kein gültiger Ordner."
+msgstr "{0} is not a valid folder."
+
+#: cachyos_dailytool/ui/pages_drives.py:120
+msgid "KEIN DATEISYSTEM"
+msgstr "NO FILE SYSTEM"
+
+#: cachyos_dailytool/ui/pages_drives.py:238
+msgid "ohne Dateisystem"
+msgstr "no file system"
+
+#: cachyos_dailytool/ui/pages_drives.py:318
+msgid "{0}  (gewählt)"
+msgstr "{0}  (chosen)"
+
+#: cachyos_dailytool/ui/pages_drives.py:319
+msgid "(keine Mountpoints)"
+msgstr "(no mount points)"
+
+#: cachyos_dailytool/ui/pages_drives.py:340
+msgid "{0} – existiert bereits"
+msgstr "{0} – already exists"
+
+#: cachyos_dailytool/ui/pages_drives.py:341
+msgid "{0} (Besitzer {1})"
+msgstr "{0} (owner {1})"
+
+#: cachyos_dailytool/ui/pages_drives.py:384
+msgid "Übernehme Besitz von {0} …"
+msgstr "Taking ownership of {0} …"
+
+#: cachyos_dailytool/ui/pages_drives.py:122
+msgid "IN FSTAB"
+msgstr "IN FSTAB"
+
+#: cachyos_dailytool/ui/pages_drives.py:368
+msgid "Fehler beim Anlegen."
+msgstr "Creating failed."
+
+#: cachyos_dailytool/ui/pages_drives.py:124
+msgid "TEMPORÄR GEMOUNTET"
+msgstr "TEMPORARILY MOUNTED"
+
+#: cachyos_dailytool/ui/pages_drives.py:224
+msgid "Fehler beim Einbinden – /etc/fstab prüfen (Backup vorhanden)."
+msgstr "Mounting failed – check /etc/fstab (backup available)."
+
+#: cachyos_dailytool/ui/pages_drives.py:259
+msgid "Formatieren fehlgeschlagen."
+msgstr "Formatting failed."
+
+#: cachyos_dailytool/ui/pages_drives.py:385
+msgid "Besitz übernommen."
+msgstr "Ownership taken."
+
+#: cachyos_dailytool/ui/pages_drives.py:385
+msgid "Fehler bei chown."
+msgstr "chown failed."
+
+#: cachyos_dailytool/ui/pages_drives.py:126
+msgid "GEMOUNTET"
+msgstr "MOUNTED"
+
+#: cachyos_dailytool/ui/pages_drives.py:128
+msgid "NICHT EINGEBUNDEN"
+msgstr "NOT MOUNTED"
+
+#: cachyos_dailytool/ui/pages_drives.py:368
+msgid "Angelegt: {0}"
+msgstr "Created: {0}"
+
+#: cachyos_dailytool/ui/pages_drives.py:223
+msgid "{0} dauerhaft unter {1} eingebunden."
+msgstr "{0} permanently mounted at {1}."
+
+#: cachyos_dailytool/ui/pages_drives.py:258
+msgid "{0} als {1} formatiert."
+msgstr "{0} formatted as {1}."
+
+#: cachyos_dailytool/ui/pages_launcher.py:14
+msgid "Speicherorte & Migration"
+msgstr "Locations & migration"
+
+#: cachyos_dailytool/ui/pages_launcher.py:15
+msgid "Launcher-Daten (Steam, Lutris, Heroic, Bottles, Compat-Tools, Launcher in Prefixen) auf ein anderes Laufwerk verschieben – Original wird zum Symlink."
+msgstr "Move launcher data (Steam, Lutris, Heroic, Bottles, compat tools, launchers in prefixes) to another drive – the original becomes a symlink."
+
+#: cachyos_dailytool/ui/pages_launcher.py:128
+msgid "ProtonPlus & Compat-Tools"
+msgstr "ProtonPlus & compat tools"
+
+#: cachyos_dailytool/ui/pages_launcher.py:129
+msgid "ProtonPlus verwaltet Proton-GE, Wine-GE, DXVK & Co. für Steam, Lutris, Heroic und Bottles."
+msgstr "ProtonPlus manages Proton-GE, Wine-GE, DXVK and more for Steam, Lutris, Heroic and Bottles."
+
+#: cachyos_dailytool/ui/pages_launcher.py:233
+msgid "Speicherplatz"
+msgstr "Disk usage"
+
+#: cachyos_dailytool/ui/pages_launcher.py:234
+msgid "Belegung der Dateisysteme und Größe der Gaming-Ordner."
+msgstr "File system usage and size of the gaming folders."
+
+#: cachyos_dailytool/ui/pages_launcher.py:19
+msgid "Launcher neu suchen"
+msgstr "Rescan launchers"
+
+#: cachyos_dailytool/ui/pages_launcher.py:24 cachyos_dailytool/ui/pages_wine.py:638
+msgid "Zielordner"
+msgstr "Target folder"
+
+#: cachyos_dailytool/ui/pages_launcher.py:24
+msgid "Dorthin werden ausgewählte Ordner verschoben; am alten Ort bleibt ein Symlink."
+msgstr "Selected folders are moved there; a symlink remains at the old location."
+
+#: cachyos_dailytool/ui/pages_launcher.py:28
+msgid "Freier Platz am Ziel"
+msgstr "Free space at target"
+
+#: cachyos_dailytool/ui/pages_launcher.py:32
+msgid "Gefundene Launcher"
+msgstr "Detected launchers"
+
+#: cachyos_dailytool/ui/pages_launcher.py:32
+msgid "Bitte die betreffenden Programme vorher beenden."
+msgstr "Please close the affected programs first."
+
+#: cachyos_dailytool/ui/pages_launcher.py:36
+msgid "AUSGEWÄHLTE VERSCHIEBEN"
+msgstr "MOVE SELECTED"
+
+#: cachyos_dailytool/ui/pages_launcher.py:63
+msgid "Ziel ist nicht erreichbar."
+msgstr "Target is not reachable."
+
+#: cachyos_dailytool/ui/pages_launcher.py:123 cachyos_dailytool/ui/pages_wine.py:1372
+msgid "Verschieben"
+msgstr "Move"
+
+#: cachyos_dailytool/ui/pages_launcher.py:139
+msgid "ProtonPlus starten"
+msgstr "Launch ProtonPlus"
+
+#: cachyos_dailytool/ui/pages_launcher.py:140
+msgid "Installieren / Aktualisieren (Flatpak)"
+msgstr "Install / update (Flatpak)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:149
+msgid "Installierte Compat-Tools"
+msgstr "Installed compat tools"
+
+#: cachyos_dailytool/ui/pages_launcher.py:149
+msgid "Proton-/Wine-Versionen in den Tool-Ordnern der Launcher"
+msgstr "Proton/Wine versions in the launchers’ tool folders"
+
+#: cachyos_dailytool/ui/pages_launcher.py:151
+msgid "Pfade"
+msgstr "Paths"
+
+#: cachyos_dailytool/ui/pages_launcher.py:151
+msgid "Wo die Launcher ihre Compat-Tools erwarten"
+msgstr "Where the launchers expect their compat tools"
+
+#: cachyos_dailytool/ui/pages_launcher.py:225
+msgid "ProtonPlus per Flatpak installieren/aktualisieren?"
+msgstr "Install/update ProtonPlus via Flatpak?"
+
+#: cachyos_dailytool/ui/pages_launcher.py:226
+msgid "Flathub wird bei Bedarf als Benutzer-Remote hinzugefügt; dann wird com.vysp3r.ProtonPlus installiert oder aktualisiert."
+msgstr "Flathub is added as a user remote if needed; then com.vysp3r.ProtonPlus is installed or updated."
+
+#: cachyos_dailytool/ui/pages_launcher.py:227 cachyos_dailytool/ui/pages_launchers.py:384 cachyos_dailytool/ui/pages_wine.py:626
+msgid "Installieren"
+msgstr "Install"
+
+#: cachyos_dailytool/ui/pages_launcher.py:239
+msgid "Dateisysteme"
+msgstr "File systems"
+
+#: cachyos_dailytool/ui/pages_launcher.py:241
+msgid "Gaming-Ordner"
+msgstr "Gaming folders"
+
+#: cachyos_dailytool/ui/pages_launcher.py:241
+msgid "Größen werden im Hintergrund berechnet (du)"
+msgstr "Sizes are calculated in the background (du)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:26
+msgid "Zielordner wählen"
+msgstr "Choose target folder"
+
+#: cachyos_dailytool/ui/pages_launcher.py:39
+msgid "rsync-Fortschritt und Ergebnis erscheinen hier."
+msgstr "rsync progress and results appear here."
+
+#: cachyos_dailytool/ui/pages_launcher.py:73
+msgid "Keine bekannten Launcher gefunden."
+msgstr "No known launchers found."
+
+#: cachyos_dailytool/ui/pages_launcher.py:101 cachyos_dailytool/ui/pages_system.py:342
+msgid "Nichts ausgewählt."
+msgstr "Nothing selected."
+
+#: cachyos_dailytool/ui/pages_launcher.py:121
+msgid "Verschiebe …"
+msgstr "Moving…"
+
+#: cachyos_dailytool/ui/pages_launcher.py:155
+msgid "Flatpak-Ausgabe erscheint hier."
+msgstr "Flatpak output appears here."
+
+#: cachyos_dailytool/ui/pages_launcher.py:171
+msgid "Installiert (natives Paket)."
+msgstr "Installed (native package)."
+
+#: cachyos_dailytool/ui/pages_launcher.py:195
+msgid "Keine Compat-Tools in den bekannten Ordnern."
+msgstr "No compat tools in the known folders."
+
+#: cachyos_dailytool/ui/pages_launcher.py:222
+msgid "ProtonPlus wird gestartet …"
+msgstr "Starting ProtonPlus…"
+
+#: cachyos_dailytool/ui/pages_launcher.py:106
+msgid "Gesamt etwa {0}. Die Programme müssen beendet sein. Nach erfolgreichem Kopieren wird das Original gelöscht und durch einen Symlink ersetzt."
+msgstr "About {0} in total. The programs must be closed. After a successful copy the original is deleted and replaced by a symlink."
+
+#: cachyos_dailytool/ui/pages_launcher.py:123
+msgid "{0} Ordner verschieben?"
+msgstr "Move {0} folders?"
+
+#: cachyos_dailytool/ui/pages_launcher.py:184
+msgid "umu-launcher installiert"
+msgstr "umu-launcher installed"
+
+#: cachyos_dailytool/ui/pages_launcher.py:184
+msgid "umu-launcher fehlt"
+msgstr "umu-launcher missing"
+
+#: cachyos_dailytool/ui/pages_launcher.py:188
+msgid "proton-cachyos nicht gefunden"
+msgstr "proton-cachyos not found"
+
+#: cachyos_dailytool/ui/pages_launcher.py:227
+msgid "Installiere ProtonPlus …"
+msgstr "Installing ProtonPlus…"
+
+#: cachyos_dailytool/ui/pages_launcher.py:301
+msgid "Summe: {0}"
+msgstr "Total: {0}"
+
+#: cachyos_dailytool/ui/pages_launcher.py:61
+msgid "{0} frei von {1} · {2} ({3}, {4})"
+msgstr "{0} free of {1} · {2} ({3}, {4})"
+
+#: cachyos_dailytool/ui/pages_launcher.py:84
+msgid "BEREITS VERSCHOBEN"
+msgstr "ALREADY MOVED"
+
+#: cachyos_dailytool/ui/pages_launcher.py:175
+msgid "Nicht installiert."
+msgstr "Not installed."
+
+#: cachyos_dailytool/ui/pages_launcher.py:176
+msgid "Nicht installiert. Flatpak fehlt ebenfalls (sudo pacman -S flatpak)."
+msgstr "Not installed. Flatpak is missing as well (sudo pacman -S flatpak)."
+
+#: cachyos_dailytool/ui/pages_launcher.py:211
+msgid "VORHANDEN"
+msgstr "AVAILABLE"
+
+#: cachyos_dailytool/ui/pages_launcher.py:211
+msgid "FEHLT"
+msgstr "MISSING"
+
+#: cachyos_dailytool/ui/pages_launcher.py:173
+msgid "Installiert als Flatpak ({0})."
+msgstr "Installed as Flatpak ({0})."
+
+#: cachyos_dailytool/ui/pages_launcher.py:266
+msgid "{0} frei von {1} ({2} %)"
+msgstr "{0} free of {1} ({2} %)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:284
+msgid "{0} (nicht vorhanden)"
+msgstr "{0} (does not exist)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:118
+msgid "FEHLER: {0}"
+msgstr "ERROR: {0}"
+
+#: cachyos_dailytool/ui/pages_launcher.py:119
+msgid "{0}: FEHLER – {1}"
+msgstr "{0}: ERROR – {1}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:310 cachyos_dailytool/ui/pages_launchers.py:316
+msgid "Launcher"
+msgstr "Launchers"
+
+#: cachyos_dailytool/ui/pages_launchers.py:311
+msgid "Bekannte Windows-Launcher mit einem Klick installieren – offizieller Installer, eigener Prefix, Proton, Startoptionen, Verknüpfung."
+msgstr "Install well-known Windows launchers with one click – official installer, own prefix, Proton, launch options, shortcut."
+
+#: cachyos_dailytool/ui/pages_launchers.py:196
+msgid "Herunterladen und installieren"
+msgstr "Download and install"
+
+#: cachyos_dailytool/ui/pages_launchers.py:203
+msgid "Zielordner (Prefix)"
+msgstr "Target folder (prefix)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:203
+msgid "Der Launcher bekommt einen eigenen Prefix; der Ordner wird bei Bedarf angelegt."
+msgstr "The launcher gets its own prefix; the folder is created if needed."
+
+#: cachyos_dailytool/ui/pages_launchers.py:217 cachyos_dailytool/ui/pages_wine.py:646
+msgid "Installationsziel"
+msgstr "Installation target"
+
+#: cachyos_dailytool/ui/pages_launchers.py:219
+msgid "Ungeeignetes Dateisystem"
+msgstr "Unsuitable file system"
+
+#: cachyos_dailytool/ui/pages_launchers.py:225 cachyos_dailytool/ui/pages_wine.py:462 cachyos_dailytool/ui/pages_wine.py:650
+msgid "Runner & Startoptionen"
+msgstr "Runner & launch options"
+
+#: cachyos_dailytool/ui/pages_launchers.py:225
+msgid "Gelten für die Verknüpfung; später unter „Prefixe verwalten“ änderbar."
+msgstr "Apply to the shortcut; can be changed later under “Manage prefixes”."
+
+#: cachyos_dailytool/ui/pages_launchers.py:246
+msgid "Installation & Verknüpfungen"
+msgstr "Installation & shortcuts"
+
+#: cachyos_dailytool/ui/pages_launchers.py:22 cachyos_dailytool/ui/pages_launchers.py:45 cachyos_dailytool/ui/pages_wine.py:417
+msgid "Kein Proton/Wine gefunden – bitte proton-cachyos, umu-launcher oder wine installieren."
+msgstr "No Proton/Wine found – please install proton-cachyos, umu-launcher or wine."
+
+#: cachyos_dailytool/ui/pages_launchers.py:25
+msgid "Es läuft bereits eine Installation – bitte warten."
+msgstr "An installation is already running – please wait."
+
+#: cachyos_dailytool/ui/pages_launchers.py:198
+msgid "Offizieller Installer"
+msgstr "Official installer"
+
+#: cachyos_dailytool/ui/pages_launchers.py:204 cachyos_dailytool/ui/pages_system.py:401 cachyos_dailytool/ui/pages_wine.py:454
+msgid "Prefix"
+msgstr "Prefix"
+
+#: cachyos_dailytool/ui/pages_launchers.py:215 cachyos_dailytool/ui/pages_wine.py:644
+msgid "Prefix-Name"
+msgstr "Prefix name"
+
+#: cachyos_dailytool/ui/pages_launchers.py:237
+msgid "Startoptionen (Steam-Syntax, z. B. mangohud %command%)"
+msgstr "Launch options (Steam syntax, e.g. mangohud %command%)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:240
+msgid "Programmargumente des Launchers"
+msgstr "Launcher program arguments"
+
+#: cachyos_dailytool/ui/pages_launchers.py:242 cachyos_dailytool/ui/pages_wine.py:808 cachyos_dailytool/ui/pages_wine.py:1199
+msgid "Umgebungsvariablen (KEY=WERT …)"
+msgstr "Environment variables (KEY=VALUE …)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:261
+msgid "Verknüpfung im Startmenü"
+msgstr "Shortcut in the start menu"
+
+#: cachyos_dailytool/ui/pages_launchers.py:263
+msgid "Verknüpfung auf dem Schreibtisch"
+msgstr "Shortcut on the desktop"
+
+#: cachyos_dailytool/ui/pages_launchers.py:315
+msgid "Prefixe neu durchsuchen"
+msgstr "Rescan prefixes"
+
+#: cachyos_dailytool/ui/pages_launchers.py:316
+msgid "Installierte Launcher werden in allen Prefixen erkannt – auch manuell installierte."
+msgstr "Installed launchers are detected in all prefixes – including manually installed ones."
+
+#: cachyos_dailytool/ui/pages_launchers.py:62
+msgid "Es läuft bereits ein Vorgang – bitte warten."
+msgstr "An operation is already running – please wait."
+
+#: cachyos_dailytool/ui/pages_launchers.py:196
+msgid "{0} installieren"
+msgstr "Install {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:230
+msgid "{0}  (empfohlen)"
+msgstr "{0}  (recommended)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:249 cachyos_dailytool/ui/pages_wine.py:633
+msgid "Unbeaufsichtigt installieren"
+msgstr "Install unattended"
+
+#: cachyos_dailytool/ui/pages_launchers.py:256
+msgid "Benötigte Komponenten installieren"
+msgstr "Install required components"
+
+#: cachyos_dailytool/ui/pages_launchers.py:319
+msgid "Download- und Installationsprotokoll erscheint hier."
+msgstr "The download and installation log appears here."
+
+#: cachyos_dailytool/ui/pages_launchers.py:386 cachyos_dailytool/ui/pages_launchers.py:359
+msgid "Installieren …"
+msgstr "Install…"
+
+#: cachyos_dailytool/ui/pages_launchers.py:105
+msgid "Das Installationsfenster öffnet sich gleich – bitte dort die Installation abschließen."
+msgstr "The installer window will open shortly – please complete the installation there."
+
+#: cachyos_dailytool/ui/pages_launchers.py:154 cachyos_dailytool/ui/widgets.py:260
+msgid "Abgebrochen."
+msgstr "Cancelled."
+
+#: cachyos_dailytool/ui/pages_launchers.py:158
+msgid "Download fehlgeschlagen – Details im Protokoll."
+msgstr "Download failed – details in the log."
+
+#: cachyos_dailytool/ui/pages_launchers.py:162 cachyos_dailytool/ui/pages_wine.py:558
+msgid "Prefix konnte nicht angelegt werden – siehe Protokoll."
+msgstr "The prefix could not be created – see the log."
+
+#: cachyos_dailytool/ui/pages_launchers.py:166
+msgid "Die Installation wurde nicht ausgeführt – Details im Protokoll."
+msgstr "The installation was not run – details in the log."
+
+#: cachyos_dailytool/ui/pages_launchers.py:193
+msgid "Installiere {0} in {1} mit {2} …"
+msgstr "Installing {0} into {1} with {2}…"
+
+#: cachyos_dailytool/ui/pages_launchers.py:205 cachyos_dailytool/ui/pages_wine.py:453 cachyos_dailytool/ui/pages_wine.py:640
+msgid "Neuen Prefix anlegen"
+msgstr "Create new prefix"
+
+#: cachyos_dailytool/ui/pages_launchers.py:354 cachyos_dailytool/ui/pages_launchers.py:372 cachyos_dailytool/ui/pages_wine.py:233
+msgid "Starten"
+msgstr "Launch"
+
+#: cachyos_dailytool/ui/pages_launchers.py:380 cachyos_dailytool/ui/pages_launchers.py:357 cachyos_dailytool/ui/pages_wine.py:784
+msgid "Verknüpfung anlegen"
+msgstr "Create shortcut"
+
+#: cachyos_dailytool/ui/pages_launchers.py:385
+msgid "Offiziellen Installer laden und in einem (neuen) Prefix installieren"
+msgstr "Download the official installer and install into a (new) prefix"
+
+#: cachyos_dailytool/ui/pages_launchers.py:127 cachyos_dailytool/ui/pages_wine.py:538
+msgid "Verknüpfung angelegt: {0} → {1}"
+msgstr "Shortcut created: {0} → {1}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:131
+msgid " Hinweis: {0} – installiert mit {1}; den Runner kannst du später unter „Einstellungen“ ändern."
+msgstr " Note: {0} – installed with {1}; you can change the runner later under “Settings”."
+
+#: cachyos_dailytool/ui/pages_launchers.py:134
+msgid "{0} ist eingerichtet – Verknüpfungen im Startmenü/auf dem Schreibtisch angelegt."
+msgstr "{0} is set up – shortcuts created in the start menu/on the desktop."
+
+#: cachyos_dailytool/ui/pages_launchers.py:135
+msgid "{0} ist eingerichtet."
+msgstr "{0} is set up."
+
+#: cachyos_dailytool/ui/pages_launchers.py:141
+msgid "Verknüpfung konnte nicht angelegt werden: {0}"
+msgstr "Could not create shortcut: {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:249 cachyos_dailytool/ui/pages_wine.py:633
+msgid "Installer-Argumente: {0}"
+msgstr "Installer arguments: {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:283
+msgid "{0} (vorhanden, Runner {1})"
+msgstr "{0} (existing, runner {1})"
+
+#: cachyos_dailytool/ui/pages_launchers.py:299
+msgid "{0} liegt auf {1}. Wine-Prefixe brauchen ein Linux-Dateisystem (ext4, btrfs, xfs) – Installationen brechen sonst ab. Bitte einen anderen Speicherort wählen."
+msgstr "{0} is on {1}. Wine prefixes need a Linux file system (ext4, btrfs, xfs) – otherwise installations fail. Please choose another location."
+
+#: cachyos_dailytool/ui/pages_launchers.py:375 cachyos_dailytool/ui/pages_wine.py:1222 cachyos_dailytool/ui/window.py:102
+msgid "Deinstallieren …"
+msgstr "Uninstall…"
+
+#: cachyos_dailytool/ui/pages_launchers.py:384
+msgid "Weitere Installation"
+msgstr "Another installation"
+
+#: cachyos_dailytool/ui/pages_launchers.py:408 cachyos_dailytool/ui/pages_wine.py:1021 cachyos_dailytool/ui/pages_wine.py:1302
+msgid "Gestartet ({0}): {1}"
+msgstr "Launched ({0}): {1}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:409 cachyos_dailytool/ui/pages_wine.py:239 cachyos_dailytool/ui/pages_wine.py:1303
+msgid "„{0}“ gestartet über {1}."
+msgstr "“{0}” launched via {1}."
+
+#: cachyos_dailytool/ui/pages_launchers.py:416
+msgid "Prefix {0} nicht gefunden."
+msgstr "Prefix {0} not found."
+
+#: cachyos_dailytool/ui/pages_launchers.py:89
+msgid "Prefix bereit: {0}"
+msgstr "Prefix ready: {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:107 cachyos_dailytool/ui/pages_wine.py:615
+msgid "Hinweis: {0}"
+msgstr "Note: {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:113 cachyos_dailytool/ui/pages_wine.py:620
+msgid "Installer endete mit Code {0} – das Ergebnis wird trotzdem geprüft."
+msgstr "Installer exited with code {0} – checking the result anyway."
+
+#: cachyos_dailytool/ui/pages_launchers.py:129
+msgid "{0} läuft noch (hat sich nach der Installation geöffnet). Du kannst ihn nutzen; das Protokoll endet, sobald er geschlossen ist."
+msgstr "{0} is still running (it opened after the installation). You can use it; the log ends as soon as it is closed."
+
+#: cachyos_dailytool/ui/pages_launchers.py:258
+msgid "winetricks: {0} – winetricks bzw. umu-launcher fehlt"
+msgstr "winetricks: {0} – winetricks or umu-launcher missing"
+
+#: cachyos_dailytool/ui/pages_launchers.py:278
+msgid "{0} (vorhandener Prefix wird verwendet)"
+msgstr "{0} (existing prefix will be used)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:278
+msgid "{0} (wird angelegt)"
+msgstr "{0} (will be created)"
+
+#: cachyos_dailytool/ui/pages_launchers.py:286
+msgid "„Automatisch“ = Runner des Prefix ({0}); eine andere Wahl gilt nur für diesen Launcher."
+msgstr "“Automatic” = the prefix’s runner ({0}); any other choice applies to this launcher only."
+
+#: cachyos_dailytool/ui/pages_launchers.py:353
+msgid "INSTALLIERT"
+msgstr "INSTALLED"
+
+#: cachyos_dailytool/ui/pages_launchers.py:356
+msgid "GEFUNDEN"
+msgstr "FOUND"
+
+#: cachyos_dailytool/ui/pages_launchers.py:373
+msgid "Runner (Proton), Startoptionen, Umgebungsvariablen, Verknüpfungen"
+msgstr "Runner (Proton), launch options, environment variables, shortcuts"
+
+#: cachyos_dailytool/ui/pages_launchers.py:92 cachyos_dailytool/ui/pages_wine.py:608
+msgid "Empfohlene Einstellungen angelegt: {0}"
+msgstr "Recommended settings created: {0}"
+
+#: cachyos_dailytool/ui/pages_launchers.py:95
+msgid "Windows-DPI auf {0} gesetzt (passend zur Desktop-Skalierung) – sonst erscheinen Installer und Launcher winzig."
+msgstr "Windows DPI set to {0} (matching the desktop scaling) – otherwise installers and launchers appear tiny."
+
+#: cachyos_dailytool/ui/pages_launchers.py:184
+msgid "{0} wurde nicht am erwarteten Ort gefunden – bitte das Hauptprogramm wählen."
+msgstr "{0} was not found at the expected location – please choose the main program."
+
+#: cachyos_dailytool/ui/pages_launchers.py:365
+msgid "In „{0}“"
+msgstr "In “{0}”"
+
+#: cachyos_dailytool/ui/pages_launchers.py:368 cachyos_dailytool/ui/pages_wine.py:1215
+msgid "STARTMENÜ"
+msgstr "START MENU"
+
+#: cachyos_dailytool/ui/pages_launchers.py:368 cachyos_dailytool/ui/pages_wine.py:1217
+msgid "SCHREIBTISCH"
+msgstr "DESKTOP"
+
+#: cachyos_dailytool/ui/pages_launchers.py:379
+msgid "Gefunden in „{0}“ – noch ohne Verknüpfung"
+msgstr "Found in “{0}” – no shortcut yet"
+
+#: cachyos_dailytool/ui/pages_launchers.py:424 cachyos_dailytool/ui/pages_wine.py:1315
+msgid "Verknüpfung für „{0}“ angelegt (Startmenü und Schreibtisch)."
+msgstr "Shortcut for “{0}” created (start menu and desktop)."
+
+#: cachyos_dailytool/ui/pages_launchers.py:353
+msgid "{0}× INSTALLIERT"
+msgstr "{0}× INSTALLED"
+
+#: cachyos_dailytool/ui/pages_system.py:23
+msgid "Update & DKMS"
+msgstr "Update & DKMS"
+
+#: cachyos_dailytool/ui/pages_system.py:24
+msgid "pacman -Syu mit anschließender Prüfung von DKMS-Modulen und Kernel-Status."
+msgstr "pacman -Syu followed by a check of DKMS modules and kernel status."
+
+#: cachyos_dailytool/ui/pages_system.py:113
+msgid "GPU-Status"
+msgstr "GPU status"
+
+#: cachyos_dailytool/ui/pages_system.py:114
+msgid "Live-Werte über nvidia-smi bzw. sysfs (amdgpu/Intel)."
+msgstr "Live values via nvidia-smi or sysfs (amdgpu/Intel)."
+
+#: cachyos_dailytool/ui/pages_system.py:226
+msgid "Systemd-Journal des aktuellen oder vorherigen Boots – mit Vorfiltern für Grafik, Gaming und Desktop."
+msgstr "Systemd journal of the current or previous boot – with presets for graphics, gaming and desktop."
+
+#: cachyos_dailytool/ui/pages_system.py:296
+msgid "Shader-Cache leeren"
+msgstr "Clear shader caches"
+
+#: cachyos_dailytool/ui/pages_system.py:297
+msgid "Sinnvoll nach Treiberwechsel (z. B. nvidia ↔ nvidia-open) oder bei Grafikfehlern nach Updates. Shader werden beim nächsten Start neu gebaut."
+msgstr "Useful after switching drivers (e.g. nvidia ↔ nvidia-open) or for graphics glitches after updates. Shaders are rebuilt on the next launch."
+
+#: cachyos_dailytool/ui/pages_system.py:361
+msgid "Skalierung"
+msgstr "Scaling"
+
+#: cachyos_dailytool/ui/pages_system.py:362
+msgid "Desktop-Skalierung (unter Plasma Wayland je Bildschirm) und Windows-DPI je Wine-Prefix."
+msgstr "Desktop scaling (per screen under Plasma Wayland) and Windows DPI per Wine prefix."
+
+#: cachyos_dailytool/ui/pages_system.py:28
+msgid "Updates prüfen"
+msgstr "Check for updates"
+
+#: cachyos_dailytool/ui/pages_system.py:30 cachyos_dailytool/ui/pages_system.py:38
+msgid "Verfügbare Updates"
+msgstr "Available updates"
+
+#: cachyos_dailytool/ui/pages_system.py:31
+msgid "Laufender Kernel"
+msgstr "Running kernel"
+
+#: cachyos_dailytool/ui/pages_system.py:32
+msgid "NVIDIA-Modul"
+msgstr "NVIDIA module"
+
+#: cachyos_dailytool/ui/pages_system.py:45
+msgid "SYSTEM AKTUALISIEREN"
+msgstr "UPDATE SYSTEM"
+
+#: cachyos_dailytool/ui/pages_system.py:54
+msgid "prüfe …"
+msgstr "checking …"
+
+#: cachyos_dailytool/ui/pages_system.py:106
+msgid "System jetzt aktualisieren?"
+msgstr "Update the system now?"
+
+#: cachyos_dailytool/ui/pages_system.py:107
+msgid "Führt „pacman -Syu --noconfirm“ als root aus. Bei Paketkonflikten oder Schlüsselproblemen bricht pacman ab; dann bitte im Terminal nacharbeiten. Danach werden DKMS- und Kernel-Status geprüft."
+msgstr "Runs “pacman -Syu --noconfirm” as root. If there are package conflicts or key problems, pacman aborts; then please finish the job in a terminal. Afterwards the DKMS and kernel status are checked."
+
+#: cachyos_dailytool/ui/pages_system.py:108
+msgid "Jetzt aktualisieren"
+msgstr "Update now"
+
+#: cachyos_dailytool/ui/pages_system.py:129
+msgid "Vollständige nvidia-smi-Ausgabe"
+msgstr "Full nvidia-smi output"
+
+#: cachyos_dailytool/ui/pages_system.py:177
+msgid "Temperatur"
+msgstr "Temperature"
+
+#: cachyos_dailytool/ui/pages_system.py:177
+msgid "Auslastung"
+msgstr "Load"
+
+#: cachyos_dailytool/ui/pages_system.py:177
+msgid "Leistung"
+msgstr "Power"
+
+#: cachyos_dailytool/ui/pages_system.py:178
+msgid "GPU-Takt"
+msgstr "GPU clock"
+
+#: cachyos_dailytool/ui/pages_system.py:178
+msgid "VRAM-Takt"
+msgstr "VRAM clock"
+
+#: cachyos_dailytool/ui/pages_system.py:178
+msgid "Lüfter"
+msgstr "Fan"
+
+#: cachyos_dailytool/ui/pages_system.py:230
+msgid "Neu laden"
+msgstr "Reload"
+
+#: cachyos_dailytool/ui/pages_system.py:231
+msgid "Filter"
+msgstr "Filter"
+
+#: cachyos_dailytool/ui/pages_system.py:246
+msgid "Maximale Zeilen"
+msgstr "Maximum lines"
+
+#: cachyos_dailytool/ui/pages_system.py:275
+msgid "lädt …"
+msgstr "loading …"
+
+#: cachyos_dailytool/ui/pages_system.py:301
+msgid "Größen neu berechnen"
+msgstr "Recalculate sizes"
+
+#: cachyos_dailytool/ui/pages_system.py:302
+msgid "Caches"
+msgstr "Caches"
+
+#: cachyos_dailytool/ui/pages_system.py:308
+msgid "AUSGEWÄHLTE LEEREN"
+msgstr "CLEAR SELECTED"
+
+#: cachyos_dailytool/ui/pages_system.py:315
+msgid "Größen werden berechnet …"
+msgstr "Calculating sizes …"
+
+#: cachyos_dailytool/ui/pages_system.py:356
+msgid "Shader-Caches leeren?"
+msgstr "Clear shader caches?"
+
+#: cachyos_dailytool/ui/pages_system.py:356
+msgid "Leeren"
+msgstr "Clear"
+
+#: cachyos_dailytool/ui/pages_system.py:367
+msgid "Desktop-Skalierung"
+msgstr "Desktop scaling"
+
+#: cachyos_dailytool/ui/pages_system.py:368
+msgid "Aktueller Wert"
+msgstr "Current value"
+
+#: cachyos_dailytool/ui/pages_system.py:395
+msgid "Windows-DPI je Wine-Prefix"
+msgstr "Windows DPI per Wine prefix"
+
+#: cachyos_dailytool/ui/pages_system.py:395
+msgid "Für unscharfe oder zu kleine Oberflächen in Windows-Programmen (LogPixels)."
+msgstr "For blurry or too small interfaces in Windows programs (LogPixels)."
+
+#: cachyos_dailytool/ui/pages_system.py:408 cachyos_dailytool/ui/pages_wine.py:1206
+msgid "Anwenden"
+msgstr "Apply"
+
+#: cachyos_dailytool/ui/pages_system.py:415
+msgid "Dieses Fenster"
+msgstr "This window"
+
+#: cachyos_dailytool/ui/pages_system.py:415
+msgid "Die Fenstergröße wird beim Schließen automatisch gespeichert."
+msgstr "The window size is saved automatically when closing."
+
+#: cachyos_dailytool/ui/pages_system.py:416
+msgid "Fenstergröße zurücksetzen"
+msgstr "Reset window size"
+
+#: cachyos_dailytool/ui/pages_system.py:417 cachyos_dailytool/ui/pages_x3d.py:432
+msgid "Zurücksetzen"
+msgstr "Reset"
+
+#: cachyos_dailytool/ui/pages_system.py:451 cachyos_dailytool/ui/pages_system.py:397
+msgid "Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start."
+msgstr "New prefixes and prefixes without their own DPI get it when they are created or before launch."
+
+#: cachyos_dailytool/ui/pages_system.py:47
+msgid "DKMS-Status"
+msgstr "DKMS status"
+
+#: cachyos_dailytool/ui/pages_system.py:49
+msgid "Ausgabe von pacman erscheint hier."
+msgstr "pacman output appears here."
+
+#: cachyos_dailytool/ui/pages_system.py:77
+msgid "Neustart nötig – neuer Kernel installiert"
+msgstr "Reboot required – new kernel installed"
+
+#: cachyos_dailytool/ui/pages_system.py:77
+msgid "aktuell geladen"
+msgstr "currently loaded"
+
+#: cachyos_dailytool/ui/pages_system.py:79
+msgid "nicht geladen"
+msgstr "not loaded"
+
+#: cachyos_dailytool/ui/pages_system.py:79
+msgid "geladenes Kernelmodul"
+msgstr "loaded kernel module"
+
+#: cachyos_dailytool/ui/pages_system.py:79
+msgid "kein NVIDIA-Modul"
+msgstr "no NVIDIA module"
+
+#: cachyos_dailytool/ui/pages_system.py:105
+msgid "pacman -Syu läuft … (Passwortabfrage über pkexec)"
+msgstr "pacman -Syu running … (password prompt via pkexec)"
+
+#: cachyos_dailytool/ui/pages_system.py:120
+msgid "Alle 2 Sekunden aktualisieren"
+msgstr "Refresh every 2 seconds"
+
+#: cachyos_dailytool/ui/pages_system.py:232
+msgid "Vorfilter"
+msgstr "Preset"
+
+#: cachyos_dailytool/ui/pages_system.py:240
+msgid "Zusätzlicher Suchbegriff (regulärer Ausdruck, Groß/Klein egal)"
+msgstr "Additional search term (regular expression, case-insensitive)"
+
+#: cachyos_dailytool/ui/pages_system.py:243
+msgid "Vorheriger Boot"
+msgstr "Previous boot"
+
+#: cachyos_dailytool/ui/pages_system.py:243
+msgid "journalctl -b -1 – hilfreich nach einem Absturz/Reboot"
+msgstr "journalctl -b -1 – helpful after a crash/reboot"
+
+#: cachyos_dailytool/ui/pages_system.py:251
+msgid "LADEN"
+msgstr "LOAD"
+
+#: cachyos_dailytool/ui/pages_system.py:252
+msgid "Kopieren"
+msgstr "Copy"
+
+#: cachyos_dailytool/ui/pages_system.py:253
+msgid "Speichern …"
+msgstr "Save …"
+
+#: cachyos_dailytool/ui/pages_system.py:280
+msgid "Journal speichern"
+msgstr "Save journal"
+
+#: cachyos_dailytool/ui/pages_system.py:311
+msgid "Ergebnis erscheint hier."
+msgstr "The result appears here."
+
+#: cachyos_dailytool/ui/pages_system.py:354
+msgid "Leere Caches …"
+msgstr "Clearing caches …"
+
+#: cachyos_dailytool/ui/pages_system.py:371
+msgid "Bildschirm"
+msgstr "Screen"
+
+#: cachyos_dailytool/ui/pages_system.py:375
+msgid "Neue Skalierung"
+msgstr "New scaling"
+
+#: cachyos_dailytool/ui/pages_system.py:388
+msgid "ANWENDEN"
+msgstr "APPLY"
+
+#: cachyos_dailytool/ui/pages_system.py:389
+msgid "Anzeige-Einstellungen öffnen"
+msgstr "Open display settings"
+
+#: cachyos_dailytool/ui/pages_system.py:396
+msgid "Automatisch an die Desktop-Skalierung anpassen"
+msgstr "Automatically match the desktop scaling"
+
+#: cachyos_dailytool/ui/pages_system.py:446
+msgid "Hinweis: Der globale Wert (kdeglobals/GNOME/GDK_SCALE) wird nach Ab- und Anmelden wirksam."
+msgstr "Note: The global value (kdeglobals/GNOME/GDK_SCALE) takes effect after logging out and back in."
+
+#: cachyos_dailytool/ui/pages_system.py:481
+msgid "Kein Prefix vorhanden."
+msgstr "No prefix available."
+
+#: cachyos_dailytool/ui/pages_system.py:73
+msgid "Keine Updates verfügbar."
+msgstr "No updates available."
+
+#: cachyos_dailytool/ui/pages_system.py:82
+msgid "prüfen"
+msgstr "check"
+
+#: cachyos_dailytool/ui/pages_system.py:325
+msgid "Gesamt {0}"
+msgstr "Total {0}"
+
+#: cachyos_dailytool/ui/pages_system.py:437
+msgid "„Anwenden“ setzt die Skalierung des Bildschirms sofort – wie in den Anzeige-Einstellungen. X11-Programme und Wine bekommen sie über Xft.dpi; Wine-Prefixe ohne eigene DPI passt das Tool beim nächsten Start an."
+msgstr "“Apply” sets the scaling of the screen immediately – just like in the display settings. X11 programs and Wine get it via Xft.dpi; the tool adjusts Wine prefixes without their own DPI on the next launch."
+
+#: cachyos_dailytool/ui/pages_system.py:87
+msgid "DKMS-Status geladen."
+msgstr "DKMS status loaded."
+
+#: cachyos_dailytool/ui/pages_system.py:172
+msgid "Treiber {0}"
+msgstr "Driver {0}"
+
+#: cachyos_dailytool/ui/pages_system.py:195
+msgid "Weder nvidia-smi noch amdgpu/Intel-sysfs liefern Werte."
+msgstr "Neither nvidia-smi nor amdgpu/Intel sysfs report any values."
+
+#: cachyos_dailytool/ui/pages_system.py:332
+msgid "nicht vorhanden"
+msgstr "not available"
+
+#: cachyos_dailytool/ui/pages_system.py:100
+msgid "Neuer Kernel installiert – Neustart empfohlen."
+msgstr "New kernel installed – reboot recommended."
+
+#: cachyos_dailytool/ui/pages_system.py:290
+msgid "Gespeichert: {0}"
+msgstr "Saved: {0}"
+
+#: cachyos_dailytool/ui/pages_system.py:432
+msgid "{0} · Plasma Wayland (je Bildschirm)"
+msgstr "{0} · Plasma Wayland (per screen)"
+
+#: cachyos_dailytool/ui/pages_system.py:444
+msgid "nicht gesetzt (100 %) · {0}"
+msgstr "not set (100 %) · {0}"
+
+#: cachyos_dailytool/ui/pages_system.py:452
+msgid "Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start. Passend zum Desktop: {0} DPI."
+msgstr "New prefixes and prefixes without their own DPI get it when they are created or before launch. Matching the desktop: {0} DPI."
+
+#: cachyos_dailytool/ui/pages_system.py:458
+msgid "(kein Prefix vorhanden)"
+msgstr "(no prefix available)"
+
+#: cachyos_dailytool/ui/pages_system.py:99
+msgid "\n=== DKMS-Status ===\n{0}\n=== Kernel ===\n"
+msgstr "\n=== DKMS status ===\n{0}\n=== Kernel ===\n"
+
+#: cachyos_dailytool/ui/pages_system.py:209
+msgid "{0} U/min"
+msgstr "{0} RPM"
+
+#: cachyos_dailytool/ui/pages_system.py:277
+msgid "{0} Zeilen"
+msgstr "{0} lines"
+
+#: cachyos_dailytool/ui/pages_system.py:334
+msgid "{0} DATEIEN"
+msgstr "{0} FILES"
+
+#: cachyos_dailytool/ui/pages_system.py:352
+msgid "{0}: {1} Einträge, {2} freigegeben"
+msgstr "{0}: {1} entries, {2} freed"
+
+#: cachyos_dailytool/ui/pages_system.py:390
+msgid "Keine Anzeige-Einstellungen gefunden."
+msgstr "No display settings found."
+
+#: cachyos_dailytool/ui/pages_system.py:486
+msgid "DPI für „{0}“ auf {1} gesetzt."
+msgstr "DPI for “{0}” set to {1}."
+
+#: cachyos_dailytool/ui/pages_system.py:101
+msgid "Laufender Kernel {0} ist aktuell."
+msgstr "Running kernel {0} is up to date."
+
+#: cachyos_dailytool/ui/pages_system.py:104
+msgid "System-Update abgeschlossen."
+msgstr "System update finished."
+
+#: cachyos_dailytool/ui/pages_system.py:104
+msgid "pacman meldete einen Fehler – Protokoll prüfen."
+msgstr "pacman reported an error – check the log."
+
+#: cachyos_dailytool/ui/pages_system.py:355
+msgid "{0} freigegeben."
+msgstr "{0} freed."
+
+#: cachyos_dailytool/ui/pages_wine.py:178
+msgid "Behebt Vollbild-Probleme wie weiße Ränder unter XWayland"
+msgstr "Fixes fullscreen issues such as white borders under XWayland"
+
+#: cachyos_dailytool/ui/pages_wine.py:246
+msgid "Es läuft noch ein Vorgang (z. B. ein nach der Installation geöffneter Launcher). Bitte erst beenden oder im Protokoll auf „Abbrechen“ klicken."
+msgstr "A task is still running (e.g. a launcher that opened after the installation). Please close it first or click “Cancel” in the log."
+
+#: cachyos_dailytool/ui/pages_wine.py:23
+msgid "win64 (empfohlen)"
+msgstr "win64 (recommended)"
+
+#: cachyos_dailytool/ui/pages_wine.py:23
+msgid "win32 (ältere 32-Bit-Programme)"
+msgstr "win32 (older 32-bit programs)"
+
+#: cachyos_dailytool/ui/pages_wine.py:177 cachyos_dailytool/ui/pages_wine.py:811 cachyos_dailytool/ui/pages_wine.py:1192
+msgid "an"
+msgstr "on"
+
+#: cachyos_dailytool/ui/pages_wine.py:177
+msgid "aus (XWayland)"
+msgstr "off (XWayland)"
+
+#: cachyos_dailytool/ui/pages_wine.py:838
+msgid "Windows-Programme (.exe/.msi) in einem Prefix starten oder installieren – Runner, Startoptionen in Steam-Syntax, GOverlay."
+msgstr "Run or install Windows programs (.exe/.msi) in a prefix – runner, launch options in Steam syntax, GOverlay."
+
+#: cachyos_dailytool/ui/pages_wine.py:1058
+msgid "Prefixe verwalten"
+msgstr "Manage prefixes"
+
+#: cachyos_dailytool/ui/pages_wine.py:1059
+msgid "Speicherorte, Runner (Proton/Wine), Startoptionen, DPI, Backups, Verknüpfungen – anlegen, umbenennen, verschieben, löschen."
+msgstr "Locations, runners (Proton/Wine), launch options, DPI, backups, shortcuts – create, rename, move, delete."
+
+#: cachyos_dailytool/ui/pages_wine.py:24
+msgid "Windows-Programme (*.exe, *.msi)"
+msgstr "Windows programs (*.exe, *.msi)"
+
+#: cachyos_dailytool/ui/pages_wine.py:24
+msgid "Alle Dateien"
+msgstr "All files"
+
+#: cachyos_dailytool/ui/pages_wine.py:99
+msgid "Vorlage einfügen"
+msgstr "Insert template"
+
+#: cachyos_dailytool/ui/pages_wine.py:108
+msgid "Aus GOverlay übernehmen"
+msgstr "Import from GOverlay"
+
+#: cachyos_dailytool/ui/pages_wine.py:267
+msgid "Installierte Programme"
+msgstr "Installed programs"
+
+#: cachyos_dailytool/ui/pages_wine.py:267
+msgid "Eintrag wählen – die Windows-Deinstallation des Programms startet im Prefix."
+msgstr "Choose an entry – the program's Windows uninstaller starts in the prefix."
+
+#: cachyos_dailytool/ui/pages_wine.py:268
+msgid "Wird gelesen …"
+msgstr "Reading…"
+
+#: cachyos_dailytool/ui/pages_wine.py:453
+msgid "Anlegen"
+msgstr "Create"
+
+#: cachyos_dailytool/ui/pages_wine.py:459
+msgid "Wird angelegt unter"
+msgstr "Will be created at"
+
+#: cachyos_dailytool/ui/pages_wine.py:626
+msgid "Programm installieren"
+msgstr "Install program"
+
+#: cachyos_dailytool/ui/pages_wine.py:627
+msgid "Installation"
+msgstr "Installation"
+
+#: cachyos_dailytool/ui/pages_wine.py:638
+msgid "Jede Installation bekommt ihren eigenen Prefix; der Ordner wird bei Bedarf angelegt."
+msgstr "Each installation gets its own prefix; the folder is created if needed."
+
+#: cachyos_dailytool/ui/pages_wine.py:662
+msgid "Nach der Installation"
+msgstr "After the installation"
+
+#: cachyos_dailytool/ui/pages_wine.py:662
+msgid "Das Hauptprogramm wird automatisch erkannt und verknüpft – bekannte Launcher sicher, sonst das wahrscheinlichste neue Programm (änderbar unter „Prefixe verwalten“)."
+msgstr "The main program is detected and linked automatically – known launchers reliably, otherwise the most likely new program (can be changed under “Manage prefixes”)."
+
+#: cachyos_dailytool/ui/pages_wine.py:703
+msgid "Später festlegen"
+msgstr "Decide later"
+
+#: cachyos_dailytool/ui/pages_wine.py:784 cachyos_dailytool/ui/pages_x3d.py:567
+msgid "Speichern"
+msgstr "Save"
+
+#: cachyos_dailytool/ui/pages_wine.py:785
+msgid "Anwendung"
+msgstr "Application"
+
+#: cachyos_dailytool/ui/pages_wine.py:788
+msgid "Programm (.exe)"
+msgstr "Program (.exe)"
+
+#: cachyos_dailytool/ui/pages_wine.py:789
+msgid "Wählen …"
+msgstr "Choose…"
+
+#: cachyos_dailytool/ui/pages_wine.py:800
+msgid "Start"
+msgstr "Launch"
+
+#: cachyos_dailytool/ui/pages_wine.py:800
+msgid "Startoptionen gelten zusätzlich zu den globalen und den Prefix-Optionen."
+msgstr "Launch options apply in addition to the global and the prefix options."
+
+#: cachyos_dailytool/ui/pages_wine.py:825
+msgid "Verknüpfungen"
+msgstr "Shortcuts"
+
+#: cachyos_dailytool/ui/pages_wine.py:52
+msgid "kein Runner"
+msgstr "no runner"
+
+#: cachyos_dailytool/ui/pages_wine.py:114
+msgid "GOverlay öffnen"
+msgstr "Open GOverlay"
+
+#: cachyos_dailytool/ui/pages_wine.py:147
+msgid "Speicherort wählen"
+msgstr "Choose location"
+
+#: cachyos_dailytool/ui/pages_wine.py:183
+msgid "Wayland-Treiber von Proton"
+msgstr "Proton Wayland driver"
+
+#: cachyos_dailytool/ui/pages_wine.py:197
+msgid "X3D-Kernzuteilung (CCD)"
+msgstr "X3D core assignment (CCD)"
+
+#: cachyos_dailytool/ui/pages_wine.py:198
+msgid "Fest beim Start (taskset) und für den Dienst; „Automatisch“ = Erkennung mit Vorgabe"
+msgstr "Fixed at launch (taskset) and for the service; “Automatic” = detection with default"
+
+#: cachyos_dailytool/ui/pages_wine.py:319
+msgid "Programm per Windows-Deinstallation entfernen, Prefix behalten (empfohlen)"
+msgstr "Remove the program with the Windows uninstaller, keep the prefix (recommended)"
+
+#: cachyos_dailytool/ui/pages_wine.py:322
+msgid "Nur Verknüpfungen und Eintrag entfernen (Dateien bleiben)"
+msgstr "Only remove shortcuts and entry (files stay)"
+
+#: cachyos_dailytool/ui/pages_wine.py:331
+msgid "Verknüpfungen im Startmenü und auf dem Schreibtisch werden in jedem Fall entfernt."
+msgstr "Shortcuts in the start menu and on the desktop are removed in any case."
+
+#: cachyos_dailytool/ui/pages_wine.py:455 cachyos_dailytool/ui/pages_wine.py:786
+msgid "Name"
+msgstr "Name"
+
+#: cachyos_dailytool/ui/pages_wine.py:466 cachyos_dailytool/ui/pages_wine.py:654
+msgid "Architektur"
+msgstr "Architecture"
+
+#: cachyos_dailytool/ui/pages_wine.py:466
+msgid "nur bei System-Wine relevant; Proton ist immer 64-Bit"
+msgstr "only relevant for system Wine; Proton is always 64-bit"
+
+#: cachyos_dailytool/ui/pages_wine.py:469
+msgid "Startoptionen für alle Programme im Prefix (Steam-Syntax)"
+msgstr "Launch options for all programs in the prefix (Steam syntax)"
+
+#: cachyos_dailytool/ui/pages_wine.py:629
+msgid "Name der Anwendung"
+msgstr "Application name"
+
+#: cachyos_dailytool/ui/pages_wine.py:654
+msgid "nur bei System-Wine relevant"
+msgstr "only relevant for system Wine"
+
+#: cachyos_dailytool/ui/pages_wine.py:657
+msgid "Startoptionen für die Anwendung (Steam-Syntax)"
+msgstr "Launch options for the application (Steam syntax)"
+
+#: cachyos_dailytool/ui/pages_wine.py:664
+msgid "Verknüpfung im Startmenü anlegen"
+msgstr "Create start menu shortcut"
+
+#: cachyos_dailytool/ui/pages_wine.py:666
+msgid "Verknüpfung auf dem Schreibtisch anlegen"
+msgstr "Create desktop shortcut"
+
+#: cachyos_dailytool/ui/pages_wine.py:698
+msgid "Keine neuen Programme gefunden – bitte Datei wählen."
+msgstr "No new programs found – please choose a file."
+
+#: cachyos_dailytool/ui/pages_wine.py:702
+msgid "Dieses Programm wird in Verknüpfungen und auf der Prefix-Seite verwendet."
+msgstr "This program is used for shortcuts and on the prefix page."
+
+#: cachyos_dailytool/ui/pages_wine.py:784
+msgid "Anwendung bearbeiten"
+msgstr "Edit application"
+
+#: cachyos_dailytool/ui/pages_wine.py:788
+msgid "Noch keine Datei gewählt"
+msgstr "No file chosen yet"
+
+#: cachyos_dailytool/ui/pages_wine.py:796
+msgid "Programmargumente (optional)"
+msgstr "Program arguments (optional)"
+
+#: cachyos_dailytool/ui/pages_wine.py:801 cachyos_dailytool/ui/pages_wine.py:873
+msgid "Runner"
+msgstr "Runner"
+
+#: cachyos_dailytool/ui/pages_wine.py:805
+msgid "Startoptionen (Steam-Syntax)"
+msgstr "Launch options (Steam syntax)"
+
+#: cachyos_dailytool/ui/pages_wine.py:826
+msgid "Startmenü"
+msgstr "Start menu"
+
+#: cachyos_dailytool/ui/pages_wine.py:828
+msgid "Schreibtisch"
+msgstr "Desktop"
+
+#: cachyos_dailytool/ui/pages_wine.py:848 cachyos_dailytool/ui/pages_x3d.py:568
+msgid "Programm"
+msgstr "Program"
+
+#: cachyos_dailytool/ui/pages_wine.py:849
+msgid "Keine Datei gewählt"
+msgstr "No file chosen"
+
+#: cachyos_dailytool/ui/pages_wine.py:849
+msgid "Datei auswählen oder eine .exe/.msi hierher ziehen"
+msgstr "Choose a file or drag an .exe/.msi here"
+
+#: cachyos_dailytool/ui/pages_wine.py:851
+msgid "Auswählen …"
+msgstr "Choose…"
+
+#: cachyos_dailytool/ui/pages_wine.py:864 cachyos_dailytool/ui/pages_wine.py:1064
+msgid "Neuer Prefix"
+msgstr "New prefix"
+
+#: cachyos_dailytool/ui/pages_wine.py:868
+msgid "Details"
+msgstr "Details"
+
+#: cachyos_dailytool/ui/pages_wine.py:872
+msgid "Steam-Syntax: Programme vor %command%, Argumente dahinter – z. B. mangohud gamemoderun %command% -windowed"
+msgstr "Steam syntax: programs before %command%, arguments after it – e.g. mangohud gamemoderun %command% -windowed"
+
+#: cachyos_dailytool/ui/pages_wine.py:884
+msgid "Befehlsvorschau"
+msgstr "Command preview"
+
+#: cachyos_dailytool/ui/pages_wine.py:886
+msgid "Befehl kopieren"
+msgstr "Copy command"
+
+#: cachyos_dailytool/ui/pages_wine.py:904
+msgid "Dateimanager-Verknüpfung"
+msgstr "File manager association"
+
+#: cachyos_dailytool/ui/pages_wine.py:904
+msgid "Ein Doppelklick auf .exe/.msi im Dateimanager öffnet dann diese Seite mit der Datei."
+msgstr "Double-clicking an .exe/.msi in the file manager then opens this page with the file."
+
+#: cachyos_dailytool/ui/pages_wine.py:905
+msgid "Aktuelle Standardanwendung für .exe"
+msgstr "Current default application for .exe"
+
+#: cachyos_dailytool/ui/pages_wine.py:906
+msgid "Dieses Tool als Standard setzen"
+msgstr "Set this tool as default"
+
+#: cachyos_dailytool/ui/pages_wine.py:934
+msgid "Windows-Programm auswählen"
+msgstr "Choose Windows program"
+
+#: cachyos_dailytool/ui/pages_wine.py:1070
+msgid "Speicherorte"
+msgstr "Locations"
+
+#: cachyos_dailytool/ui/pages_wine.py:1070
+msgid "Neue Prefixe landen im Standardordner; weitere Orte stehen in den Dialogen zur Auswahl."
+msgstr "New prefixes go into the default folder; additional locations can be chosen in the dialogs."
+
+#: cachyos_dailytool/ui/pages_wine.py:1071
+msgid "Ort hinzufügen"
+msgstr "Add location"
+
+#: cachyos_dailytool/ui/pages_wine.py:1075
+msgid "Prefixe"
+msgstr "Prefixes"
+
+#: cachyos_dailytool/ui/pages_wine.py:1077
+msgid "Backups"
+msgstr "Backups"
+
+#: cachyos_dailytool/ui/pages_wine.py:1078
+msgid "Backup-Ordner öffnen"
+msgstr "Open backup folder"
+
+#: cachyos_dailytool/ui/pages_wine.py:1098
+msgid "Standardordner für neue Prefixe"
+msgstr "Default folder for new prefixes"
+
+#: cachyos_dailytool/ui/pages_wine.py:1114
+msgid "Speicherort hinzufügen"
+msgstr "Add location"
+
+#: cachyos_dailytool/ui/pages_wine.py:1144
+msgid "Standardordner ändern?"
+msgstr "Change default folder?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1144
+msgid "Ändern"
+msgstr "Change"
+
+#: cachyos_dailytool/ui/pages_wine.py:1325
+msgid "Entfernt den Eintrag und seine Verknüpfungen im Startmenü/auf dem Schreibtisch. Die installierten Dateien im Prefix bleiben erhalten."
+msgstr "Removes the entry and its shortcuts in the start menu/on the desktop. The installed files in the prefix are kept."
+
+#: cachyos_dailytool/ui/pages_wine.py:1326
+msgid "Entfernen"
+msgstr "Remove"
+
+#: cachyos_dailytool/ui/pages_wine.py:1346
+msgid "Neuer Name (Ordnername im selben Speicherort):"
+msgstr "New name (folder name in the same location):"
+
+#: cachyos_dailytool/ui/pages_wine.py:1346 cachyos_dailytool/ui/pages_wine.py:1175
+msgid "Umbenennen"
+msgstr "Rename"
+
+#: cachyos_dailytool/ui/pages_wine.py:1373
+msgid "Neuen Speicherort wählen"
+msgstr "Choose new location"
+
+#: cachyos_dailytool/ui/pages_wine.py:1382
+msgid "Backup wiederherstellen?"
+msgstr "Restore backup?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1384 cachyos_dailytool/ui/pages_wine.py:1258
+msgid "Wiederherstellen"
+msgstr "Restore"
+
+#: cachyos_dailytool/ui/pages_wine.py:1396
+msgid "Backup löschen?"
+msgstr "Delete backup?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1396 cachyos_dailytool/ui/pages_wine.py:1182
+msgid "Löschen"
+msgstr "Delete"
+
+#: cachyos_dailytool/ui/pages_wine.py:1417
+msgid "Endgültig löschen"
+msgstr "Delete permanently"
+
+#: cachyos_dailytool/ui/pages_wine.py:45
+msgid "Automatisch (kein Runner gefunden)"
+msgstr "Automatic (no runner found)"
+
+#: cachyos_dailytool/ui/pages_wine.py:97
+msgid "Vorlage …"
+msgstr "Template…"
+
+#: cachyos_dailytool/ui/pages_wine.py:124
+msgid "Speicherort"
+msgstr "Location"
+
+#: cachyos_dailytool/ui/pages_wine.py:184
+msgid "An"
+msgstr "On"
+
+#: cachyos_dailytool/ui/pages_wine.py:184
+msgid "Aus (XWayland)"
+msgstr "Off (XWayland)"
+
+#: cachyos_dailytool/ui/pages_wine.py:199
+msgid "Automatisch (Erkennung)"
+msgstr "Automatic (detection)"
+
+#: cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:16
+msgid "Cache-CCD (3D V-Cache)"
+msgstr "Cache CCD (3D V-Cache)"
+
+#: cachyos_dailytool/ui/pages_wine.py:199
+msgid "Keine Zuweisung"
+msgstr "No assignment"
+
+#: cachyos_dailytool/ui/pages_wine.py:695
+msgid "Andere Datei wählen …"
+msgstr "Choose another file…"
+
+#: cachyos_dailytool/ui/pages_wine.py:715
+msgid "Hauptprogramm wählen"
+msgstr "Choose main program"
+
+#: cachyos_dailytool/ui/pages_wine.py:725
+msgid "Installation abgeschlossen – Verknüpfung kann später über „Prefixe verwalten“ angelegt werden."
+msgstr "Installation complete – a shortcut can be created later under “Manage prefixes”."
+
+#: cachyos_dailytool/ui/pages_wine.py:754
+msgid "Name und Programm sind erforderlich."
+msgstr "Name and program are required."
+
+#: cachyos_dailytool/ui/pages_wine.py:785 cachyos_dailytool/ui/pages_wine.py:329
+msgid "Prefix: {0}"
+msgstr "Prefix: {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:811 cachyos_dailytool/ui/pages_wine.py:43
+msgid "Wie Prefix ({0})"
+msgstr "Same as prefix ({0})"
+
+#: cachyos_dailytool/ui/pages_wine.py:811 cachyos_dailytool/ui/pages_wine.py:1192
+msgid "aus"
+msgstr "off"
+
+#: cachyos_dailytool/ui/pages_wine.py:815
+msgid "Variable PROTON_ENABLE_WAYLAND hat Vorrang"
+msgstr "Variable PROTON_ENABLE_WAYLAND takes precedence"
+
+#: cachyos_dailytool/ui/pages_wine.py:844
+msgid "Prefixe und Runner neu einlesen"
+msgstr "Reload prefixes and runners"
+
+#: cachyos_dailytool/ui/pages_wine.py:877
+msgid "Startoptionen für diesen Start"
+msgstr "Launch options for this launch"
+
+#: cachyos_dailytool/ui/pages_wine.py:881
+msgid "Umgebungsvariablen für diesen Start (KEY=WERT …)"
+msgstr "Environment variables for this launch (KEY=VALUE …)"
+
+#: cachyos_dailytool/ui/pages_wine.py:901
+msgid "Protokoll von Prefix-Erstellung und Installationen erscheint hier."
+msgstr "The log of prefix creation and installations appears here."
+
+#: cachyos_dailytool/ui/pages_wine.py:965
+msgid "Kein Prefix vorhanden – mit „Neuer Prefix“ anlegen oder „Installieren …“ nutzen."
+msgstr "No prefix available – create one with “New prefix” or use “Install…”."
+
+#: cachyos_dailytool/ui/pages_wine.py:990
+msgid "Datei und Prefix wählen, dann erscheint hier der vollständige Befehl."
+msgstr "Choose a file and a prefix, then the full command appears here."
+
+#: cachyos_dailytool/ui/pages_wine.py:1007
+msgid "Bitte zuerst eine .exe/.msi auswählen."
+msgstr "Please choose an .exe/.msi first."
+
+#: cachyos_dailytool/ui/pages_wine.py:1011
+msgid "Bitte zuerst einen Prefix anlegen (oder „Installieren …“ nutzen)."
+msgstr "Please create a prefix first (or use “Install…”)."
+
+#: cachyos_dailytool/ui/pages_wine.py:1026
+msgid "Bitte zuerst die Installationsdatei (.exe/.msi) auswählen."
+msgstr "Please choose the installer file (.exe/.msi) first."
+
+#: cachyos_dailytool/ui/pages_wine.py:1034
+msgid "Bitte zuerst einen Prefix anlegen."
+msgstr "Please create a prefix first."
+
+#: cachyos_dailytool/ui/pages_wine.py:1081
+msgid "Protokoll von Erstellung, Backup, Verschieben erscheint hier."
+msgstr "The log of creating, backing up and moving appears here."
+
+#: cachyos_dailytool/ui/pages_wine.py:1099
+msgid "Neuen Standardordner wählen"
+msgstr "Choose new default folder"
+
+#: cachyos_dailytool/ui/pages_wine.py:1105
+msgid "Weiterer Speicherort"
+msgstr "Additional location"
+
+#: cachyos_dailytool/ui/pages_wine.py:1106
+msgid "Aus der Liste entfernen (Dateien bleiben)"
+msgstr "Remove from the list (files stay)"
+
+#: cachyos_dailytool/ui/pages_wine.py:1155
+msgid "Keine Prefixe gefunden – oben rechts „Neuer Prefix“ oder auf der Startseite „Installieren …“."
+msgstr "No prefixes found – use “New prefix” at the top right or “Install…” on the “Run program” page."
+
+#: cachyos_dailytool/ui/pages_wine.py:1203
+msgid "Windows-DPI"
+msgstr "Windows DPI"
+
+#: cachyos_dailytool/ui/pages_wine.py:1246
+msgid "{0} · {1} · geändert {2}{3}"
+msgstr "{0} · {1} · modified {2}{3}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1252
+msgid "Keine Backups vorhanden."
+msgstr "No backups available."
+
+#: cachyos_dailytool/ui/pages_wine.py:1261
+msgid "Backup löschen"
+msgstr "Delete backup"
+
+#: cachyos_dailytool/ui/pages_wine.py:278
+msgid "Keine Einträge in der Windows-Programmliste."
+msgstr "No entries in the Windows program list."
+
+#: cachyos_dailytool/ui/pages_wine.py:301 cachyos_dailytool/ui/pages_wine.py:403
+msgid "Deinstalliere „{0}“ – ggf. im Fenster des Deinstallationsprogramms bestätigen …"
+msgstr "Uninstalling “{0}” – confirm in the uninstaller window if asked…"
+
+#: cachyos_dailytool/ui/pages_wine.py:320
+msgid "Vollständig: Prefix „{0}“ samt allen Dateien löschen – auch darin installierte Spiele"
+msgstr "Completely: delete prefix “{0}” with all files – including games installed in it"
+
+#: cachyos_dailytool/ui/pages_wine.py:330
+msgid "„{0}“ deinstallieren?"
+msgstr "Uninstall “{0}”?"
+
+#: cachyos_dailytool/ui/pages_wine.py:445
+msgid "Prefix-Erstellung fehlgeschlagen – siehe Protokoll."
+msgstr "Prefix creation failed – see log."
+
+#: cachyos_dailytool/ui/pages_wine.py:451
+msgid "Erstelle Prefix „{0}“ mit {1} …"
+msgstr "Creating prefix “{0}” with {1}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:565
+msgid "Installation abgebrochen."
+msgstr "Installation cancelled."
+
+#: cachyos_dailytool/ui/pages_wine.py:623
+msgid "Installiere „{0}“ in {1} ({2}) …"
+msgstr "Installing “{0}” in {1} ({2})…"
+
+#: cachyos_dailytool/ui/pages_wine.py:627
+msgid "Erkannt: {0} – Installation, Programmpfad und Verknüpfung laufen automatisch."
+msgstr "Detected: {0} – installation, program path and shortcut are handled automatically."
+
+#: cachyos_dailytool/ui/pages_wine.py:699
+msgid "{0} neue Programme gefunden; das wahrscheinlichste ist vorausgewählt."
+msgstr "{0} new programs found; the most likely one is preselected."
+
+#: cachyos_dailytool/ui/pages_wine.py:701
+msgid "Hauptprogramm für „{0}“"
+msgstr "Main program for “{0}”"
+
+#: cachyos_dailytool/ui/pages_wine.py:790
+msgid "Programm im Prefix wählen"
+msgstr "Choose program in the prefix"
+
+#: cachyos_dailytool/ui/pages_wine.py:974
+msgid "{0} · {1} · {2} · Prefix-Optionen: {3} · {4}"
+msgstr "{0} · {1} · {2} · Prefix options: {3} · {4}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1022
+msgid "{0} gestartet in „{1}“ über {2}."
+msgstr "{0} launched in “{1}” via {2}."
+
+#: cachyos_dailytool/ui/pages_wine.py:1051
+msgid ".exe/.msi werden jetzt mit diesem Tool geöffnet ({0})."
+msgstr ".exe/.msi files now open with this tool ({0})."
+
+#: cachyos_dailytool/ui/pages_wine.py:1086
+msgid "{0} · tar.gz mit aufgelösten Symlinks"
+msgstr "{0} · tar.gz with resolved symlinks"
+
+#: cachyos_dailytool/ui/pages_wine.py:1144
+msgid "Neue Prefixe werden künftig unter\n{0}\nangelegt."
+msgstr "New prefixes will be created in\n{0}\nfrom now on."
+
+#: cachyos_dailytool/ui/pages_wine.py:1174
+msgid "Backup"
+msgstr "Back up"
+
+#: cachyos_dailytool/ui/pages_wine.py:1176
+msgid "Verschieben …"
+msgstr "Move…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1179
+msgid "Windows-Programme …"
+msgstr "Windows programs…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1195
+msgid "Startoptionen für alle Programme im Prefix"
+msgstr "Launch options for all programs in the prefix"
+
+#: cachyos_dailytool/ui/pages_wine.py:1285
+msgid "Wayland-Treiber für „{0}“: {1}"
+msgstr "Wayland driver for “{0}”: {1}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1285
+msgid "globale Vorgabe"
+msgstr "global default"
+
+#: cachyos_dailytool/ui/pages_wine.py:1289
+msgid "Runner für „{0}“: {1}"
+msgstr "Runner for “{0}”: {1}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1292
+msgid "Setze DPI {0} für „{1}“ …"
+msgstr "Setting DPI {0} for “{1}”…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1325
+msgid "„{0}“ entfernen?"
+msgstr "Remove “{0}”?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1346
+msgid "Prefix „{0}“ umbenennen"
+msgstr "Rename prefix “{0}”"
+
+#: cachyos_dailytool/ui/pages_wine.py:1378
+msgid "Sichere „{0}“ nach {1} …"
+msgstr "Backing up “{0}” to {1}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1383
+msgid "{0} wird nach {1} entpackt. Ein gleichnamiger Prefix wird überschrieben."
+msgstr "{0} will be extracted to {1}. A prefix with the same name will be overwritten."
+
+#: cachyos_dailytool/ui/pages_wine.py:1396
+msgid "{0} ({1}) wird unwiderruflich gelöscht."
+msgstr "{0} ({1}) will be deleted permanently."
+
+#: cachyos_dailytool/ui/pages_wine.py:1414
+msgid "\n\nAußerdem werden {0} Anwendungseinträge samt Verknüpfungen entfernt."
+msgstr "\n\nIn addition, {0} application entries and their shortcuts will be removed."
+
+#: cachyos_dailytool/ui/pages_wine.py:1415
+msgid "Prefix „{0}“ löschen?"
+msgstr "Delete prefix “{0}”?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1416
+msgid "{0} wird mit allen darin installierten Programmen und Spielständen unwiderruflich gelöscht.{1} Vorher ein Backup anlegen?"
+msgstr "{0} will be deleted permanently, including all programs and saved games installed in it.{1} Create a backup first?"
+
+#: cachyos_dailytool/ui/pages_wine.py:110
+msgid "Startoptionen aus der GOverlay-/MangoHud-Konfiguration übernommen."
+msgstr "Launch options imported from the GOverlay/MangoHud configuration."
+
+#: cachyos_dailytool/ui/pages_wine.py:263
+msgid "Windows-Programme in „{0}“"
+msgstr "Windows programs in “{0}”"
+
+#: cachyos_dailytool/ui/pages_wine.py:285
+msgid "PASST"
+msgstr "MATCH"
+
+#: cachyos_dailytool/ui/pages_wine.py:327
+msgid "Im selben Prefix liegen außerdem: {0} – beim Löschen des Prefix wären sie ebenfalls weg."
+msgstr "Also in the same prefix: {0} – deleting the prefix would remove them as well."
+
+#: cachyos_dailytool/ui/pages_wine.py:429
+msgid "{0} ist bereits ein Prefix."
+msgstr "{0} is already a prefix."
+
+#: cachyos_dailytool/ui/pages_wine.py:680
+msgid "{0} (vorhanden, {1}, {2})"
+msgstr "{0} (existing, {1}, {2})"
+
+#: cachyos_dailytool/ui/pages_wine.py:893
+msgid "STARTEN"
+msgstr "LAUNCH"
+
+#: cachyos_dailytool/ui/pages_wine.py:894
+msgid "INSTALLIEREN …"
+msgstr "INSTALL…"
+
+#: cachyos_dailytool/ui/pages_wine.py:898
+msgid "drive_c öffnen"
+msgstr "Open drive_c"
+
+#: cachyos_dailytool/ui/pages_wine.py:915 cachyos_dailytool/ui/pages_wine.py:1052
+msgid "keine"
+msgstr "none"
+
+#: cachyos_dailytool/ui/pages_wine.py:1122
+msgid "{0} vorhandene Prefixe dorthin verschieben"
+msgstr "Move {0} existing prefixes there"
+
+#: cachyos_dailytool/ui/pages_wine.py:1138
+msgid "Stelle Standardordner auf {0} um …"
+msgstr "Changing the default folder to {0}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1151
+msgid "{0} Prefixe · Standardordner {1}"
+msgstr "{0} prefixes · default folder {1}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1167
+msgid "WEITERER ORT"
+msgstr "ADDITIONAL LOCATION"
+
+#: cachyos_dailytool/ui/pages_wine.py:1179
+msgid "Installierte Programme im Prefix anzeigen und deinstallieren"
+msgstr "Show and uninstall programs installed in the prefix"
+
+#: cachyos_dailytool/ui/pages_wine.py:1192
+msgid "Globale Vorgabe ({0})"
+msgstr "Global default ({0})"
+
+#: cachyos_dailytool/ui/pages_wine.py:1220
+msgid "Bearbeiten"
+msgstr "Edit"
+
+#: cachyos_dailytool/ui/pages_wine.py:1323
+msgid "„{0}“ und Verknüpfungen entfernt (Programmdateien bleiben im Prefix)."
+msgstr "“{0}” and its shortcuts removed (program files stay in the prefix)."
+
+#: cachyos_dailytool/ui/pages_wine.py:1343
+msgid "Benenne „{0}“ um …"
+msgstr "Renaming “{0}”…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1370
+msgid "Prefix „{0}“ verschieben?"
+msgstr "Move prefix “{0}”?"
+
+#: cachyos_dailytool/ui/pages_wine.py:1371
+msgid "{0}\n→ {1}\n\nAuf demselben Dateisystem sofort, sonst Kopie per rsync. Verknüpfungen werden angepasst."
+msgstr "{0}\n→ {1}\n\nInstant on the same file system, otherwise copied with rsync. Shortcuts are updated."
+
+#: cachyos_dailytool/ui/pages_wine.py:115
+msgid "GOverlay konnte nicht gestartet werden."
+msgstr "GOverlay could not be started."
+
+#: cachyos_dailytool/ui/pages_wine.py:369
+msgid "Entferne „{0}“ samt Prefix …"
+msgstr "Removing “{0}” including its prefix…"
+
+#: cachyos_dailytool/ui/pages_wine.py:449
+msgid "Hinweis: {0} – Prefix mit {1} angelegt."
+msgstr "Note: {0} – prefix created with {1}."
+
+#: cachyos_dailytool/ui/pages_wine.py:554
+msgid "Hinweis: {0} – installiert mit {1}."
+msgstr "Note: {0} – installed with {1}."
+
+#: cachyos_dailytool/ui/pages_wine.py:569
+msgid "Installer endete mit Code {0} – Programmsuche läuft trotzdem."
+msgstr "Installer exited with code {0} – searching for the program anyway."
+
+#: cachyos_dailytool/ui/pages_wine.py:895
+msgid "Installer in einem (neuen) Prefix ausführen, Hauptprogramm erkennen, Verknüpfungen anlegen"
+msgstr "Run the installer in a (new) prefix, detect the main program, create shortcuts"
+
+#: cachyos_dailytool/ui/pages_wine.py:947
+msgid "(kein Prefix vorhanden – „Neuer Prefix“)"
+msgstr "(no prefix available – “New prefix”)"
+
+#: cachyos_dailytool/ui/pages_wine.py:1152
+msgid " + {0} weiterer Speicherort"
+msgstr " + {0} additional location"
+
+#: cachyos_dailytool/ui/pages_wine.py:1196
+msgid "Startoptionen gespeichert."
+msgstr "Launch options saved."
+
+#: cachyos_dailytool/ui/pages_wine.py:1200
+msgid "Umgebungsvariablen gespeichert."
+msgstr "Environment variables saved."
+
+#: cachyos_dailytool/ui/pages_wine.py:1333 cachyos_dailytool/ui/pages_wine.py:1352
+msgid "{0} existiert bereits."
+msgstr "{0} already exists."
+
+#: cachyos_dailytool/ui/pages_wine.py:1367
+msgid "Verschiebe „{0}“ nach {1} …"
+msgstr "Moving “{0}” to {1}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1384
+msgid "Stelle {0} wieder her …"
+msgstr "Restoring {0}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:1392
+msgid "{0} gelöscht."
+msgstr "{0} deleted."
+
+#: cachyos_dailytool/ui/pages_wine.py:137
+msgid "Standardordner · {0}"
+msgstr "Default folder · {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:305
+msgid "Konnte die Liste nicht lesen: {0}"
+msgstr "Could not read the list: {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:782
+msgid "„{0}“ gespeichert."
+msgstr "“{0}” saved."
+
+#: cachyos_dailytool/ui/pages_wine.py:1003 cachyos_dailytool/ui/pages_wine.py:1269
+msgid "Prefix „{0}“ angelegt."
+msgstr "Prefix “{0}” created."
+
+#: cachyos_dailytool/ui/pages_wine.py:1153
+msgid " + {0} weitere Speicherorte"
+msgstr " + {0} additional locations"
+
+#: cachyos_dailytool/ui/pages_wine.py:1230
+msgid "{0} gefunden"
+msgstr "{0} found"
+
+#: cachyos_dailytool/ui/pages_wine.py:1230
+msgid "{0} · noch ohne Verknüpfung"
+msgstr "{0} · no shortcut yet"
+
+#: cachyos_dailytool/ui/pages_wine.py:302 cachyos_dailytool/ui/pages_wine.py:1181
+msgid "Deinstallation von „{0}“ beendet."
+msgstr "Uninstallation of “{0}” finished."
+
+#: cachyos_dailytool/ui/pages_wine.py:349
+msgid "Verknüpfungen von „{0}“ entfernt – die Dateien im Prefix bleiben."
+msgstr "Shortcuts of “{0}” removed – the files in the prefix stay."
+
+#: cachyos_dailytool/ui/pages_wine.py:360
+msgid "Lösche {0} …"
+msgstr "Deleting {0}…"
+
+#: cachyos_dailytool/ui/pages_wine.py:365
+msgid "Verknüpfungen von „{0}“ entfernt"
+msgstr "Shortcuts of “{0}” removed"
+
+#: cachyos_dailytool/ui/pages_wine.py:406
+msgid "Welches Programm gehört zu „{0}“?"
+msgstr "Which program belongs to “{0}”?"
+
+#: cachyos_dailytool/ui/pages_wine.py:539 cachyos_dailytool/ui/pages_wine.py:734
+msgid "„{0}“ eingerichtet – Verknüpfungen angelegt."
+msgstr "“{0}” set up – shortcuts created."
+
+#: cachyos_dailytool/ui/pages_wine.py:540
+msgid "Verknüpfung fehlgeschlagen: {0}"
+msgstr "Shortcut failed: {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:735
+msgid "„{0}“ eingerichtet."
+msgstr "“{0}” set up."
+
+#: cachyos_dailytool/ui/pages_wine.py:1141
+msgid "Standardordner geändert."
+msgstr "Default folder changed."
+
+#: cachyos_dailytool/ui/pages_wine.py:1212
+msgid "keine Startoptionen"
+msgstr "no launch options"
+
+#: cachyos_dailytool/ui/pages_wine.py:1294
+msgid "DPI für „{0}“ auf {1} gesetzt – Programm neu starten."
+msgstr "DPI for “{0}” set to {1} – restart the program."
+
+#: cachyos_dailytool/ui/pages_wine.py:1412
+msgid "Prefix „{0}“ gelöscht."
+msgstr "Prefix “{0}” deleted."
+
+#: cachyos_dailytool/ui/pages_wine.py:387
+msgid "„{0}“ ist noch vorhanden – Deinstallation abgebrochen? Die Verknüpfung bleibt."
+msgstr "“{0}” is still present – uninstallation cancelled? The shortcut stays."
+
+#: cachyos_dailytool/ui/pages_wine.py:600
+msgid " Falls falsch: unter „Prefixe verwalten“ ändern."
+msgstr " If wrong: change it under “Manage prefixes”."
+
+#: cachyos_dailytool/ui/pages_wine.py:602
+msgid "Fehler beim Anlegen der Verknüpfung: {0}"
+msgstr "Error creating the shortcut: {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:1344
+msgid "Umbenannt in „{0}“."
+msgstr "Renamed to “{0}”."
+
+#: cachyos_dailytool/ui/pages_wine.py:1379
+msgid "Backup erstellt: {0}"
+msgstr "Backup created: {0}"
+
+#: cachyos_dailytool/ui/pages_wine.py:370
+msgid "„{0}“ vollständig entfernt (Prefix gelöscht)."
+msgstr "“{0}” removed completely (prefix deleted)."
+
+#: cachyos_dailytool/ui/pages_wine.py:1140
+msgid "Standardordner geändert, {0} Prefixe verschoben."
+msgstr "Default folder changed, {0} prefixes moved."
+
+#: cachyos_dailytool/ui/pages_wine.py:1368
+msgid "Verschoben nach {0}."
+msgstr "Moved to {0}."
+
+#: cachyos_dailytool/ui/pages_wine.py:390
+msgid "„{0}“ deinstalliert, Verknüpfungen entfernt. Der Prefix bleibt erhalten."
+msgstr "“{0}” uninstalled, shortcuts removed. The prefix is kept."
+
+#: cachyos_dailytool/ui/pages_wine.py:597
+msgid "„{0}“ eingerichtet – Programm {1}, Verknüpfungen angelegt."
+msgstr "“{0}” set up – program {1}, shortcuts created."
+
+#: cachyos_dailytool/ui/pages_wine.py:598
+msgid "„{0}“ eingerichtet – Programm {1}."
+msgstr "“{0}” set up – program {1}."
+
+#: cachyos_dailytool/ui/pages_x3d.py:15
+msgid "Frei"
+msgstr "Unrestricted"
+
+#: cachyos_dailytool/ui/pages_x3d.py:16
+msgid "Frei (alle Kerne)"
+msgstr "Unrestricted (all cores)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:19
+msgid "Frequenz-CCD (AMD-Vorgabe)"
+msgstr "Frequency CCD (AMD default)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:19
+msgid "Unverändert lassen"
+msgstr "Leave unchanged"
+
+#: cachyos_dailytool/ui/pages_x3d.py:20
+msgid "Cache-CCD (3D V-Cache) – wie AMDs Treiber"
+msgstr "Cache CCD (3D V-Cache) – like AMD's driver"
+
+#: cachyos_dailytool/ui/pages_x3d.py:20
+msgid "Nicht zuweisen (nur beobachten)"
+msgstr "Do not assign (observe only)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:75
+msgid "X3D-Kerne (CCD)"
+msgstr "X3D cores (CCD)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:76
+msgid "Spiele automatisch dem CCD mit dem 3D V-Cache zuweisen – nach dem Muster von AMDs 3D-V-Cache-Treiber und Anwendungs-Kompatibilitätsdatenbank unter Windows."
+msgstr "Automatically assign games to the CCD with the 3D V-Cache – modelled on AMD's 3D V-Cache driver and application compatibility database on Windows."
+
+#: cachyos_dailytool/ui/pages_x3d.py:327
+msgid "allen Kernen"
+msgstr "all cores"
+
+#: cachyos_dailytool/ui/pages_x3d.py:383
+msgid " Balken: Auslastung je CPU der letzten 2 Sekunden; Linux zählt die SMT-Geschwister getrennt (z. B. 0-7 und 16-23 = CCD0)."
+msgstr " Bars: usage per CPU over the last 2 seconds; Linux counts the SMT siblings separately (e.g. 0-7 and 16-23 = CCD0)."
+
+#: cachyos_dailytool/ui/pages_x3d.py:474
+msgid ". Spiele ohne Eintrag bekommen die Vorgabe für unbekannte Spiele; AMDs eigene Liste ist nicht öffentlich."
+msgstr ". Games without an entry get the default for unknown games; AMD's own list is not public."
+
+#: cachyos_dailytool/ui/pages_x3d.py:98
+msgid "Bevorzugte Kerne"
+msgstr "Preferred cores"
+
+#: cachyos_dailytool/ui/pages_x3d.py:99
+msgid "Hintergrunddienst"
+msgstr "Background service"
+
+#: cachyos_dailytool/ui/pages_x3d.py:100
+msgid "Erkannte Spiele"
+msgstr "Detected games"
+
+#: cachyos_dailytool/ui/pages_x3d.py:110
+msgid "Core Complex Dies (CCD) und Rangfolge der Kerne"
+msgstr "Core Complex Dies (CCD) and core preference"
+
+#: cachyos_dailytool/ui/pages_x3d.py:117
+msgid "CACHE-CCD BEVORZUGEN"
+msgstr "PREFER CACHE CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:119
+msgid "FREQUENZ-CCD BEVORZUGEN"
+msgstr "PREFER FREQUENCY CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:121
+msgid "ZUGRIFF EINRICHTEN …"
+msgstr "SET UP ACCESS …"
+
+#: cachyos_dailytool/ui/pages_x3d.py:131
+msgid "Automatik (wie AMDs Treiber)"
+msgstr "Automatic mode (like AMD's driver)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:132
+msgid "Läuft ein Spiel, stellt der Dienst die Rangfolge auf dessen CCD und hält den gesamten Prozessbaum des Spiels dort (alle Threads). Steam, Launcher, Discord und Browser wechseln währenddessen auf den anderen CCD. Nach dem Spiel gilt wieder die Ruhe-Vorgabe."
+msgstr "While a game is running, the service sets the core preference to its CCD and keeps the game's entire process tree there (all threads). Steam, launchers, Discord and browsers move to the other CCD in the meantime. After the game, the idle default applies again."
+
+#: cachyos_dailytool/ui/pages_x3d.py:165
+msgid "Erkannte Spiele (live)"
+msgstr "Detected games (live)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:168
+msgid "Kein Spiel erkannt. Der Dienst prüft alle 1,5 s die eigenen Prozesse."
+msgstr "No game detected. The service checks your own processes every 1.5 s."
+
+#: cachyos_dailytool/ui/pages_x3d.py:174
+msgid "Katalog und eigene Festlegungen"
+msgstr "Catalog and custom rules"
+
+#: cachyos_dailytool/ui/pages_x3d.py:189
+msgid "Protokoll des Dienstes"
+msgstr "Service log"
+
+#: cachyos_dailytool/ui/pages_x3d.py:260
+msgid "Unbekannt"
+msgstr "Unknown"
+
+#: cachyos_dailytool/ui/pages_x3d.py:375
+msgid "Der Kernel-Treiber amd_3d_vcache ist nicht aktiv. Ohne ihn setzt der Dienst nur die Affinität der Spiele; die Rangfolge der Kerne (CPPC) bleibt, wie das BIOS sie vorgibt."
+msgstr "The kernel driver amd_3d_vcache is not active. Without it, the service only sets the affinity of games; the core preference (CPPC) stays as the BIOS sets it."
+
+#: cachyos_dailytool/ui/pages_x3d.py:482
+msgid "Gespeichert – der Dienst übernimmt die Einstellung beim nächsten Durchlauf."
+msgstr "Saved – the service applies the setting on its next pass."
+
+#: cachyos_dailytool/ui/pages_x3d.py:492
+msgid "Festlegung entfernt – es gilt wieder Katalog bzw. Vorgabe."
+msgstr "Rule removed – the catalog or default applies again."
+
+#: cachyos_dailytool/ui/pages_x3d.py:521
+msgid "Schreibrecht auf die Kern-Rangfolge einrichten?"
+msgstr "Set up write access to the core preference?"
+
+#: cachyos_dailytool/ui/pages_x3d.py:525
+msgid "Einrichten"
+msgstr "Set up"
+
+#: cachyos_dailytool/ui/pages_x3d.py:567
+msgid "Festlegung hinzufügen"
+msgstr "Add rule"
+
+#: cachyos_dailytool/ui/pages_x3d.py:568
+msgid "Dateiname der Windows-.exe (z. B. eldenring.exe), Linux-Prozessname oder Steam-AppID."
+msgstr "File name of the Windows .exe (e.g. eldenring.exe), Linux process name or Steam AppID."
+
+#: cachyos_dailytool/ui/pages_x3d.py:118
+msgid "amd_x3d_mode = cache: der Kernel bevorzugt die Kerne mit 3D V-Cache"
+msgstr "amd_x3d_mode = cache: the kernel prefers the cores with 3D V-Cache"
+
+#: cachyos_dailytool/ui/pages_x3d.py:120
+msgid "amd_x3d_mode = frequency: der Kernel bevorzugt die höher taktenden Kerne (AMD-Vorgabe)"
+msgstr "amd_x3d_mode = frequency: the kernel prefers the higher-clocked cores (AMD default)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:122
+msgid "Einmalig als Root: Schreibrecht auf amd_x3d_mode für deine Gruppe"
+msgstr "One-time as root: write access to amd_x3d_mode for your group"
+
+#: cachyos_dailytool/ui/pages_x3d.py:135
+msgid "Erkennung und Zuweisung aktiv"
+msgstr "Detection and assignment active"
+
+#: cachyos_dailytool/ui/pages_x3d.py:136
+msgid "Aus: der Dienst läuft weiter, weist aber nichts zu und hebt bestehende Zuweisungen auf"
+msgstr "Off: the service keeps running but assigns nothing and releases existing assignments"
+
+#: cachyos_dailytool/ui/pages_x3d.py:137
+msgid "Hintergrunddienst läuft"
+msgstr "Background service running"
+
+#: cachyos_dailytool/ui/pages_x3d.py:139
+msgid "Beim Anmelden starten"
+msgstr "Start at login"
+
+#: cachyos_dailytool/ui/pages_x3d.py:140
+msgid "Unbekannte Spiele"
+msgstr "Unknown games"
+
+#: cachyos_dailytool/ui/pages_x3d.py:141
+msgid "Erkannt an GPU-Zugriff und Herkunft: Proton/Wine, Steam, umu, Heroic, Lutris, Spieleordner"
+msgstr "Detected by GPU access and origin: Proton/Wine, Steam, umu, Heroic, Lutris, game folders"
+
+#: cachyos_dailytool/ui/pages_x3d.py:143
+msgid "Ohne laufendes Spiel bevorzugen"
+msgstr "Prefer when no game is running"
+
+#: cachyos_dailytool/ui/pages_x3d.py:144
+msgid "Rangfolge der Kerne (amd_x3d_mode), sobald kein Spiel mehr läuft"
+msgstr "Core preference (amd_x3d_mode) once no game is running"
+
+#: cachyos_dailytool/ui/pages_x3d.py:146
+msgid "Hintergrundprogramme auf den anderen CCD"
+msgstr "Background programs on the other CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:147
+msgid "Steam, Store-Launcher, Discord, Browser – nur solange ein Spiel läuft; danach wieder alle Kerne"
+msgstr "Steam, store launchers, Discord, browsers – only while a game is running; all cores again afterwards"
+
+#: cachyos_dailytool/ui/pages_x3d.py:148
+msgid "Zuweisung erzwingen"
+msgstr "Enforce assignment"
+
+#: cachyos_dailytool/ui/pages_x3d.py:149
+msgid "Threads zurückholen, die ein Spiel selbst außerhalb seines CCD platziert"
+msgstr "Bring back threads that a game itself places outside its CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:150
+msgid "Zusätzliche Spieleordner für native Spiele (durch : getrennt)"
+msgstr "Additional game folders for native games (separated by :)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:176
+msgid "Spiel, .exe oder Steam-AppID suchen …"
+msgstr "Search game, .exe or Steam AppID …"
+
+#: cachyos_dailytool/ui/pages_x3d.py:179
+msgid "Eintrag hinzufügen …"
+msgstr "Add entry …"
+
+#: cachyos_dailytool/ui/pages_x3d.py:194
+msgid "Ausgabe von Einrichtungsschritten erscheint hier."
+msgstr "Output of setup steps appears here."
+
+#: cachyos_dailytool/ui/pages_x3d.py:267
+msgid "Kein Prozessor mit zwei unterschiedlich großen L3-Caches erkannt (Dual-CCD-X3D wie 7950X3D/7900X3D/9950X3D/9900X3D). Die Zuweisung bleibt hier wirkungslos; Einstellungen können trotzdem vorbereitet werden."
+msgstr "No processor with two L3 caches of different sizes detected (dual-CCD X3D such as 7950X3D/7900X3D/9950X3D/9900X3D). Assignment has no effect here; settings can still be prepared."
+
+#: cachyos_dailytool/ui/pages_x3d.py:273
+msgid "Kein Treiber"
+msgstr "No driver"
+
+#: cachyos_dailytool/ui/pages_x3d.py:273
+msgid "amd_3d_vcache fehlt"
+msgstr "amd_3d_vcache missing"
+
+#: cachyos_dailytool/ui/pages_x3d.py:280
+msgid "Erkennung aus – beobachtet nur"
+msgstr "Detection off – observing only"
+
+#: cachyos_dailytool/ui/pages_x3d.py:282
+msgid "Probelauf – ändert nichts"
+msgstr "Dry run – changes nothing"
+
+#: cachyos_dailytool/ui/pages_x3d.py:283
+msgid "Läuft"
+msgstr "Running"
+
+#: cachyos_dailytool/ui/pages_x3d.py:285
+msgid "Gestoppt"
+msgstr "Stopped"
+
+#: cachyos_dailytool/ui/pages_x3d.py:285
+msgid "unten einschalten"
+msgstr "turn on below"
+
+#: cachyos_dailytool/ui/pages_x3d.py:326
+msgid "Frequenz-CCDs"
+msgstr "frequency CCDs"
+
+#: cachyos_dailytool/ui/pages_x3d.py:341
+msgid "bevorzugt"
+msgstr "preferred"
+
+#: cachyos_dailytool/ui/pages_x3d.py:348
+msgid "Cache-CCD · 3D V-Cache"
+msgstr "Cache CCD · 3D V-Cache"
+
+#: cachyos_dailytool/ui/pages_x3d.py:381
+msgid "Manuelles Umschalten gilt bis zum nächsten Spielstart bzw. -ende; dann setzt der Dienst die Rangfolge wieder nach seinen Regeln."
+msgstr "Manual switching applies until the next game starts or ends; then the service sets the core preference according to its rules again."
+
+#: cachyos_dailytool/ui/pages_x3d.py:471
+msgid "{0} Spiele im Katalog, {1} eigene Festlegungen"
+msgstr "{0} games in the catalog, {1} custom rules"
+
+#: cachyos_dailytool/ui/pages_x3d.py:517
+msgid "Richte Schreibrecht auf amd_x3d_mode ein (Passwortabfrage über pkexec) …"
+msgstr "Setting up write access to amd_x3d_mode (password prompt via pkexec) …"
+
+#: cachyos_dailytool/ui/pages_x3d.py:569
+msgid "Anzeigename (optional)"
+msgstr "Display name (optional)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:570
+msgid "Programmdatei / Prozessname / Steam-AppID"
+msgstr "Program file / process name / Steam AppID"
+
+#: cachyos_dailytool/ui/pages_x3d.py:571
+msgid "Zuweisung"
+msgstr "Assignment"
+
+#: cachyos_dailytool/ui/pages_x3d.py:278
+msgid "{0} Spiel- · {1} Hintergrund-Threads"
+msgstr "{0} game · {1} background threads"
+
+#: cachyos_dailytool/ui/pages_x3d.py:305
+msgid "Noch keine Einträge – der Dienst protokolliert erkannte Spiele und Umschaltungen."
+msgstr "No entries yet – the service logs detected games and switches."
+
+#: cachyos_dailytool/ui/pages_x3d.py:348
+msgid "Frequenz-CCD · höherer Takt"
+msgstr "Frequency CCD · higher clock"
+
+#: cachyos_dailytool/ui/pages_x3d.py:394
+msgid "{0} · {1} · {2} Prozesse, {3} Threads"
+msgstr "{0} · {1} · {2} processes, {3} threads"
+
+#: cachyos_dailytool/ui/pages_x3d.py:434
+msgid "Kein Spiel"
+msgstr "Not a game"
+
+#: cachyos_dailytool/ui/pages_x3d.py:473
+msgid " · {0} weitere Treffer – Suche eingrenzen"
+msgstr " · {0} more matches – narrow the search"
+
+#: cachyos_dailytool/ui/pages_x3d.py:486
+msgid "„{0}“ → {1}"
+msgstr "“{0}” → {1}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:497
+msgid "„{0}“ wird nicht mehr als Spiel behandelt (Zuweisung wird aufgehoben)."
+msgstr "“{0}” is no longer treated as a game (assignment is released)."
+
+#: cachyos_dailytool/ui/pages_x3d.py:522
+msgid "Legt als root die Datei {0} an (Gruppe {1}, Modus 0664 für amd_x3d_mode) und wendet sie sofort an. Danach kann der Dienst ohne Passwort zwischen Cache- und Frequenz-CCD umschalten – wie AMDs Treiber unter Windows."
+msgstr "Creates the file {0} as root (group {1}, mode 0664 for amd_x3d_mode) and applies it immediately. Afterwards the service can switch between the cache and frequency CCD without a password – like AMD's driver on Windows."
+
+#: cachyos_dailytool/ui/pages_x3d.py:555
+msgid "Programmdatei oder Steam-AppID angeben."
+msgstr "Enter a program file or Steam AppID."
+
+#: cachyos_dailytool/ui/pages_x3d.py:138
+msgid "cachyos-dailytool --x3d-daemon über systemd --user ({0})"
+msgstr "cachyos-dailytool --x3d-daemon via systemd --user ({0})"
+
+#: cachyos_dailytool/ui/pages_x3d.py:265
+msgid "{0} CCD(s) · kein Dual-CCD-X3D"
+msgstr "{0} CCD(s) · no dual-CCD X3D"
+
+#: cachyos_dailytool/ui/pages_x3d.py:275 cachyos_dailytool/x3d.py:1566
+msgid "schreibbar"
+msgstr "writable"
+
+#: cachyos_dailytool/ui/pages_x3d.py:275 cachyos_dailytool/x3d.py:1566
+msgid "nur lesbar"
+msgstr "read-only"
+
+#: cachyos_dailytool/ui/pages_x3d.py:290
+msgid " · {0}/{1} auf {2}"
+msgstr " · {0}/{1} on {2}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:378
+msgid "Die Rangfolge gehört root. „Zugriff einrichten“ legt per pkexec eine tmpfiles.d-Regel an, die deiner Gruppe ({0}) Schreibrecht gibt – dauerhaft, ohne Passwortabfrage beim Spielen."
+msgstr "The core preference belongs to root. “Set up access” uses pkexec to create a tmpfiles.d rule that gives your group ({0}) write access – permanently, without a password prompt while gaming."
+
+#: cachyos_dailytool/ui/pages_x3d.py:397
+msgid " · seit {0}"
+msgstr " · since {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:432
+msgid "Eigene Festlegung entfernen"
+msgstr "Remove custom rule"
+
+#: cachyos_dailytool/ui/pages_x3d.py:435
+msgid "Dieses Programm nie als Spiel behandeln"
+msgstr "Never treat this program as a game"
+
+#: cachyos_dailytool/ui/pages_x3d.py:464
+msgid "kein Spiel"
+msgstr "not a game"
+
+#: cachyos_dailytool/ui/pages_x3d.py:465
+msgid "Wieder zulassen"
+msgstr "Allow again"
+
+#: cachyos_dailytool/ui/pages_x3d.py:536
+msgid "Dienst gestartet."
+msgstr "Service started."
+
+#: cachyos_dailytool/ui/pages_x3d.py:536
+msgid "Dienst gestoppt."
+msgstr "Service stopped."
+
+#: cachyos_dailytool/ui/pages_x3d.py:350
+msgid "{0} Kerne / {1} Threads · {2} · CPUs {3}"
+msgstr "{0} cores / {1} threads · {2} · CPUs {3}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:406
+msgid "Threads: {0}/{1} auf {2} gebunden"
+msgstr "Threads: {0}/{1} bound to {2}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:409
+msgid " · zuletzt gelaufen auf {0}"
+msgstr " · last ran on {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:429
+msgid "„{name}“ fest dem {mode} zuweisen"
+msgstr "Always assign “{name}” to {mode}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:448
+msgid "Eigene Festlegung · {0}"
+msgstr "Custom rule · {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:450
+msgid "Kein Spiel (Ausschluss) · {0}"
+msgstr "Not a game (exclusion) · {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:456
+msgid "Katalog · {0}"
+msgstr "Catalog · {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:467 cachyos_dailytool/ui/pages_x3d.py:467
+msgid "Vorgabe"
+msgstr "Default"
+
+#: cachyos_dailytool/ui/pages_x3d.py:505
+msgid "Bevorzugte Kerne: {0}"
+msgstr "Preferred cores: {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:534
+msgid "Dienst: {0}"
+msgstr "Service: {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:546
+msgid "Startet künftig beim Anmelden."
+msgstr "Will start at login from now on."
+
+#: cachyos_dailytool/ui/pages_x3d.py:546
+msgid "Autostart aus."
+msgstr "Autostart off."
+
+#: cachyos_dailytool/ui/pages_x3d.py:415
+msgid "{0:.0f} % CPU-Zeit auf {1}"
+msgstr "{0:.0f} % CPU time on {1}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:417
+msgid "alle Threads gebunden"
+msgstr "all threads bound"
+
+#: cachyos_dailytool/ui/pages_x3d.py:545
+msgid "Autostart: {0}"
+msgstr "Autostart: {0}"
+
+#: cachyos_dailytool/ui/pages_x3d.py:519
+msgid "Zugriff eingerichtet."
+msgstr "Access set up."
+
+#: cachyos_dailytool/ui/pages_x3d.py:520
+msgid "Einrichtung fehlgeschlagen – Protokoll prüfen."
+msgstr "Setup failed – check the log."
+
+#: cachyos_dailytool/ui/pages_x3d.py:417
+msgid "{0} Threads außerhalb"
+msgstr "{0} threads outside"
+
+#: cachyos_dailytool/ui/util.py:209
+msgid "%d.%m.%Y %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: cachyos_dailytool/ui/widgets.py:180
+msgid "Bereit."
+msgstr "Ready."
+
+#: cachyos_dailytool/ui/widgets.py:193
+msgid "Protokoll kopieren"
+msgstr "Copy log"
+
+#: cachyos_dailytool/ui/widgets.py:196
+msgid "Protokoll leeren"
+msgstr "Clear log"
+
+#: cachyos_dailytool/ui/widgets.py:324
+msgid "Im Dateimanager öffnen"
+msgstr "Open in file manager"
+
+#: cachyos_dailytool/ui/widgets.py:297 cachyos_dailytool/ui/widgets.py:262
+msgid "Fertig."
+msgstr "Done."
+
+#: cachyos_dailytool/ui/widgets.py:387
+msgid "Aktualisieren"
+msgstr "Refresh"
+
+#: cachyos_dailytool/ui/widgets.py:264
+msgid "Fehlgeschlagen (Code {0})."
+msgstr "Failed (code {0})."
+
+#: cachyos_dailytool/ui/window.py:22
+msgid "ÜBERSICHT"
+msgstr "OVERVIEW"
+
+#: cachyos_dailytool/ui/window.py:23
+msgid "WINE & PREFIXE"
+msgstr "WINE & PREFIXES"
+
+#: cachyos_dailytool/ui/window.py:24
+msgid "LAUNCHER & SPEICHERORTE"
+msgstr "LAUNCHERS & LOCATIONS"
+
+#: cachyos_dailytool/ui/window.py:25
+msgid "LAUFWERKE"
+msgstr "DRIVES"
+
+#: cachyos_dailytool/ui/window.py:26
+msgid "SYSTEM"
+msgstr "SYSTEM"
+
+#: cachyos_dailytool/ui/window.py:89 cachyos_dailytool/ui/window.py:90
+msgid "Sprache der Oberfläche"
+msgstr "Interface language"
+
+#: cachyos_dailytool/ui/window.py:99
+msgid "Einstellungen …"
+msgstr "Settings…"
+
+#: cachyos_dailytool/ui/window.py:100
+msgid "Protokollordner öffnen"
+msgstr "Open log folder"
+
+#: cachyos_dailytool/ui/window.py:101
+msgid "Über CachyOS DailyTool"
+msgstr "About CachyOS DailyTool"
+
+#: cachyos_dailytool/ui/window.py:103
+msgid "Beenden"
+msgstr "Quit"
+
+#: cachyos_dailytool/ui/window.py:96
+msgid "Seite aktualisieren (Strg+R)"
+msgstr "Refresh page (Ctrl+R)"
+
+#: cachyos_dailytool/ui/window.py:104
+msgid "Menü"
+msgstr "Menu"
+
+#: cachyos_dailytool/x3d.py:56
+msgid "Wine-Systemprozesse"
+msgstr "Wine system processes"
+
+#: cachyos_dailytool/x3d.py:56
+msgid "Steam (Windows-Teil in Proton)"
+msgstr "Steam (Windows part in Proton)"
+
+#: cachyos_dailytool/x3d.py:56
+msgid "Epic-Port (epic-linux)"
+msgstr "Epic port (epic-linux)"
+
+#: cachyos_dailytool/x3d.py:57
+msgid "Galaxy-Port (galaxy-linux)"
+msgstr "Galaxy port (galaxy-linux)"
+
+#: cachyos_dailytool/x3d.py:57
+msgid "Ubisoft-Port (ubiconnect-linux)"
+msgstr "Ubisoft port (ubiconnect-linux)"
+
+#: cachyos_dailytool/x3d.py:57
+msgid "Sonstige Hintergrundprogramme"
+msgstr "Other background programs"
+
+#: cachyos_dailytool/x3d.py:58
+msgid "Indiana Jones und der Große Kreis"
+msgstr "Indiana Jones and the Great Circle"
+
+#: cachyos_dailytool/x3d.py:239
+msgid "CCD{0}: {1} Kerne, {2}"
+msgstr "CCD{0}: {1} cores, {2}"
+
+#: cachyos_dailytool/x3d.py:322
+msgid "Kernel-Treiber amd_3d_vcache nicht vorhanden (Kernel ≥ 6.13, BIOS: CPPC Dynamic Preferred Cores = Driver/Auto)"
+msgstr "Kernel driver amd_3d_vcache not available (kernel ≥ 6.13, BIOS: CPPC Dynamic Preferred Cores = Driver/Auto)"
+
+#: cachyos_dailytool/x3d.py:1506
+msgid "systemd --user ist nicht verfügbar"
+msgstr "systemd --user is not available"
+
+#: cachyos_dailytool/x3d.py:237
+msgid "Keine Cache-Topologie gefunden"
+msgstr "No cache topology found"
+
+#: cachyos_dailytool/x3d.py:326
+msgid "Kein Schreibrecht auf amd_x3d_mode – Zugriff zuerst einrichten"
+msgstr "No write access to amd_x3d_mode – set up access first"
+
+#: cachyos_dailytool/x3d.py:345
+msgid "Schreibrecht für Gruppe {0} auf $f eingerichtet ({1})."
+msgstr "Write access for group {0} to $f set up ({1})."
+
+#: cachyos_dailytool/x3d.py:1512
+msgid "systemctl meldete einen Fehler"
+msgstr "systemctl reported an error"
+
+#: cachyos_dailytool/x3d.py:1521
+msgid "systemctl start fehlgeschlagen"
+msgstr "systemctl start failed"
+
+#: cachyos_dailytool/x3d.py:1577
+msgid "Spiele    : keine erkannt"
+msgstr "Games     : none detected"
+
+#: cachyos_dailytool/x3d.py:319
+msgid "Ungültiger Modus: {0}"
+msgstr "Invalid mode: {0}"
+
+#: cachyos_dailytool/x3d.py:354
+msgid "Zugriffsregel entfernt."
+msgstr "Access rule removed."
+
+#: cachyos_dailytool/x3d.py:895
+msgid "Verknüpfung im DailyTool"
+msgstr "Shortcut in DailyTool"
+
+#: cachyos_dailytool/x3d.py:1399
+msgid "Der X3D-Dienst läuft bereits."
+msgstr "The X3D service is already running."
+
+#: cachyos_dailytool/x3d.py:1535
+msgid "systemctl stop fehlgeschlagen"
+msgstr "systemctl stop failed"
+
+#: cachyos_dailytool/x3d.py:1561
+msgid "Prozessor : {0}"
+msgstr "Processor : {0}"
+
+#: cachyos_dailytool/x3d.py:1563
+msgid " – kein Dual-CCD-X3D"
+msgstr " – no dual-CCD X3D"
+
+#: cachyos_dailytool/x3d.py:328
+msgid "Schreiben fehlgeschlagen: {0}"
+msgstr "Writing failed: {0}"
+
+#: cachyos_dailytool/x3d.py:889
+msgid "Eigene Festlegung"
+msgstr "Custom rule"
+
+#: cachyos_dailytool/x3d.py:899
+msgid "Katalog"
+msgstr "Catalog"
+
+#: cachyos_dailytool/x3d.py:903
+msgid "Windows-Programm mit GPU-Zugriff"
+msgstr "Windows program with GPU access"
+
+#: cachyos_dailytool/x3d.py:908
+msgid "Natives Spiel mit GPU-Zugriff"
+msgstr "Native game with GPU access"
+
+#: cachyos_dailytool/x3d.py:908
+msgid "Vom Launcher gestartet, GPU-Zugriff"
+msgstr "Started by a launcher, GPU access"
+
+#: cachyos_dailytool/x3d.py:1562
+msgid "Topologie : {0}"
+msgstr "Topology  : {0}"
+
+#: cachyos_dailytool/x3d.py:1565
+msgid "Rangfolge : {0}"
+msgstr "Preference: {0}"
+
+#: cachyos_dailytool/x3d.py:1565
+msgid "kein Treiber"
+msgstr "no driver"
+
+#: cachyos_dailytool/x3d.py:1569
+msgid "Dienst    : {0}"
+msgstr "Service   : {0}"
+
+#: cachyos_dailytool/x3d.py:1569
+msgid "läuft"
+msgstr "running"
+
+#: cachyos_dailytool/x3d.py:1569
+msgid "läuft nicht"
+msgstr "not running"
+
+#: cachyos_dailytool/x3d.py:1590
+msgid "Spiel     : {name} [{source}] → {mode}{cpus} – {reason}; Wurzel {root}, {procs} Prozesse, {on}/{total} Threads im Ziel-CCD"
+msgstr "Game      : {name} [{source}] → {mode}{cpus} – {reason}; root {root}, {procs} processes, {on}/{total} threads on the target CCD"
+
+#: cachyos_dailytool/x3d.py:1563
+msgid " – Cache-CCD = CCD{0}"
+msgstr " – cache CCD = CCD{0}"

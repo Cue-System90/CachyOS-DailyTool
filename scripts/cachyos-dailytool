@@ -1,0 +1,5 @@
+#!/bin/sh
+# Startskript für die Benutzer-Installation (install.sh ohne --system)
+PREFIX="${CACHYOS_DAILYTOOL_HOME:-$HOME/.local/lib/cachyos-dailytool}"
+export PYTHONPATH="$PREFIX${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -m cachyos_dailytool "$@"

@@ -1,0 +1,382 @@
+"""Erkennung von Kompatibilitätstools (Proton, Wine, umu) wie in Steams Auswahlliste – adaptiert aus dem Galaxy-Port."""
+from __future__ import annotations
+
+import os
+import re
+import shutil
+import subprocess
+from dataclasses import dataclass
+from pathlib import Path
+
+from .i18n import tr
+
+AUTO_ID = "auto"
+
+
+@dataclass(frozen=True)
+class CompatTool:
+    id: str
+    name: str
+    kind: str               # proton | wine | umu-latest
+    path: str = ""          # Proton-Verzeichnis bzw. Wine-Binary bzw. umu-Token
+    version: str = ""
+    source: str = ""
+    requires_runtime: str = ""  # Steam-AppID der benötigten Steam Linux Runtime
+
+    @property
+    def label(self) -> str:
+        core = re.search(r"\d[\d.\-]*\d", self.version or "")
+        dup = bool(self.version) and (self.version in self.name or (core is not None and core.group(0) in self.name))
+        v = f" {self.version}" if self.version and not dup else ""
+        return f"{self.name}{v} · {self.source}" if self.source else f"{self.name}{v}"
+
+    @property
+    def is_proton(self) -> bool:
+        return self.kind == "proton"
+
+
+UMU_GE = CompatTool("umu:GE-Proton", tr("GE-Proton (neueste Version, Download über umu)"), "umu-latest", "GE-Proton", "", "umu")
+UMU_UMU = CompatTool("umu:UMU-Proton", tr("UMU-Proton (neueste Version, Download über umu)"), "umu-latest", "UMU-Proton", "", "umu")
+
+# Ab GE-Proton 11-6 zeichnen Chromium-/CEF-Launcher (Ubisoft Connect, Rockstar Games Launcher) auch mit dem
+# Wayland-Treiber (prozessübergreifendes Rendern per DMA-BUF, Release-Notes GE-Proton11-6). Belegt am 2026-10-17 mit
+# GE-Proton11-9 auf dem Desktop (RTX 4090): beide Anmeldefenster als native Wayland-Fenster, scharf bei 216 DPI –
+# mit proton-cachyos 11.0-20261005 dagegen rein weiß. Bilder: reference/wayland-test-2026-10-17/*-ge-proton-11-9-*.png
+CEF_WAYLAND_MIN_GE = (11, 6)
+_GE_RE = re.compile(r"GE-Proton(\d+)-(\d+)", re.I)
+
+
+def cef_wayland_ok(tool: "CompatTool | None") -> bool:
+    """Zeichnen CEF-Launcher mit diesem Runner unter dem Wayland-Treiber? GE-Proton ab 11-6 (auch „neueste Version“
+    über umu), sonst nein (proton-cachyos 11, Valve-Proton, UMU-Proton, Wine: weißes Fenster bzw. ungeprüft)."""
+    if tool is None:
+        return False
+    if tool.kind == "umu-latest":
+        return (tool.path or "").lower() == "ge-proton"
+    if tool.kind != "proton":
+        return False
+    for text in (tool.version, tool.name, Path(tool.path).name if tool.path else ""):
+        m = _GE_RE.search(text or "")
+        if m:
+            return (int(m.group(1)), int(m.group(2))) >= CEF_WAYLAND_MIN_GE
+    return False
+
+
+HOME = Path.home()
+STEAM_ROOT_CANDIDATES = [
+    HOME / ".steam" / "root", HOME / ".steam" / "steam", HOME / ".local" / "share" / "Steam",
+    HOME / ".var" / "app" / "com.valvesoftware.Steam" / ".local" / "share" / "Steam",
+    HOME / ".var" / "app" / "com.valvesoftware.Steam" / "data" / "Steam",
+]
+COMPAT_TOOLS_DIRS = [
+    HOME / ".local" / "share" / "Steam" / "compatibilitytools.d",
+    HOME / ".steam" / "root" / "compatibilitytools.d",
+    HOME / ".steam" / "steam" / "compatibilitytools.d",
+    HOME / ".var" / "app" / "com.valvesoftware.Steam" / "data" / "Steam" / "compatibilitytools.d",
+    Path("/usr/share/steam/compatibilitytools.d"),
+    Path("/usr/local/share/steam/compatibilitytools.d"),
+]
+HEROIC_PROTON_DIRS = [HOME / ".config" / "heroic" / "tools" / "proton",
+                      HOME / ".var" / "app" / "com.heroicgameslauncher.hgl" / "config" / "heroic" / "tools" / "proton"]
+LUTRIS_WINE_DIRS = [HOME / ".local" / "share" / "lutris" / "runners" / "wine",
+                    HOME / ".var" / "app" / "net.lutris.Lutris" / "data" / "lutris" / "runners" / "wine"]
+BOTTLES_RUNNER_DIRS = [HOME / ".local" / "share" / "bottles" / "runners",
+                       HOME / ".var" / "app" / "com.usebottles.bottles" / "data" / "bottles" / "runners"]
+RUNTIME_NAMES = {"1070560": "SteamLinuxRuntime", "1391110": "SteamLinuxRuntime_soldier", "1628350": "SteamLinuxRuntime_sniper"}
+
+
+# --------------------------------------------------------------------------- VDF (minimal)
+def parse_vdf(text: str) -> dict:
+    tokens = re.findall(r'"((?:[^"\\]|\\.)*)"|([{}])|//[^\n]*', text)
+    stack: list[dict] = [{}]
+    key: str | None = None
+    for s, brace in tokens:
+        if brace == "{":
+            new: dict = {}
+            if key is not None:
+                stack[-1][key] = new
+            stack.append(new)
+            key = None
+        elif brace == "}":
+            if len(stack) > 1:
+                stack.pop()
+            key = None
+        elif s is not None and (s or brace == ""):
+            if key is None:
+                key = s
+            else:
+                stack[-1][key] = s
+                key = None
+    return stack[0]
+
+
+def _read_vdf(path: Path) -> dict:
+    try:
+        return parse_vdf(path.read_text(encoding="utf-8", errors="replace"))
+    except OSError:
+        return {}
+
+
+# --------------------------------------------------------------------------- Steam
+def steam_roots() -> list[Path]:
+    out: list[Path] = []
+    for c in STEAM_ROOT_CANDIDATES:
+        try:
+            if c.is_dir():
+                r = c.resolve()
+                if r not in out:
+                    out.append(r)
+        except OSError:
+            continue
+    return out
+
+
+def steam_root() -> Path | None:
+    roots = steam_roots()
+    return roots[0] if roots else None
+
+
+def steam_library_folders() -> list[Path]:
+    libs: list[Path] = []
+    for root in steam_roots():
+        sa = root / "steamapps"
+        if sa.is_dir() and sa not in libs:
+            libs.append(sa)
+        data = _read_vdf(sa / "libraryfolders.vdf")
+        folders = data.get("libraryfolders") or data.get("LibraryFolders") or {}
+        for _, v in folders.items():
+            p = v.get("path") if isinstance(v, dict) else v
+            if isinstance(p, str):
+                lp = Path(p) / "steamapps"
+                if lp.is_dir() and lp not in libs:
+                    libs.append(lp)
+    return libs
+
+
+def find_runtime(appid: str) -> Path | None:
+    if not appid:
+        return None
+    for lib in steam_library_folders():
+        acf = _read_vdf(lib / f"appmanifest_{appid}.acf")
+        installdir = (acf.get("AppState") or {}).get("installdir")
+        cands = [lib / "common" / installdir] if installdir else []
+        name = RUNTIME_NAMES.get(appid)
+        if name:
+            cands.append(lib / "common" / name)
+        for c in cands:
+            if (c / "_v2-entry-point").exists():
+                return c
+    return None
+
+
+# --------------------------------------------------------------------------- Werkzeuge
+def _natural_key(s: str) -> list:
+    return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
+
+
+def _proton_version(d: Path) -> str:
+    try:
+        parts = (d / "version").read_text().split()
+        return parts[1] if len(parts) > 1 else (parts[0] if parts else "")
+    except OSError:
+        return ""
+
+
+def _proton_display_name(d: Path) -> str:
+    data = _read_vdf(d / "compatibilitytool.vdf")
+    tools = (data.get("compatibilitytools") or {}).get("compat_tools") or {}
+    for _, v in tools.items():
+        if isinstance(v, dict) and v.get("display_name"):
+            return str(v["display_name"])
+    return d.name
+
+
+def _requires_runtime(d: Path) -> str:
+    data = _read_vdf(d / "toolmanifest.vdf")
+    return str((data.get("manifest") or {}).get("require_tool_appid") or "")
+
+
+def _proton_tool(d: Path, source: str) -> CompatTool | None:
+    try:
+        if not (d / "proton").is_file():
+            return None
+        d = d.resolve()
+    except OSError:
+        return None
+    return CompatTool(id=f"proton:{d}", name=_proton_display_name(d), kind="proton", path=str(d),
+                      version=_proton_version(d), source=source, requires_runtime=_requires_runtime(d))
+
+
+def _wine_tool(bin_path: Path, source: str, name: str | None = None) -> CompatTool | None:
+    try:
+        if not bin_path.is_file() or not os.access(bin_path, os.X_OK):
+            return None
+        bin_path = bin_path.resolve()
+    except OSError:
+        return None
+    return CompatTool(id=f"wine:{bin_path}", name=name or bin_path.parent.parent.name, kind="wine", path=str(bin_path), source=source)
+
+
+def _iter_dirs(p: Path):
+    try:
+        return sorted((c for c in p.iterdir() if c.is_dir()), key=lambda c: _natural_key(c.name), reverse=True)
+    except OSError:
+        return []
+
+
+def umu_available() -> bool:
+    return shutil.which("umu-run") is not None
+
+
+def umu_path() -> str | None:
+    return shutil.which("umu-run")
+
+
+_wine_version_cache: dict[str, str] = {}
+
+
+def system_wine() -> CompatTool | None:
+    w = shutil.which("wine")
+    if not w:
+        return None
+    ver = _wine_version_cache.get(w)
+    if ver is None:
+        try:
+            ver = subprocess.run([w, "--version"], capture_output=True, text=True, timeout=10).stdout.strip()
+        except (OSError, subprocess.SubprocessError):
+            ver = ""
+        _wine_version_cache[w] = ver
+    return CompatTool(id=f"wine:{w}", name=tr("System-Wine ({0})").format(ver or "wine"), kind="wine", path=w, version=ver, source="System")
+
+
+def discover(include_umu_latest: bool = True, include_wine: bool = True) -> list[CompatTool]:
+    """Alle gefundenen Kompatibilitätstools, neueste zuerst, ohne Duplikate."""
+    tools: list[CompatTool] = []
+    seen: set[str] = set()
+
+    def add(t: CompatTool | None) -> None:
+        if t and t.id not in seen:
+            seen.add(t.id)
+            tools.append(t)
+
+    for cdir in COMPAT_TOOLS_DIRS:
+        src = "System" if str(cdir).startswith("/usr") else "compatibilitytools.d"
+        for d in _iter_dirs(cdir):
+            add(_proton_tool(d, src))
+    for lib in steam_library_folders():
+        for d in _iter_dirs(lib / "common"):
+            if d.name.lower().startswith("proton"):
+                add(_proton_tool(d, "Steam"))
+    for hdir in HEROIC_PROTON_DIRS:
+        for d in _iter_dirs(hdir):
+            add(_proton_tool(d, "Heroic"))
+    if include_umu_latest and umu_available():
+        add(UMU_GE)
+        add(UMU_UMU)
+    if include_wine:
+        add(system_wine())
+        for ldir in LUTRIS_WINE_DIRS:
+            for d in _iter_dirs(ldir):
+                add(_wine_tool(d / "bin" / "wine", "Lutris", d.name))
+        for bdir in BOTTLES_RUNNER_DIRS:
+            for d in _iter_dirs(bdir):
+                add(_wine_tool(d / "bin" / "wine", "Bottles", d.name))
+    return tools
+
+
+def resolve(tool_id: str, tools: list[CompatTool] | None = None) -> CompatTool | None:
+    if not tool_id or tool_id == AUTO_ID:
+        return None
+    tools = tools if tools is not None else discover()
+    for t in tools:
+        if t.id == tool_id:
+            return t
+    if tool_id.startswith("proton:"):
+        return _proton_tool(Path(tool_id[len("proton:"):]), tr("manuell"))
+    if tool_id.startswith("wine:"):
+        return _wine_tool(Path(tool_id[len("wine:"):]), tr("manuell"))
+    if tool_id.startswith("umu:"):
+        return CompatTool(tool_id, tool_id[4:] + " (umu)", "umu-latest", tool_id[4:], "", "umu")
+    return None
+
+
+def default_tool(tools: list[CompatTool] | None = None, prefer_umu: bool = True) -> CompatTool | None:
+    """Automatik: System-Proton (proton-cachyos) > neuestes Proton > umu-GE > Wine."""
+    tools = tools if tools is not None else discover()
+    protons = [t for t in tools if t.kind == "proton"]
+    system = [t for t in protons if t.source == "System"]
+    if system:
+        return system[0]
+    if protons:
+        return protons[0]
+    if prefer_umu:
+        for t in tools:
+            if t.kind == "umu-latest":
+                return t
+    for t in tools:
+        if t.kind == "wine":
+            return t
+    return None
+
+
+def tool_needs_umu(tool: CompatTool) -> bool:
+    """SLR-Protons (toolmanifest mit require_tool_appid) brauchen den Container – ohne Steam-Runtime nur per umu."""
+    if tool.kind == "umu-latest":
+        return True
+    if tool.kind == "proton" and tool.requires_runtime:
+        return find_runtime(tool.requires_runtime) is None
+    return False
+
+
+UMU_STEAM_COMPAT = HOME / ".local" / "share" / "Steam" / "compatibilitytools.d"   # dorthin lädt umu GE-/UMU-Proton
+UMU_OWN_COMPAT = HOME / ".local" / "share" / "umu" / "compatibilitytools"
+
+
+def local_umu_tool(token: str) -> Path | None:
+    """Neueste lokal vorhandene Version für einen umu-Token (GE-Proton → GE-Proton*, UMU-Proton → UMU-Proton*)."""
+    prefix = {"GE-Proton": "GE-Proton", "GE-Latest": "GE-Proton", "UMU-Proton": "UMU-Proton", "UMU-Latest": "UMU-Proton"}.get(token, token)
+    found: list[Path] = []
+    for base in (UMU_STEAM_COMPAT, UMU_OWN_COMPAT):
+        for d in _iter_dirs(base):
+            if d.name.startswith(prefix) and (d / "proton").is_file():
+                found.append(d)
+    found.sort(key=lambda d: _natural_key(d.name), reverse=True)
+    return found[0] if found else None
+
+
+def github_rate_limit(timeout: float = 8.0, opener=None) -> tuple[int, int] | None:
+    """(verbleibende Abfragen, Zeitpunkt der Freigabe) der GitHub-API für diese IP; None bei fehlender Verbindung.
+
+    Die Abfrage von /rate_limit zählt selbst nicht auf das Limit."""
+    import json as _json
+    import urllib.request as _ur
+    opener = opener or _ur.urlopen
+    try:
+        req = _ur.Request("https://api.github.com/rate_limit", headers={"Accept": "application/vnd.github+json",
+                                                                          "User-Agent": "cachyos-dailytool"})
+        with opener(req, timeout=timeout) as resp:
+            data = _json.loads(resp.read().decode("utf-8", "replace"))
+        core = (data.get("resources") or {}).get("core") or data.get("rate") or {}
+        return int(core.get("remaining", 0)), int(core.get("reset", 0))
+    except Exception:
+        return None
+
+
+def wine_binary(tool: CompatTool | None) -> str | None:
+    """Wine-Binary des Tools (für reg/winecfg/wineboot): Proton → files/bin/wine, Wine → Binary,
+    umu → Wine der lokal geladenen Proton-Version (sonst System-Wine)."""
+    if tool is None:
+        return shutil.which("wine")
+    if tool.kind == "wine":
+        return tool.path
+    base = Path(tool.path)
+    if tool.kind == "umu-latest":
+        local = local_umu_tool(tool.path)
+        if local is None:
+            return shutil.which("wine")
+        base = local
+    for sub in ("files", "dist"):
+        w = base / sub / "bin" / "wine"
+        if w.is_file():
+            return str(w)
+    return shutil.which("wine")

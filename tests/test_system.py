@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from cachy_toolkit import config, system
+from cachyos_dailytool import config, system
 
 
 def _cp(stdout: str = "", rc: int = 0, stderr: str = "") -> subprocess.CompletedProcess:

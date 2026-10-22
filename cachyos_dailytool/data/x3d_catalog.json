@@ -1,0 +1,976 @@
+{
+ "version": 1,
+ "_comment": "Kompatibilitätskatalog für die X3D-Kernzuteilung. kind: game (Spiel, wird zugewiesen), launcher (Store-Client: kein Spiel; läuft ein Spiel, wandert er auf den anderen CCD), background (natives Hintergrundprogramm, ebenso), system (Wine-Systemprozesse: kein Spiel, nie einzeln verschoben). mode: cache | frequency | none – fehlt er bei einem Spiel, gilt die Vorgabe (Cache-CCD, wie AMDs Treiber). Schlüssel: exe = Dateiname der Windows-.exe, comm = Linux-Prozessname, steam = Steam-AppID.",
+ "entries": [
+  {
+   "name": "Wine-Systemprozesse",
+   "kind": "system",
+   "exe": [
+    "services.exe",
+    "winedevice.exe",
+    "plugplay.exe",
+    "explorer.exe",
+    "start.exe",
+    "rundll32.exe",
+    "regsvr32.exe",
+    "conhost.exe",
+    "svchost.exe",
+    "rpcss.exe",
+    "wineboot.exe",
+    "winemenubuilder.exe",
+    "tabtip.exe",
+    "msiexec.exe",
+    "iexplore.exe",
+    "cmd.exe",
+    "reg.exe",
+    "regedit.exe",
+    "winecfg.exe",
+    "control.exe",
+    "taskmgr.exe",
+    "notepad.exe",
+    "wordpad.exe",
+    "winedbg.exe",
+    "wmplayer.exe",
+    "winhlp32.exe",
+    "dllhost.exe",
+    "spoolsv.exe",
+    "wusa.exe",
+    "werfault.exe",
+    "mscorsvw.exe",
+    "ngen.exe",
+    "mono.exe",
+    "wineconsole.exe",
+    "wscript.exe",
+    "cscript.exe",
+    "powershell.exe",
+    "mshta.exe",
+    "crashpad_handler.exe",
+    "crashreportclient.exe",
+    "unitycrashhandler64.exe",
+    "unitycrashhandler32.exe",
+    "ue4prereqsetup_x64.exe",
+    "ueprereqsetup_x64.exe",
+    "vcredist_x64.exe",
+    "vcredist_x86.exe",
+    "vc_redist.x64.exe",
+    "vc_redist.x86.exe",
+    "dxsetup.exe",
+    "oalinst.exe",
+    "easyanticheat_setup.exe",
+    "easyanticheat_eos_setup.exe",
+    "easyanticheat.exe",
+    "beservice.exe",
+    "battleye.exe",
+    "steamservice.exe",
+    "steamerrorreporter.exe",
+    "steamerrorreporter64.exe"
+   ]
+  },
+  {
+   "name": "Steam (Windows-Teil in Proton)",
+   "kind": "launcher",
+   "exe": [
+    "steam.exe",
+    "steamwebhelper.exe",
+    "gameoverlayui.exe"
+   ]
+  },
+  {
+   "name": "Epic Games Launcher",
+   "kind": "launcher",
+   "exe": [
+    "epicgameslauncher.exe",
+    "epicwebhelper.exe",
+    "epiconlineservices.exe",
+    "epiconlineservicesuserhelper.exe",
+    "epiconlineserviceshost.exe",
+    "eosoverlayrenderer-win64-shipping.exe"
+   ]
+  },
+  {
+   "name": "Ubisoft Connect",
+   "kind": "launcher",
+   "exe": [
+    "ubisoftconnect.exe",
+    "upc.exe",
+    "uplaywebcore.exe",
+    "ubisoftgamelauncher.exe",
+    "ubisoftgamelauncher64.exe",
+    "uplayservice.exe",
+    "ubisoftconnectinstaller.exe"
+   ]
+  },
+  {
+   "name": "EA App",
+   "kind": "launcher",
+   "exe": [
+    "eadesktop.exe",
+    "eabackgroundservice.exe",
+    "ealauncher.exe",
+    "ealocalhostsvc.exe",
+    "eaconnect_microsoft.exe",
+    "origin.exe",
+    "originwebhelperservice.exe",
+    "originclientservice.exe",
+    "eaantiCheat.gameservicelauncher.exe",
+    "eaanticheat.gameservicelauncher.exe",
+    "eaanticheat.gameservice.exe"
+   ]
+  },
+  {
+   "name": "Battle.net",
+   "kind": "launcher",
+   "exe": [
+    "battle.net.exe",
+    "battle.net launcher.exe",
+    "battle.net helper.exe",
+    "agent.exe",
+    "blizzard error.exe",
+    "battle.net-setup.exe"
+   ]
+  },
+  {
+   "name": "Rockstar Games Launcher",
+   "kind": "launcher",
+   "exe": [
+    "launcher.exe",
+    "launcherpatcher.exe",
+    "rockstarservice.exe",
+    "rockstarerrorhandler.exe",
+    "socialclubhelper.exe",
+    "rockstar-games-launcher.exe",
+    "playgtav.exe",
+    "playrdr2.exe"
+   ]
+  },
+  {
+   "name": "GOG Galaxy",
+   "kind": "launcher",
+   "exe": [
+    "galaxyclient.exe",
+    "galaxyclientservice.exe",
+    "galaxycommunication.exe",
+    "galaxyclient helper.exe",
+    "gog galaxy notifications renderer.exe",
+    "galaxyoverlay.exe",
+    "gog galaxy.exe",
+    "setup_galaxy_2.0.exe"
+   ]
+  },
+  {
+   "name": "Amazon Games",
+   "kind": "launcher",
+   "exe": [
+    "amazon games.exe",
+    "amazon games ui.exe",
+    "amazongamesservice.exe",
+    "amazon games services.exe"
+   ]
+  },
+  {
+   "name": "Xbox / Microsoft Store",
+   "kind": "launcher",
+   "exe": [
+    "xboxapp.exe",
+    "xboxpcapp.exe",
+    "gamingservices.exe",
+    "gamingservicesnet.exe"
+   ]
+  },
+  {
+   "name": "Steam",
+   "kind": "background",
+   "comm": [
+    "steam",
+    "steamwebhelper",
+    "steam-runtime-launcher-service"
+   ]
+  },
+  {
+   "name": "Heroic Games Launcher",
+   "kind": "background",
+   "comm": [
+    "heroic"
+   ]
+  },
+  {
+   "name": "Lutris",
+   "kind": "background",
+   "comm": [
+    "lutris"
+   ]
+  },
+  {
+   "name": "Epic-Port (epic-linux)",
+   "kind": "background",
+   "comm": [
+    "epic-linux"
+   ]
+  },
+  {
+   "name": "Galaxy-Port (galaxy-linux)",
+   "kind": "background",
+   "comm": [
+    "galaxy-linux"
+   ]
+  },
+  {
+   "name": "Ubisoft-Port (ubiconnect-linux)",
+   "kind": "background",
+   "comm": [
+    "ubiconnect-linux"
+   ]
+  },
+  {
+   "name": "Discord",
+   "kind": "background",
+   "comm": [
+    "Discord",
+    "discord",
+    "vesktop",
+    "Vesktop",
+    "webcord",
+    "armcord"
+   ]
+  },
+  {
+   "name": "Browser",
+   "kind": "background",
+   "comm": [
+    "firefox",
+    "firefox-bin",
+    "chrome",
+    "chromium",
+    "brave",
+    "vivaldi-bin",
+    "zen",
+    "zen-bin",
+    "librewolf",
+    "opera",
+    "microsoft-edge",
+    "msedge",
+    "falkon",
+    "epiphany"
+   ]
+  },
+  {
+   "name": "Sonstige Hintergrundprogramme",
+   "kind": "background",
+   "comm": [
+    "spotify",
+    "thunderbird",
+    "code",
+    "codium",
+    "claude-desktop",
+    "teams-for-linux",
+    "slack",
+    "element-desktop",
+    "signal-desktop",
+    "telegram-desktop",
+    "kdeconnectd",
+    "baloo_file",
+    "baloo_file_extractor",
+    "akonadi_control"
+   ]
+  },
+  {
+   "name": "Cyberpunk 2077",
+   "kind": "game",
+   "exe": [
+    "cyberpunk2077.exe"
+   ],
+   "steam": [
+    "1091500"
+   ]
+  },
+  {
+   "name": "The Witcher 3",
+   "kind": "game",
+   "exe": [
+    "witcher3.exe"
+   ],
+   "steam": [
+    "292030"
+   ]
+  },
+  {
+   "name": "Elden Ring",
+   "kind": "game",
+   "exe": [
+    "eldenring.exe",
+    "start_protected_game.exe"
+   ],
+   "steam": [
+    "1245620"
+   ]
+  },
+  {
+   "name": "Baldur's Gate 3",
+   "kind": "game",
+   "exe": [
+    "bg3.exe",
+    "bg3_dx11.exe"
+   ],
+   "steam": [
+    "1086940"
+   ]
+  },
+  {
+   "name": "Hogwarts Legacy",
+   "kind": "game",
+   "exe": [
+    "hogwartslegacy.exe"
+   ],
+   "steam": [
+    "990080"
+   ]
+  },
+  {
+   "name": "Starfield",
+   "kind": "game",
+   "exe": [
+    "starfield.exe"
+   ],
+   "steam": [
+    "1716740"
+   ]
+  },
+  {
+   "name": "Red Dead Redemption 2",
+   "kind": "game",
+   "exe": [
+    "rdr2.exe"
+   ],
+   "steam": [
+    "1174180"
+   ]
+  },
+  {
+   "name": "Grand Theft Auto V",
+   "kind": "game",
+   "exe": [
+    "gta5.exe",
+    "gta5_enhanced.exe"
+   ],
+   "steam": [
+    "271590",
+    "3240220"
+   ]
+  },
+  {
+   "name": "Counter-Strike 2",
+   "kind": "game",
+   "comm": [
+    "cs2"
+   ],
+   "exe": [
+    "cs2.exe"
+   ],
+   "steam": [
+    "730"
+   ]
+  },
+  {
+   "name": "Dota 2",
+   "kind": "game",
+   "comm": [
+    "dota2"
+   ],
+   "exe": [
+    "dota2.exe"
+   ],
+   "steam": [
+    "570"
+   ]
+  },
+  {
+   "name": "Microsoft Flight Simulator",
+   "kind": "game",
+   "exe": [
+    "flightsimulator.exe",
+    "flightsimulator2024.exe"
+   ],
+   "steam": [
+    "1250410",
+    "2537590"
+   ]
+  },
+  {
+   "name": "Star Citizen",
+   "kind": "game",
+   "exe": [
+    "starcitizen.exe"
+   ]
+  },
+  {
+   "name": "Cities: Skylines II",
+   "kind": "game",
+   "exe": [
+    "cities2.exe"
+   ],
+   "steam": [
+    "949230"
+   ]
+  },
+  {
+   "name": "Total War: Warhammer III",
+   "kind": "game",
+   "exe": [
+    "warhammer3.exe"
+   ],
+   "steam": [
+    "1142710"
+   ]
+  },
+  {
+   "name": "Anno 1800",
+   "kind": "game",
+   "exe": [
+    "anno1800.exe"
+   ],
+   "steam": [
+    "916440"
+   ]
+  },
+  {
+   "name": "Surviving Mars",
+   "kind": "game",
+   "exe": [
+    "mars.exe",
+    "marssteam.exe",
+    "marsgog.exe",
+    "marsepic.exe",
+    "survivingmars.exe"
+   ],
+   "steam": [
+    "464920"
+   ]
+  },
+  {
+   "name": "Factorio",
+   "kind": "game",
+   "exe": [
+    "factorio.exe"
+   ],
+   "comm": [
+    "factorio"
+   ],
+   "steam": [
+    "427520"
+   ]
+  },
+  {
+   "name": "Stellaris",
+   "kind": "game",
+   "exe": [
+    "stellaris.exe"
+   ],
+   "comm": [
+    "stellaris"
+   ],
+   "steam": [
+    "281990"
+   ]
+  },
+  {
+   "name": "Europa Universalis IV",
+   "kind": "game",
+   "exe": [
+    "eu4.exe"
+   ],
+   "comm": [
+    "eu4"
+   ],
+   "steam": [
+    "236850"
+   ]
+  },
+  {
+   "name": "Victoria 3",
+   "kind": "game",
+   "exe": [
+    "victoria3.exe"
+   ],
+   "comm": [
+    "victoria3"
+   ],
+   "steam": [
+    "529340"
+   ]
+  },
+  {
+   "name": "Hearts of Iron IV",
+   "kind": "game",
+   "exe": [
+    "hoi4.exe"
+   ],
+   "comm": [
+    "hoi4"
+   ],
+   "steam": [
+    "394360"
+   ]
+  },
+  {
+   "name": "Assassin's Creed Valhalla",
+   "kind": "game",
+   "exe": [
+    "acvalhalla.exe",
+    "acvalhalla_plus.exe"
+   ]
+  },
+  {
+   "name": "Assassin's Creed Mirage",
+   "kind": "game",
+   "exe": [
+    "acmirage.exe",
+    "acmirage_plus.exe"
+   ]
+  },
+  {
+   "name": "Far Cry 6",
+   "kind": "game",
+   "exe": [
+    "farcry6.exe"
+   ],
+   "steam": [
+    "2369390"
+   ]
+  },
+  {
+   "name": "Forza Horizon 5",
+   "kind": "game",
+   "exe": [
+    "forzahorizon5.exe"
+   ],
+   "steam": [
+    "1551360"
+   ]
+  },
+  {
+   "name": "Horizon Zero Dawn",
+   "kind": "game",
+   "exe": [
+    "horizonzerodawn.exe"
+   ],
+   "steam": [
+    "1151640"
+   ]
+  },
+  {
+   "name": "God of War",
+   "kind": "game",
+   "exe": [
+    "gow.exe"
+   ],
+   "steam": [
+    "1593500"
+   ]
+  },
+  {
+   "name": "Monster Hunter Wilds",
+   "kind": "game",
+   "exe": [
+    "monsterhunterwilds.exe"
+   ],
+   "steam": [
+    "2246340"
+   ]
+  },
+  {
+   "name": "Helldivers 2",
+   "kind": "game",
+   "exe": [
+    "helldivers2.exe"
+   ],
+   "steam": [
+    "553850"
+   ]
+  },
+  {
+   "name": "Path of Exile 2",
+   "kind": "game",
+   "exe": [
+    "pathofexile.exe",
+    "pathofexilesteam.exe",
+    "pathofexile_x64.exe"
+   ],
+   "steam": [
+    "2694490",
+    "238960"
+   ]
+  },
+  {
+   "name": "Diablo IV",
+   "kind": "game",
+   "exe": [
+    "diablo iv.exe"
+   ],
+   "steam": [
+    "2344520"
+   ]
+  },
+  {
+   "name": "World of Warcraft",
+   "kind": "game",
+   "exe": [
+    "wow.exe",
+    "wowclassic.exe"
+   ]
+  },
+  {
+   "name": "Overwatch 2",
+   "kind": "game",
+   "exe": [
+    "overwatch.exe"
+   ],
+   "steam": [
+    "2357570"
+   ]
+  },
+  {
+   "name": "Fortnite",
+   "kind": "game",
+   "exe": [
+    "fortniteclient-win64-shipping.exe"
+   ]
+  },
+  {
+   "name": "Apex Legends",
+   "kind": "game",
+   "exe": [
+    "r5apex.exe",
+    "r5apex_dx12.exe"
+   ],
+   "steam": [
+    "1172470"
+   ]
+  },
+  {
+   "name": "Rocket League",
+   "kind": "game",
+   "exe": [
+    "rocketleague.exe"
+   ]
+  },
+  {
+   "name": "Valheim",
+   "kind": "game",
+   "exe": [
+    "valheim.exe"
+   ],
+   "comm": [
+    "valheim.x86_64"
+   ],
+   "steam": [
+    "892970"
+   ]
+  },
+  {
+   "name": "Satisfactory",
+   "kind": "game",
+   "exe": [
+    "factorygame-win64-shipping.exe",
+    "factorygamesteam-win64-shipping.exe",
+    "factorygameegs-win64-shipping.exe"
+   ],
+   "steam": [
+    "526870"
+   ]
+  },
+  {
+   "name": "Kingdom Come: Deliverance II",
+   "kind": "game",
+   "exe": [
+    "kingdomcome.exe"
+   ],
+   "steam": [
+    "1771300"
+   ]
+  },
+  {
+   "name": "Stalker 2",
+   "kind": "game",
+   "exe": [
+    "stalker2-win64-shipping.exe"
+   ],
+   "steam": [
+    "1643320"
+   ]
+  },
+  {
+   "name": "Black Myth: Wukong",
+   "kind": "game",
+   "exe": [
+    "b1-win64-shipping.exe"
+   ],
+   "steam": [
+    "2358720"
+   ]
+  },
+  {
+   "name": "Hitman: World of Assassination",
+   "kind": "game",
+   "exe": [
+    "hitman3.exe"
+   ],
+   "steam": [
+    "1659040"
+   ]
+  },
+  {
+   "name": "Civilization VI",
+   "kind": "game",
+   "exe": [
+    "civilizationvi.exe",
+    "civilizationvi_dx12.exe"
+   ],
+   "comm": [
+    "Civ6",
+    "Civ6Sub"
+   ],
+   "steam": [
+    "289070"
+   ]
+  },
+  {
+   "name": "Civilization VII",
+   "kind": "game",
+   "exe": [
+    "civ7_win64_dx12.exe",
+    "civ7_win64_vulkan.exe"
+   ],
+   "steam": [
+    "1295660"
+   ]
+  },
+  {
+   "name": "Age of Empires IV",
+   "kind": "game",
+   "exe": [
+    "reliccardinal.exe",
+    "reliccardinal_ws.exe"
+   ],
+   "steam": [
+    "1466860"
+   ]
+  },
+  {
+   "name": "Dark Souls III",
+   "kind": "game",
+   "exe": [
+    "darksoulsiii.exe"
+   ],
+   "steam": [
+    "374320"
+   ]
+  },
+  {
+   "name": "Sekiro",
+   "kind": "game",
+   "exe": [
+    "sekiro.exe"
+   ],
+   "steam": [
+    "814380"
+   ]
+  },
+  {
+   "name": "Armored Core VI",
+   "kind": "game",
+   "exe": [
+    "armoredcore6.exe"
+   ],
+   "steam": [
+    "1888160"
+   ]
+  },
+  {
+   "name": "Resident Evil 4",
+   "kind": "game",
+   "exe": [
+    "re4.exe"
+   ],
+   "steam": [
+    "2050650"
+   ]
+  },
+  {
+   "name": "Street Fighter 6",
+   "kind": "game",
+   "exe": [
+    "streetfighter6.exe"
+   ],
+   "steam": [
+    "1364780"
+   ]
+  },
+  {
+   "name": "Tekken 8",
+   "kind": "game",
+   "exe": [
+    "polaris-win64-shipping.exe"
+   ],
+   "steam": [
+    "1778820"
+   ]
+  },
+  {
+   "name": "Doom Eternal",
+   "kind": "game",
+   "exe": [
+    "doometernalx64vk.exe"
+   ],
+   "steam": [
+    "782330"
+   ]
+  },
+  {
+   "name": "Doom: The Dark Ages",
+   "kind": "game",
+   "exe": [
+    "doomthedarkages.exe"
+   ],
+   "steam": [
+    "3017860"
+   ]
+  },
+  {
+   "name": "Indiana Jones und der Große Kreis",
+   "kind": "game",
+   "exe": [
+    "thegreatcircle.exe"
+   ],
+   "steam": [
+    "2677660"
+   ]
+  },
+  {
+   "name": "Alan Wake 2",
+   "kind": "game",
+   "exe": [
+    "alanwake2.exe"
+   ]
+  },
+  {
+   "name": "Control",
+   "kind": "game",
+   "exe": [
+    "control_dx12.exe",
+    "control_dx11.exe"
+   ],
+   "steam": [
+    "870780"
+   ]
+  },
+  {
+   "name": "Death Stranding",
+   "kind": "game",
+   "exe": [
+    "ds.exe"
+   ],
+   "steam": [
+    "1850570",
+    "1190460"
+   ]
+  },
+  {
+   "name": "Ghost of Tsushima",
+   "kind": "game",
+   "exe": [
+    "ghostoftsushima.exe"
+   ],
+   "steam": [
+    "2215430"
+   ]
+  },
+  {
+   "name": "Marvel's Spider-Man 2",
+   "kind": "game",
+   "exe": [
+    "spider-man2.exe"
+   ],
+   "steam": [
+    "2651280"
+   ]
+  },
+  {
+   "name": "The Last of Us Part I",
+   "kind": "game",
+   "exe": [
+    "tlou-i.exe"
+   ],
+   "steam": [
+    "1888930"
+   ]
+  },
+  {
+   "name": "Avowed",
+   "kind": "game",
+   "exe": [
+    "alabama-wingdx12-shipping.exe",
+    "alabama-win64-shipping.exe"
+   ],
+   "steam": [
+    "2457220"
+   ]
+  },
+  {
+   "name": "Clair Obscur: Expedition 33",
+   "kind": "game",
+   "exe": [
+    "sandfall-win64-shipping.exe"
+   ],
+   "steam": [
+    "1903340"
+   ]
+  },
+  {
+   "name": "Oblivion Remastered",
+   "kind": "game",
+   "exe": [
+    "oblivionremastered-win64-shipping.exe"
+   ],
+   "steam": [
+    "2623190"
+   ]
+  },
+  {
+   "name": "Hunt: Showdown 1896",
+   "kind": "game",
+   "exe": [
+    "huntgame.exe"
+   ],
+   "steam": [
+    "594650"
+   ]
+  },
+  {
+   "name": "Escape from Tarkov",
+   "kind": "game",
+   "exe": [
+    "escapefromtarkov.exe"
+   ]
+  },
+  {
+   "name": "Warframe",
+   "kind": "game",
+   "exe": [
+    "warframe.x64.exe"
+   ],
+   "steam": [
+    "230410"
+   ]
+  },
+  {
+   "name": "Destiny 2",
+   "kind": "game",
+   "exe": [
+    "destiny2.exe"
+   ],
+   "steam": [
+    "1085660"
+   ]
+  }
+ ]
+}

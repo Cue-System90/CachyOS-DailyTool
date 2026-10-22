@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from cachy_toolkit import launchers, registry, system
+from cachyos_dailytool import launchers, registry, system
 
 
 class FakeResp(io.BytesIO):

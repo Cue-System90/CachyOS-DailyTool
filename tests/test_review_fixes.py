@@ -10,7 +10,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest import mock
 
-from cachy_toolkit import compat, config, launcher, registry, shortcuts, system
+from cachyos_dailytool import compat, config, launcher, registry, shortcuts, system
 
 
 def mkprefix(p: Path) -> Path:
@@ -122,7 +122,7 @@ class UninstallAndWinetricksTests(unittest.TestCase):
 
 class CandidateAndRegisterTests(unittest.TestCase):
     def test_split_candidates_excludes_uninstallers(self):
-        from cachy_toolkit.ui.pages_wine import split_candidates
+        from cachyos_dailytool.ui.pages_wine import split_candidates
         before = {"/p/drive_c/old.exe"}
         after = before | {"/p/drive_c/App/uninst.exe", "/p/drive_c/App/MyApp.exe", "/p/drive_c/App/Updater.exe"}
         good, rest = split_candidates(before, after, "My App")
@@ -130,7 +130,7 @@ class CandidateAndRegisterTests(unittest.TestCase):
         self.assertEqual(sorted(rest), ["/p/drive_c/App/Updater.exe", "/p/drive_c/App/uninst.exe"])
 
     def test_register_app_keep_existing(self):
-        from cachy_toolkit.ui.pages_wine import register_app
+        from cachyos_dailytool.ui.pages_wine import register_app
         with tempfile.TemporaryDirectory() as td:
             reg = registry.Registry(Path(td) / "r.json")
             win = SimpleNamespace(registry=reg)
