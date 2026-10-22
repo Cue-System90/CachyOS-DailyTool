@@ -137,7 +137,8 @@ class CompatPage(Page):
         self.status_lbl.set_hexpand(True)
         srow.append(self.status_lbl)
         self.launch_btn = button(tr("ProtonPlus starten"), ["btn-primary"], icon=pick_icon("media-playback-start-symbolic"), on_click=self._launch)
-        self.install_btn = button(tr("Installieren / Aktualisieren (Flatpak)"), ["btn-secondary"], icon=pick_icon("software-update-available-symbolic"),
+        self.install_btn = button(tr("Installieren"), ["btn-secondary"],
+                                  icon=pick_icon("system-software-install-symbolic", "folder-download-symbolic", "download-symbolic"),
                                   on_click=self._install)
         srow.append(self.launch_btn)
         srow.append(self.install_btn)
@@ -152,13 +153,15 @@ class CompatPage(Page):
         self.content.append(self.pgroup)
         self.trows: list[Gtk.Widget] = []
         self.prows: list[Gtk.Widget] = []
-        self.task = TaskRunner(min_height=120, idle_text=tr("Flatpak-Ausgabe erscheint hier."))
+        self.task = TaskRunner(min_height=120, idle_text=tr("Ausgabe der Installation erscheint hier."))
         self.content.append(self.task)
         self.status: str | None = None
+        self.install_mode: str | None = None   # "pacman" | "flatpak" | None
+        self.repo: str | None = None
 
     def on_show(self) -> None:
         def work() -> dict:
-            return {"status": system.protonplus_status(),
+            return {"status": system.protonplus_status(), "repo": system.protonplus_repo(),
                     "tools": system.list_compat_tools(self.cfg.wine_prefix_root),
                     "dirs": system.compat_tool_dirs(self.cfg.wine_prefix_root),
                     "umu": system.have("umu-run"), "flatpak": system.have("flatpak"),
@@ -166,16 +169,30 @@ class CompatPage(Page):
         run_async(work, self._apply)
 
     def _apply(self, d: dict) -> None:
-        self.status = d["status"]
+        self.status, self.repo = d["status"], d["repo"]
+        # Installationsweg: natives Paket aus den Paketquellen (CachyOS: cachyos/protonplus) vor Flatpak
         if self.status == "native":
-            self.status_lbl.set_text(tr("Installiert (natives Paket)."))
+            self.install_mode = None
+            self.status_lbl.set_text(tr("Installiert (natives Paket). Updates kommen mit dem System-Update."))
         elif self.status == "flatpak":
+            self.install_mode = "flatpak"
             self.status_lbl.set_text(tr("Installiert als Flatpak ({0}).").format(system.PROTONPLUS_FLATPAK))
+            self.install_btn.get_child().set_label(tr("Aktualisieren (Flatpak)"))
+        elif self.repo:
+            self.install_mode = "pacman"
+            self.status_lbl.set_text(tr("Nicht installiert. ProtonPlus liegt in der Paketquelle „{0}“ und lässt sich direkt "
+                                        "mit pacman installieren.").format(self.repo))
+            self.install_btn.get_child().set_label(tr("Installieren (pacman)"))
+        elif d["flatpak"]:
+            self.install_mode = "flatpak"
+            self.status_lbl.set_text(tr("Nicht installiert."))
+            self.install_btn.get_child().set_label(tr("Installieren (Flatpak)"))
         else:
-            self.status_lbl.set_text(tr("Nicht installiert.") if d["flatpak"]
-                                     else tr("Nicht installiert. Flatpak fehlt ebenfalls (sudo pacman -S flatpak)."))
-        self.launch_btn.set_sensitive(self.status is not None)
-        self.install_btn.set_sensitive(d["flatpak"])
+            self.install_mode = None
+            self.status_lbl.set_text(tr("Nicht installiert. Weder in den Paketquellen noch per Flatpak verfügbar "
+                                        "(Flatpak fehlt: sudo pacman -S flatpak)."))
+        self.launch_btn.set_visible(self.status is not None)
+        self.install_btn.set_visible(self.install_mode is not None)
         child = self.tags.get_first_child()
         while child:
             nxt = child.get_next_sibling()
@@ -196,7 +213,8 @@ class CompatPage(Page):
             self.tgroup.add(lbl)
             self.trows.append(lbl)
         for t in tools:
-            row = action_row(t.name, f"{t.location} · {t.path}", pick_icon("package-x-generic-symbolic"))
+            row = action_row(t.name, f"{t.location} · {t.path}", pick_icon("package-x-generic-symbolic", "package-symbolic",
+                                                                            "application-x-executable-symbolic"))
             ob = icon_button(pick_icon("folder-open-symbolic"), tr("Öffnen"), ["flat"], on_click=lambda tt=t: system.open_path(tt.path))
             ob.set_valign(Gtk.Align.CENTER)
             row.add_suffix(ob)
@@ -222,6 +240,18 @@ class CompatPage(Page):
             self.toast(tr("ProtonPlus wird gestartet …"))
 
     def _install(self) -> None:
+        if self.install_mode == "pacman":
+            try:
+                argv = system.protonplus_pacman_argv()
+            except RuntimeError as exc:
+                self.toast(str(exc))
+                return
+            confirm(self, tr("ProtonPlus aus den Paketquellen installieren?"),
+                    tr("Installiert das Paket protonplus aus der Paketquelle „{0}“ mit „pacman -S --needed protonplus“ "
+                       "(Passwortabfrage über pkexec). Updates kommen danach mit dem System-Update.").format(self.repo),
+                    tr("Installieren"), lambda: self.task.run(argv, tr("Installiere ProtonPlus (pacman) …"),
+                                                             on_done=lambda rc: self.on_show()))
+            return
         confirm(self, tr("ProtonPlus per Flatpak installieren/aktualisieren?"),
                 tr("Flathub wird bei Bedarf als Benutzer-Remote hinzugefügt; dann wird com.vysp3r.ProtonPlus installiert oder aktualisiert."),
                 tr("Installieren"), lambda: self.task.run_steps(system.protonplus_install_steps(), tr("Installiere ProtonPlus …"),

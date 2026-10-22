@@ -322,5 +322,24 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(system.human_bytes(None), "–")
 
 
+
+class ProtonPlusRepoTests(unittest.TestCase):
+    def test_repo_from_pacman_print_format(self):
+        from unittest import mock as _mock
+        out = subprocess.CompletedProcess([], 0, "qt6-base cachyos-extra-znver4\nprotonplus cachyos\n", "")
+        with _mock.patch.object(system, "have", return_value=True), _mock.patch.object(system, "run", return_value=out):
+            self.assertEqual(system.protonplus_repo(), "cachyos")
+        missing = subprocess.CompletedProcess([], 1, "", "Ziel nicht gefunden: protonplus")
+        with _mock.patch.object(system, "have", return_value=True), _mock.patch.object(system, "run", return_value=missing):
+            self.assertIsNone(system.protonplus_repo())
+        with _mock.patch.object(system, "have", return_value=False):
+            self.assertIsNone(system.protonplus_repo())
+
+    def test_pacman_argv_is_one_root_call(self):
+        from unittest import mock as _mock
+        with _mock.patch.object(system, "root_helper", return_value="pkexec"):
+            self.assertEqual(system.protonplus_pacman_argv(), ["pkexec", "bash", "-c", "pacman -S --needed --noconfirm protonplus"])
+
+
 if __name__ == "__main__":
     unittest.main()

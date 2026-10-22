@@ -1210,7 +1210,7 @@ class PrefixesPage(Page):
 
             for app in R.apps_for_prefix(p.path):
                 arow = Adw.ActionRow(title=app.name, subtitle=f"{Path(app.exe).name} · {app.launch_options or tr('keine Startoptionen')}")
-                arow.add_prefix(Gtk.Image.new_from_file(app.icon) if app.icon and Path(app.icon).exists() else Gtk.Image(icon_name="wine", pixel_size=16))
+                arow.add_prefix(Gtk.Image.new_from_file(app.icon) if app.icon and Path(app.icon).exists() else Gtk.Image(icon_name=pick_icon("wine", "application-x-ms-dos-executable", "application-x-executable-symbolic"), pixel_size=16))
                 if app.menu:
                     arow.add_suffix(Tag(tr("STARTMENÜ"), "ok"))
                 if app.desktop:
@@ -1254,7 +1254,8 @@ class PrefixesPage(Page):
             self.backup_rows.append(lbl)
             return
         for b in backups:
-            row = action_row(b.name, f"{system.human_bytes(b.size)} · {fmt_time(b.mtime)}", pick_icon("package-x-generic-symbolic"))
+            row = action_row(b.name, f"{system.human_bytes(b.size)} · {fmt_time(b.mtime)}", pick_icon("package-x-generic-symbolic", "package-symbolic",
+                                                                                                    "folder-symbolic"))
             rb = button(tr("Wiederherstellen"), ["btn-secondary"], on_click=lambda bb=b: self._restore(bb))
             rb.set_valign(Gtk.Align.CENTER)
             row.add_suffix(rb)

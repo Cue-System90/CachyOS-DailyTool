@@ -413,27 +413,27 @@ msgstr "Chooses or creates a Wine prefix before launching an .exe/.msi"
 msgid "Bitte einen Namen eingeben."
 msgstr "Please enter a name."
 
-#: cachyos_dailytool/system.py:1361
+#: cachyos_dailytool/system.py:1380
 msgid "Aktueller Boot – alles"
 msgstr "Current boot – everything"
 
-#: cachyos_dailytool/system.py:1362
+#: cachyos_dailytool/system.py:1381
 msgid "Nur Warnungen und Fehler"
 msgstr "Warnings and errors only"
 
-#: cachyos_dailytool/system.py:1363
+#: cachyos_dailytool/system.py:1382
 msgid "Kernel-Meldungen (dmesg)"
 msgstr "Kernel messages (dmesg)"
 
-#: cachyos_dailytool/system.py:1382
+#: cachyos_dailytool/system.py:1401
 msgid "Keine passenden Einträge gefunden."
 msgstr "No matching entries found."
 
-#: cachyos_dailytool/system.py:1436
+#: cachyos_dailytool/system.py:1455
 msgid "dkms ist nicht installiert (bei CachyOS-Kerneln mit fertigen Modulpaketen normal)."
 msgstr "dkms is not installed (normal for CachyOS kernels with prebuilt module packages)."
 
-#: cachyos_dailytool/system.py:1438
+#: cachyos_dailytool/system.py:1457
 msgid "Keine DKMS-Module registriert."
 msgstr "No DKMS modules registered."
 
@@ -449,79 +449,79 @@ msgstr "Steam compat tools (Proton-GE etc.)"
 msgid "Ziel und Quelle sind identisch"
 msgstr "Target and source are identical"
 
-#: cachyos_dailytool/system.py:1220
+#: cachyos_dailytool/system.py:1239
 msgid "Steam – eigene Compat-Tools"
 msgstr "Steam – custom compat tools"
 
-#: cachyos_dailytool/system.py:1221
+#: cachyos_dailytool/system.py:1240
 msgid "Steam (Flatpak) – Compat-Tools"
 msgstr "Steam (Flatpak) – compat tools"
 
-#: cachyos_dailytool/system.py:1222
+#: cachyos_dailytool/system.py:1241
 msgid "System – proton-cachyos u. a."
 msgstr "System – proton-cachyos etc."
 
-#: cachyos_dailytool/system.py:1225
+#: cachyos_dailytool/system.py:1244
 msgid "Lutris – Wine-Runner"
 msgstr "Lutris – Wine runners"
 
-#: cachyos_dailytool/system.py:1226
+#: cachyos_dailytool/system.py:1245
 msgid "Bottles – Runner"
 msgstr "Bottles – runners"
 
-#: cachyos_dailytool/system.py:1228 cachyos_dailytool/system.py:1345 cachyos_dailytool/system.py:1242
+#: cachyos_dailytool/system.py:1247 cachyos_dailytool/system.py:1364 cachyos_dailytool/system.py:1261
 msgid "Wine-Prefix-Root"
 msgstr "Wine prefix root"
 
-#: cachyos_dailytool/system.py:1286
+#: cachyos_dailytool/system.py:1305
 msgid "Steam Shader-Cache"
 msgstr "Steam shader cache"
 
-#: cachyos_dailytool/system.py:1286
+#: cachyos_dailytool/system.py:1305
 msgid "steamapps/shadercache (nativ und Flatpak)"
 msgstr "steamapps/shadercache (native and Flatpak)"
 
-#: cachyos_dailytool/system.py:1289
+#: cachyos_dailytool/system.py:1308
 msgid "DXVK / VKD3D-Caches"
 msgstr "DXVK / VKD3D caches"
 
-#: cachyos_dailytool/system.py:1292
+#: cachyos_dailytool/system.py:1311
 msgid "Mesa Shader-Cache"
 msgstr "Mesa shader cache"
 
-#: cachyos_dailytool/system.py:1294
+#: cachyos_dailytool/system.py:1313
 msgid "~/.cache/nvidia/GLCache und ~/.nv/GLCache"
 msgstr "~/.cache/nvidia/GLCache and ~/.nv/GLCache"
 
-#: cachyos_dailytool/system.py:1346 cachyos_dailytool/ui/dialogs.py:18 cachyos_dailytool/ui/pages_launcher.py:25
+#: cachyos_dailytool/system.py:1365 cachyos_dailytool/ui/dialogs.py:18 cachyos_dailytool/ui/pages_launcher.py:25
 msgid "Gaming-Zielordner"
 msgstr "Gaming target folder"
 
-#: cachyos_dailytool/system.py:1347 cachyos_dailytool/ui/dialogs.py:19
+#: cachyos_dailytool/system.py:1366 cachyos_dailytool/ui/dialogs.py:19
 msgid "Prefix-Backups"
 msgstr "Prefix backups"
 
-#: cachyos_dailytool/system.py:1376
+#: cachyos_dailytool/system.py:1395
 msgid "journalctl lieferte keine Daten."
 msgstr "journalctl returned no data."
 
-#: cachyos_dailytool/system.py:1423 cachyos_dailytool/system.py:1425
+#: cachyos_dailytool/system.py:1442 cachyos_dailytool/system.py:1444
 msgid "pacman -Qu (lokale Datenbank, evtl. veraltet)"
 msgstr "pacman -Qu (local database, possibly outdated)"
 
-#: cachyos_dailytool/system.py:1426
+#: cachyos_dailytool/system.py:1445
 msgid "pacman -Qu fehlgeschlagen"
 msgstr "pacman -Qu failed"
 
-#: cachyos_dailytool/system.py:1558
+#: cachyos_dailytool/system.py:1577
 msgid "kscreen-doctor fehlgeschlagen"
 msgstr "kscreen-doctor failed"
 
-#: cachyos_dailytool/system.py:1564
+#: cachyos_dailytool/system.py:1583
 msgid "kwriteconfig6 fehlgeschlagen"
 msgstr "kwriteconfig6 failed"
 
-#: cachyos_dailytool/system.py:1571
+#: cachyos_dailytool/system.py:1590
 msgid "Kein KDE/GNOME erkannt – GDK_SCALE={0} wurde in ~/.profile eingetragen."
 msgstr "No KDE/GNOME detected – GDK_SCALE={0} was added to ~/.profile."
 
@@ -565,7 +565,7 @@ msgstr "Removing source {0} …"
 msgid "Symlink gesetzt: {0} → {1}"
 msgstr "Symlink created: {0} → {1}"
 
-#: cachyos_dailytool/system.py:1420
+#: cachyos_dailytool/system.py:1439
 msgid "checkupdates fehlgeschlagen"
 msgstr "checkupdates failed"
 
@@ -605,19 +605,19 @@ msgstr "{0} is already a symlink → {1}"
 msgid "{0} existiert nicht"
 msgstr "{0} does not exist"
 
-#: cachyos_dailytool/system.py:1290
+#: cachyos_dailytool/system.py:1309
 msgid "*.dxvk-cache und *.vkd3d-proton.cache unter {0} und {1}"
 msgstr "*.dxvk-cache and *.vkd3d-proton.cache in {0} and {1}"
 
-#: cachyos_dailytool/system.py:1556
+#: cachyos_dailytool/system.py:1575
 msgid "Skalierung von {0} auf {1} % gesetzt – sofort wirksam. Windows-Programme in Prefixen mit eigener DPI behalten ihre Größe (unter „Windows-DPI je Wine-Prefix“ anpassbar)."
 msgstr "Scaling of {0} set to {1} % – effective immediately. Windows programs in prefixes with their own DPI keep their size (adjustable under “Windows DPI per Wine prefix”)."
 
-#: cachyos_dailytool/system.py:1562
+#: cachyos_dailytool/system.py:1581
 msgid "KDE-Skalierung auf {0} % gesetzt (kdeglobals/KScreen). Wirkt nach Ab- und Anmelden. Unter Plasma Wayland zählt zusätzlich die Skalierung je Bildschirm in den Anzeige-Einstellungen."
 msgstr "KDE scaling set to {0} % (kdeglobals/KScreen). Takes effect after logging out and back in. Under Plasma Wayland, the per-screen scaling in the display settings also applies."
 
-#: cachyos_dailytool/system.py:1567
+#: cachyos_dailytool/system.py:1586
 msgid "GNOME-Textskalierung auf Faktor {0} gesetzt."
 msgstr "GNOME text scaling set to factor {0}."
 
@@ -625,7 +625,7 @@ msgstr "GNOME text scaling set to factor {0}."
 msgid "Programm nicht gefunden: {0}"
 msgstr "Program not found: {0}"
 
-#: cachyos_dailytool/system.py:1384
+#: cachyos_dailytool/system.py:1403
 msgid "… {0} ältere Zeilen ausgeblendet …"
 msgstr "… {0} older lines hidden …"
 
@@ -633,7 +633,7 @@ msgstr "… {0} older lines hidden …"
 msgid "Rückgabecode {0} ignoriert – das Ergebnis ist vollständig vorhanden."
 msgstr "Exit code {0} ignored – the result is complete."
 
-#: cachyos_dailytool/system.py:124 cachyos_dailytool/ui/pages_launchers.py:426 cachyos_dailytool/ui/pages_system.py:488
+#: cachyos_dailytool/system.py:124 cachyos_dailytool/ui/pages_launchers.py:426 cachyos_dailytool/ui/pages_system.py:489
 msgid "Fehler: {0}"
 msgstr "Error: {0}"
 
@@ -721,7 +721,7 @@ msgstr "Frequency CCD"
 msgid "keine Zuweisung"
 msgstr "no assignment"
 
-#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_system.py:123
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_system.py:124
 msgid "Automatisch"
 msgstr "Automatic"
 
@@ -781,7 +781,7 @@ msgstr "Mount drive"
 msgid "System-Update"
 msgstr "System update"
 
-#: cachyos_dailytool/ui/dashboard.py:47 cachyos_dailytool/ui/pages_system.py:225
+#: cachyos_dailytool/ui/dashboard.py:47 cachyos_dailytool/ui/pages_system.py:226
 msgid "Logs & Diagnose"
 msgstr "Logs & diagnostics"
 
@@ -789,7 +789,7 @@ msgstr "Logs & diagnostics"
 msgid "Shader-Cache"
 msgstr "Shader cache"
 
-#: cachyos_dailytool/ui/dashboard.py:96 cachyos_dailytool/ui/pages_system.py:194
+#: cachyos_dailytool/ui/dashboard.py:96 cachyos_dailytool/ui/pages_system.py:195
 msgid "Keine GPU-Daten"
 msgstr "No GPU data"
 
@@ -849,7 +849,7 @@ msgstr "X3D processor with two CCDs: the service for automatic core assignment o
 msgid "Alles in Ordnung – keine Hinweise."
 msgstr "All good – no notes."
 
-#: cachyos_dailytool/ui/dashboard.py:195 cachyos_dailytool/ui/pages_system.py:72
+#: cachyos_dailytool/ui/dashboard.py:195 cachyos_dailytool/ui/pages_system.py:73
 msgid "System ist aktuell"
 msgstr "System is up to date"
 
@@ -869,7 +869,7 @@ msgstr "{0} without fstab entry"
 msgid " · bevorzugt: {0}"
 msgstr " · preferred: {0}"
 
-#: cachyos_dailytool/ui/dashboard.py:183 cachyos_dailytool/ui/pages_launcher.py:91 cachyos_dailytool/ui/pages_launcher.py:200
+#: cachyos_dailytool/ui/dashboard.py:183 cachyos_dailytool/ui/pages_launcher.py:91 cachyos_dailytool/ui/pages_launcher.py:218
 msgid "Öffnen"
 msgstr "Open"
 
@@ -1313,11 +1313,11 @@ msgstr "ProtonPlus & compat tools"
 msgid "ProtonPlus verwaltet Proton-GE, Wine-GE, DXVK & Co. für Steam, Lutris, Heroic und Bottles."
 msgstr "ProtonPlus manages Proton-GE, Wine-GE, DXVK and more for Steam, Lutris, Heroic and Bottles."
 
-#: cachyos_dailytool/ui/pages_launcher.py:233
+#: cachyos_dailytool/ui/pages_launcher.py:263
 msgid "Speicherplatz"
 msgstr "Disk usage"
 
-#: cachyos_dailytool/ui/pages_launcher.py:234
+#: cachyos_dailytool/ui/pages_launcher.py:264
 msgid "Belegung der Dateisysteme und Größe der Gaming-Ordner."
 msgstr "File system usage and size of the gaming folders."
 
@@ -1353,7 +1353,7 @@ msgstr "MOVE SELECTED"
 msgid "Ziel ist nicht erreichbar."
 msgstr "Target is not reachable."
 
-#: cachyos_dailytool/ui/pages_launcher.py:123 cachyos_dailytool/ui/pages_wine.py:1372
+#: cachyos_dailytool/ui/pages_launcher.py:123 cachyos_dailytool/ui/pages_wine.py:1373
 msgid "Verschieben"
 msgstr "Move"
 
@@ -1361,47 +1361,43 @@ msgstr "Move"
 msgid "ProtonPlus starten"
 msgstr "Launch ProtonPlus"
 
-#: cachyos_dailytool/ui/pages_launcher.py:140
-msgid "Installieren / Aktualisieren (Flatpak)"
-msgstr "Install / update (Flatpak)"
-
-#: cachyos_dailytool/ui/pages_launcher.py:149
-msgid "Installierte Compat-Tools"
-msgstr "Installed compat tools"
-
-#: cachyos_dailytool/ui/pages_launcher.py:149
-msgid "Proton-/Wine-Versionen in den Tool-Ordnern der Launcher"
-msgstr "Proton/Wine versions in the launchers’ tool folders"
-
-#: cachyos_dailytool/ui/pages_launcher.py:151
-msgid "Pfade"
-msgstr "Paths"
-
-#: cachyos_dailytool/ui/pages_launcher.py:151
-msgid "Wo die Launcher ihre Compat-Tools erwarten"
-msgstr "Where the launchers expect their compat tools"
-
-#: cachyos_dailytool/ui/pages_launcher.py:225
-msgid "ProtonPlus per Flatpak installieren/aktualisieren?"
-msgstr "Install/update ProtonPlus via Flatpak?"
-
-#: cachyos_dailytool/ui/pages_launcher.py:226
-msgid "Flathub wird bei Bedarf als Benutzer-Remote hinzugefügt; dann wird com.vysp3r.ProtonPlus installiert oder aktualisiert."
-msgstr "Flathub is added as a user remote if needed; then com.vysp3r.ProtonPlus is installed or updated."
-
-#: cachyos_dailytool/ui/pages_launcher.py:227 cachyos_dailytool/ui/pages_launchers.py:384 cachyos_dailytool/ui/pages_wine.py:626
+#: cachyos_dailytool/ui/pages_launcher.py:140 cachyos_dailytool/ui/pages_launcher.py:257 cachyos_dailytool/ui/pages_launcher.py:252
 msgid "Installieren"
 msgstr "Install"
 
-#: cachyos_dailytool/ui/pages_launcher.py:239
+#: cachyos_dailytool/ui/pages_launcher.py:150
+msgid "Installierte Compat-Tools"
+msgstr "Installed compat tools"
+
+#: cachyos_dailytool/ui/pages_launcher.py:150
+msgid "Proton-/Wine-Versionen in den Tool-Ordnern der Launcher"
+msgstr "Proton/Wine versions in the launchers’ tool folders"
+
+#: cachyos_dailytool/ui/pages_launcher.py:152
+msgid "Pfade"
+msgstr "Paths"
+
+#: cachyos_dailytool/ui/pages_launcher.py:152
+msgid "Wo die Launcher ihre Compat-Tools erwarten"
+msgstr "Where the launchers expect their compat tools"
+
+#: cachyos_dailytool/ui/pages_launcher.py:255
+msgid "ProtonPlus per Flatpak installieren/aktualisieren?"
+msgstr "Install/update ProtonPlus via Flatpak?"
+
+#: cachyos_dailytool/ui/pages_launcher.py:256
+msgid "Flathub wird bei Bedarf als Benutzer-Remote hinzugefügt; dann wird com.vysp3r.ProtonPlus installiert oder aktualisiert."
+msgstr "Flathub is added as a user remote if needed; then com.vysp3r.ProtonPlus is installed or updated."
+
+#: cachyos_dailytool/ui/pages_launcher.py:269
 msgid "Dateisysteme"
 msgstr "File systems"
 
-#: cachyos_dailytool/ui/pages_launcher.py:241
+#: cachyos_dailytool/ui/pages_launcher.py:271
 msgid "Gaming-Ordner"
 msgstr "Gaming folders"
 
-#: cachyos_dailytool/ui/pages_launcher.py:241
+#: cachyos_dailytool/ui/pages_launcher.py:271
 msgid "Größen werden im Hintergrund berechnet (du)"
 msgstr "Sizes are calculated in the background (du)"
 
@@ -1417,7 +1413,7 @@ msgstr "rsync progress and results appear here."
 msgid "Keine bekannten Launcher gefunden."
 msgstr "No known launchers found."
 
-#: cachyos_dailytool/ui/pages_launcher.py:101 cachyos_dailytool/ui/pages_system.py:342
+#: cachyos_dailytool/ui/pages_launcher.py:101 cachyos_dailytool/ui/pages_system.py:343
 msgid "Nichts ausgewählt."
 msgstr "Nothing selected."
 
@@ -1425,21 +1421,25 @@ msgstr "Nothing selected."
 msgid "Verschiebe …"
 msgstr "Moving…"
 
-#: cachyos_dailytool/ui/pages_launcher.py:155
-msgid "Flatpak-Ausgabe erscheint hier."
-msgstr "Flatpak output appears here."
+#: cachyos_dailytool/ui/pages_launcher.py:156
+msgid "Ausgabe der Installation erscheint hier."
+msgstr "The installation output appears here."
 
-#: cachyos_dailytool/ui/pages_launcher.py:171
-msgid "Installiert (natives Paket)."
-msgstr "Installed (native package)."
+#: cachyos_dailytool/ui/pages_launcher.py:176
+msgid "Installiert (natives Paket). Updates kommen mit dem System-Update."
+msgstr "Installed (native package). Updates arrive with the system update."
 
-#: cachyos_dailytool/ui/pages_launcher.py:195
+#: cachyos_dailytool/ui/pages_launcher.py:212
 msgid "Keine Compat-Tools in den bekannten Ordnern."
 msgstr "No compat tools in the known folders."
 
-#: cachyos_dailytool/ui/pages_launcher.py:222
+#: cachyos_dailytool/ui/pages_launcher.py:240
 msgid "ProtonPlus wird gestartet …"
 msgstr "Starting ProtonPlus…"
+
+#: cachyos_dailytool/ui/pages_launcher.py:249
+msgid "ProtonPlus aus den Paketquellen installieren?"
+msgstr "Install ProtonPlus from the package repositories?"
 
 #: cachyos_dailytool/ui/pages_launcher.py:106
 msgid "Gesamt etwa {0}. Die Programme müssen beendet sein. Nach erfolgreichem Kopieren wird das Original gelöscht und durch einen Symlink ersetzt."
@@ -1449,23 +1449,27 @@ msgstr "About {0} in total. The programs must be closed. After a successful copy
 msgid "{0} Ordner verschieben?"
 msgstr "Move {0} folders?"
 
-#: cachyos_dailytool/ui/pages_launcher.py:184
+#: cachyos_dailytool/ui/pages_launcher.py:180
+msgid "Aktualisieren (Flatpak)"
+msgstr "Update (Flatpak)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:201
 msgid "umu-launcher installiert"
 msgstr "umu-launcher installed"
 
-#: cachyos_dailytool/ui/pages_launcher.py:184
+#: cachyos_dailytool/ui/pages_launcher.py:201
 msgid "umu-launcher fehlt"
 msgstr "umu-launcher missing"
 
-#: cachyos_dailytool/ui/pages_launcher.py:188
+#: cachyos_dailytool/ui/pages_launcher.py:205
 msgid "proton-cachyos nicht gefunden"
 msgstr "proton-cachyos not found"
 
-#: cachyos_dailytool/ui/pages_launcher.py:227
+#: cachyos_dailytool/ui/pages_launcher.py:257
 msgid "Installiere ProtonPlus …"
 msgstr "Installing ProtonPlus…"
 
-#: cachyos_dailytool/ui/pages_launcher.py:301
+#: cachyos_dailytool/ui/pages_launcher.py:331
 msgid "Summe: {0}"
 msgstr "Total: {0}"
 
@@ -1477,33 +1481,53 @@ msgstr "{0} free of {1} · {2} ({3}, {4})"
 msgid "BEREITS VERSCHOBEN"
 msgstr "ALREADY MOVED"
 
-#: cachyos_dailytool/ui/pages_launcher.py:175
-msgid "Nicht installiert."
-msgstr "Not installed."
+#: cachyos_dailytool/ui/pages_launcher.py:185
+msgid "Installieren (pacman)"
+msgstr "Install (pacman)"
 
-#: cachyos_dailytool/ui/pages_launcher.py:176
-msgid "Nicht installiert. Flatpak fehlt ebenfalls (sudo pacman -S flatpak)."
-msgstr "Not installed. Flatpak is missing as well (sudo pacman -S flatpak)."
-
-#: cachyos_dailytool/ui/pages_launcher.py:211
+#: cachyos_dailytool/ui/pages_launcher.py:229
 msgid "VORHANDEN"
 msgstr "AVAILABLE"
 
-#: cachyos_dailytool/ui/pages_launcher.py:211
+#: cachyos_dailytool/ui/pages_launcher.py:229
 msgid "FEHLT"
 msgstr "MISSING"
 
-#: cachyos_dailytool/ui/pages_launcher.py:173
+#: cachyos_dailytool/ui/pages_launcher.py:250
+msgid "Installiert das Paket protonplus aus der Paketquelle „{0}“ mit „pacman -S --needed protonplus“ (Passwortabfrage über pkexec). Updates kommen danach mit dem System-Update."
+msgstr "Installs the protonplus package from the “{0}” repository with “pacman -S --needed protonplus” (password prompt via pkexec). Updates then arrive with the system update."
+
+#: cachyos_dailytool/ui/pages_launcher.py:252
+msgid "Installiere ProtonPlus (pacman) …"
+msgstr "Installing ProtonPlus (pacman)…"
+
+#: cachyos_dailytool/ui/pages_launcher.py:179
 msgid "Installiert als Flatpak ({0})."
 msgstr "Installed as Flatpak ({0})."
 
-#: cachyos_dailytool/ui/pages_launcher.py:266
+#: cachyos_dailytool/ui/pages_launcher.py:188
+msgid "Nicht installiert."
+msgstr "Not installed."
+
+#: cachyos_dailytool/ui/pages_launcher.py:189
+msgid "Installieren (Flatpak)"
+msgstr "Install (Flatpak)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:192
+msgid "Nicht installiert. Weder in den Paketquellen noch per Flatpak verfügbar (Flatpak fehlt: sudo pacman -S flatpak)."
+msgstr "Not installed. Available neither from the package repositories nor via Flatpak (Flatpak is missing: sudo pacman -S flatpak)."
+
+#: cachyos_dailytool/ui/pages_launcher.py:296
 msgid "{0} frei von {1} ({2} %)"
 msgstr "{0} free of {1} ({2} %)"
 
-#: cachyos_dailytool/ui/pages_launcher.py:284
+#: cachyos_dailytool/ui/pages_launcher.py:314
 msgid "{0} (nicht vorhanden)"
 msgstr "{0} (does not exist)"
+
+#: cachyos_dailytool/ui/pages_launcher.py:183
+msgid "Nicht installiert. ProtonPlus liegt in der Paketquelle „{0}“ und lässt sich direkt mit pacman installieren."
+msgstr "Not installed. ProtonPlus is available in the “{0}” repository and can be installed directly with pacman."
 
 #: cachyos_dailytool/ui/pages_launcher.py:118
 msgid "FEHLER: {0}"
@@ -1565,7 +1589,7 @@ msgstr "An installation is already running – please wait."
 msgid "Offizieller Installer"
 msgstr "Official installer"
 
-#: cachyos_dailytool/ui/pages_launchers.py:204 cachyos_dailytool/ui/pages_system.py:401 cachyos_dailytool/ui/pages_wine.py:454
+#: cachyos_dailytool/ui/pages_launchers.py:204 cachyos_dailytool/ui/pages_system.py:402 cachyos_dailytool/ui/pages_wine.py:454
 msgid "Prefix"
 msgstr "Prefix"
 
@@ -1709,11 +1733,11 @@ msgstr "Uninstall…"
 msgid "Weitere Installation"
 msgstr "Another installation"
 
-#: cachyos_dailytool/ui/pages_launchers.py:408 cachyos_dailytool/ui/pages_wine.py:1021 cachyos_dailytool/ui/pages_wine.py:1302
+#: cachyos_dailytool/ui/pages_launchers.py:408 cachyos_dailytool/ui/pages_wine.py:1021 cachyos_dailytool/ui/pages_wine.py:1303
 msgid "Gestartet ({0}): {1}"
 msgstr "Launched ({0}): {1}"
 
-#: cachyos_dailytool/ui/pages_launchers.py:409 cachyos_dailytool/ui/pages_wine.py:239 cachyos_dailytool/ui/pages_wine.py:1303
+#: cachyos_dailytool/ui/pages_launchers.py:409 cachyos_dailytool/ui/pages_wine.py:239 cachyos_dailytool/ui/pages_wine.py:1304
 msgid "„{0}“ gestartet über {1}."
 msgstr "“{0}” launched via {1}."
 
@@ -1793,7 +1817,7 @@ msgstr "DESKTOP"
 msgid "Gefunden in „{0}“ – noch ohne Verknüpfung"
 msgstr "Found in “{0}” – no shortcut yet"
 
-#: cachyos_dailytool/ui/pages_launchers.py:424 cachyos_dailytool/ui/pages_wine.py:1315
+#: cachyos_dailytool/ui/pages_launchers.py:424 cachyos_dailytool/ui/pages_wine.py:1316
 msgid "Verknüpfung für „{0}“ angelegt (Startmenü und Schreibtisch)."
 msgstr "Shortcut for “{0}” created (start menu and desktop)."
 
@@ -1809,31 +1833,31 @@ msgstr "Update & DKMS"
 msgid "pacman -Syu mit anschließender Prüfung von DKMS-Modulen und Kernel-Status."
 msgstr "pacman -Syu followed by a check of DKMS modules and kernel status."
 
-#: cachyos_dailytool/ui/pages_system.py:113
+#: cachyos_dailytool/ui/pages_system.py:114
 msgid "GPU-Status"
 msgstr "GPU status"
 
-#: cachyos_dailytool/ui/pages_system.py:114
+#: cachyos_dailytool/ui/pages_system.py:115
 msgid "Live-Werte über nvidia-smi bzw. sysfs (amdgpu/Intel)."
 msgstr "Live values via nvidia-smi or sysfs (amdgpu/Intel)."
 
-#: cachyos_dailytool/ui/pages_system.py:226
+#: cachyos_dailytool/ui/pages_system.py:227
 msgid "Systemd-Journal des aktuellen oder vorherigen Boots – mit Vorfiltern für Grafik, Gaming und Desktop."
 msgstr "Systemd journal of the current or previous boot – with presets for graphics, gaming and desktop."
 
-#: cachyos_dailytool/ui/pages_system.py:296
+#: cachyos_dailytool/ui/pages_system.py:297
 msgid "Shader-Cache leeren"
 msgstr "Clear shader caches"
 
-#: cachyos_dailytool/ui/pages_system.py:297
+#: cachyos_dailytool/ui/pages_system.py:298
 msgid "Sinnvoll nach Treiberwechsel (z. B. nvidia ↔ nvidia-open) oder bei Grafikfehlern nach Updates. Shader werden beim nächsten Start neu gebaut."
 msgstr "Useful after switching drivers (e.g. nvidia ↔ nvidia-open) or for graphics glitches after updates. Shaders are rebuilt on the next launch."
 
-#: cachyos_dailytool/ui/pages_system.py:361
+#: cachyos_dailytool/ui/pages_system.py:362
 msgid "Skalierung"
 msgstr "Scaling"
 
-#: cachyos_dailytool/ui/pages_system.py:362
+#: cachyos_dailytool/ui/pages_system.py:363
 msgid "Desktop-Skalierung (unter Plasma Wayland je Bildschirm) und Windows-DPI je Wine-Prefix."
 msgstr "Desktop scaling (per screen under Plasma Wayland) and Windows DPI per Wine prefix."
 
@@ -1857,331 +1881,331 @@ msgstr "NVIDIA module"
 msgid "SYSTEM AKTUALISIEREN"
 msgstr "UPDATE SYSTEM"
 
-#: cachyos_dailytool/ui/pages_system.py:54
+#: cachyos_dailytool/ui/pages_system.py:55
 msgid "prüfe …"
 msgstr "checking …"
 
-#: cachyos_dailytool/ui/pages_system.py:106
+#: cachyos_dailytool/ui/pages_system.py:107
 msgid "System jetzt aktualisieren?"
 msgstr "Update the system now?"
 
-#: cachyos_dailytool/ui/pages_system.py:107
+#: cachyos_dailytool/ui/pages_system.py:108
 msgid "Führt „pacman -Syu --noconfirm“ als root aus. Bei Paketkonflikten oder Schlüsselproblemen bricht pacman ab; dann bitte im Terminal nacharbeiten. Danach werden DKMS- und Kernel-Status geprüft."
 msgstr "Runs “pacman -Syu --noconfirm” as root. If there are package conflicts or key problems, pacman aborts; then please finish the job in a terminal. Afterwards the DKMS and kernel status are checked."
 
-#: cachyos_dailytool/ui/pages_system.py:108
+#: cachyos_dailytool/ui/pages_system.py:109
 msgid "Jetzt aktualisieren"
 msgstr "Update now"
 
-#: cachyos_dailytool/ui/pages_system.py:129
+#: cachyos_dailytool/ui/pages_system.py:130
 msgid "Vollständige nvidia-smi-Ausgabe"
 msgstr "Full nvidia-smi output"
 
-#: cachyos_dailytool/ui/pages_system.py:177
+#: cachyos_dailytool/ui/pages_system.py:178
 msgid "Temperatur"
 msgstr "Temperature"
 
-#: cachyos_dailytool/ui/pages_system.py:177
+#: cachyos_dailytool/ui/pages_system.py:178
 msgid "Auslastung"
 msgstr "Load"
 
-#: cachyos_dailytool/ui/pages_system.py:177
+#: cachyos_dailytool/ui/pages_system.py:178
 msgid "Leistung"
 msgstr "Power"
 
-#: cachyos_dailytool/ui/pages_system.py:178
+#: cachyos_dailytool/ui/pages_system.py:179
 msgid "GPU-Takt"
 msgstr "GPU clock"
 
-#: cachyos_dailytool/ui/pages_system.py:178
+#: cachyos_dailytool/ui/pages_system.py:179
 msgid "VRAM-Takt"
 msgstr "VRAM clock"
 
-#: cachyos_dailytool/ui/pages_system.py:178
+#: cachyos_dailytool/ui/pages_system.py:179
 msgid "Lüfter"
 msgstr "Fan"
 
-#: cachyos_dailytool/ui/pages_system.py:230
+#: cachyos_dailytool/ui/pages_system.py:231
 msgid "Neu laden"
 msgstr "Reload"
 
-#: cachyos_dailytool/ui/pages_system.py:231
+#: cachyos_dailytool/ui/pages_system.py:232
 msgid "Filter"
 msgstr "Filter"
 
-#: cachyos_dailytool/ui/pages_system.py:246
+#: cachyos_dailytool/ui/pages_system.py:247
 msgid "Maximale Zeilen"
 msgstr "Maximum lines"
 
-#: cachyos_dailytool/ui/pages_system.py:275
+#: cachyos_dailytool/ui/pages_system.py:276
 msgid "lädt …"
 msgstr "loading …"
 
-#: cachyos_dailytool/ui/pages_system.py:301
+#: cachyos_dailytool/ui/pages_system.py:302
 msgid "Größen neu berechnen"
 msgstr "Recalculate sizes"
 
-#: cachyos_dailytool/ui/pages_system.py:302
+#: cachyos_dailytool/ui/pages_system.py:303
 msgid "Caches"
 msgstr "Caches"
 
-#: cachyos_dailytool/ui/pages_system.py:308
+#: cachyos_dailytool/ui/pages_system.py:309
 msgid "AUSGEWÄHLTE LEEREN"
 msgstr "CLEAR SELECTED"
 
-#: cachyos_dailytool/ui/pages_system.py:315
+#: cachyos_dailytool/ui/pages_system.py:316
 msgid "Größen werden berechnet …"
 msgstr "Calculating sizes …"
 
-#: cachyos_dailytool/ui/pages_system.py:356
+#: cachyos_dailytool/ui/pages_system.py:357
 msgid "Shader-Caches leeren?"
 msgstr "Clear shader caches?"
 
-#: cachyos_dailytool/ui/pages_system.py:356
+#: cachyos_dailytool/ui/pages_system.py:357
 msgid "Leeren"
 msgstr "Clear"
 
-#: cachyos_dailytool/ui/pages_system.py:367
+#: cachyos_dailytool/ui/pages_system.py:368
 msgid "Desktop-Skalierung"
 msgstr "Desktop scaling"
 
-#: cachyos_dailytool/ui/pages_system.py:368
+#: cachyos_dailytool/ui/pages_system.py:369
 msgid "Aktueller Wert"
 msgstr "Current value"
 
-#: cachyos_dailytool/ui/pages_system.py:395
+#: cachyos_dailytool/ui/pages_system.py:396
 msgid "Windows-DPI je Wine-Prefix"
 msgstr "Windows DPI per Wine prefix"
 
-#: cachyos_dailytool/ui/pages_system.py:395
+#: cachyos_dailytool/ui/pages_system.py:396
 msgid "Für unscharfe oder zu kleine Oberflächen in Windows-Programmen (LogPixels)."
 msgstr "For blurry or too small interfaces in Windows programs (LogPixels)."
 
-#: cachyos_dailytool/ui/pages_system.py:408 cachyos_dailytool/ui/pages_wine.py:1206
+#: cachyos_dailytool/ui/pages_system.py:409 cachyos_dailytool/ui/pages_wine.py:1206
 msgid "Anwenden"
 msgstr "Apply"
 
-#: cachyos_dailytool/ui/pages_system.py:415
+#: cachyos_dailytool/ui/pages_system.py:416
 msgid "Dieses Fenster"
 msgstr "This window"
 
-#: cachyos_dailytool/ui/pages_system.py:415
+#: cachyos_dailytool/ui/pages_system.py:416
 msgid "Die Fenstergröße wird beim Schließen automatisch gespeichert."
 msgstr "The window size is saved automatically when closing."
 
-#: cachyos_dailytool/ui/pages_system.py:416
+#: cachyos_dailytool/ui/pages_system.py:417
 msgid "Fenstergröße zurücksetzen"
 msgstr "Reset window size"
 
-#: cachyos_dailytool/ui/pages_system.py:417 cachyos_dailytool/ui/pages_x3d.py:432
+#: cachyos_dailytool/ui/pages_system.py:418 cachyos_dailytool/ui/pages_x3d.py:432
 msgid "Zurücksetzen"
 msgstr "Reset"
 
-#: cachyos_dailytool/ui/pages_system.py:451 cachyos_dailytool/ui/pages_system.py:397
+#: cachyos_dailytool/ui/pages_system.py:452 cachyos_dailytool/ui/pages_system.py:398
 msgid "Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start."
 msgstr "New prefixes and prefixes without their own DPI get it when they are created or before launch."
 
-#: cachyos_dailytool/ui/pages_system.py:47
+#: cachyos_dailytool/ui/pages_system.py:48
 msgid "DKMS-Status"
 msgstr "DKMS status"
 
-#: cachyos_dailytool/ui/pages_system.py:49
+#: cachyos_dailytool/ui/pages_system.py:50
 msgid "Ausgabe von pacman erscheint hier."
 msgstr "pacman output appears here."
 
-#: cachyos_dailytool/ui/pages_system.py:77
+#: cachyos_dailytool/ui/pages_system.py:78
 msgid "Neustart nötig – neuer Kernel installiert"
 msgstr "Reboot required – new kernel installed"
 
-#: cachyos_dailytool/ui/pages_system.py:77
+#: cachyos_dailytool/ui/pages_system.py:78
 msgid "aktuell geladen"
 msgstr "currently loaded"
 
-#: cachyos_dailytool/ui/pages_system.py:79
+#: cachyos_dailytool/ui/pages_system.py:80
 msgid "nicht geladen"
 msgstr "not loaded"
 
-#: cachyos_dailytool/ui/pages_system.py:79
+#: cachyos_dailytool/ui/pages_system.py:80
 msgid "geladenes Kernelmodul"
 msgstr "loaded kernel module"
 
-#: cachyos_dailytool/ui/pages_system.py:79
+#: cachyos_dailytool/ui/pages_system.py:80
 msgid "kein NVIDIA-Modul"
 msgstr "no NVIDIA module"
 
-#: cachyos_dailytool/ui/pages_system.py:105
+#: cachyos_dailytool/ui/pages_system.py:106
 msgid "pacman -Syu läuft … (Passwortabfrage über pkexec)"
 msgstr "pacman -Syu running … (password prompt via pkexec)"
 
-#: cachyos_dailytool/ui/pages_system.py:120
+#: cachyos_dailytool/ui/pages_system.py:121
 msgid "Alle 2 Sekunden aktualisieren"
 msgstr "Refresh every 2 seconds"
 
-#: cachyos_dailytool/ui/pages_system.py:232
+#: cachyos_dailytool/ui/pages_system.py:233
 msgid "Vorfilter"
 msgstr "Preset"
 
-#: cachyos_dailytool/ui/pages_system.py:240
+#: cachyos_dailytool/ui/pages_system.py:241
 msgid "Zusätzlicher Suchbegriff (regulärer Ausdruck, Groß/Klein egal)"
 msgstr "Additional search term (regular expression, case-insensitive)"
 
-#: cachyos_dailytool/ui/pages_system.py:243
+#: cachyos_dailytool/ui/pages_system.py:244
 msgid "Vorheriger Boot"
 msgstr "Previous boot"
 
-#: cachyos_dailytool/ui/pages_system.py:243
+#: cachyos_dailytool/ui/pages_system.py:244
 msgid "journalctl -b -1 – hilfreich nach einem Absturz/Reboot"
 msgstr "journalctl -b -1 – helpful after a crash/reboot"
 
-#: cachyos_dailytool/ui/pages_system.py:251
+#: cachyos_dailytool/ui/pages_system.py:252
 msgid "LADEN"
 msgstr "LOAD"
 
-#: cachyos_dailytool/ui/pages_system.py:252
+#: cachyos_dailytool/ui/pages_system.py:253
 msgid "Kopieren"
 msgstr "Copy"
 
-#: cachyos_dailytool/ui/pages_system.py:253
+#: cachyos_dailytool/ui/pages_system.py:254
 msgid "Speichern …"
 msgstr "Save …"
 
-#: cachyos_dailytool/ui/pages_system.py:280
+#: cachyos_dailytool/ui/pages_system.py:281
 msgid "Journal speichern"
 msgstr "Save journal"
 
-#: cachyos_dailytool/ui/pages_system.py:311
+#: cachyos_dailytool/ui/pages_system.py:312
 msgid "Ergebnis erscheint hier."
 msgstr "The result appears here."
 
-#: cachyos_dailytool/ui/pages_system.py:354
+#: cachyos_dailytool/ui/pages_system.py:355
 msgid "Leere Caches …"
 msgstr "Clearing caches …"
 
-#: cachyos_dailytool/ui/pages_system.py:371
+#: cachyos_dailytool/ui/pages_system.py:372
 msgid "Bildschirm"
 msgstr "Screen"
 
-#: cachyos_dailytool/ui/pages_system.py:375
+#: cachyos_dailytool/ui/pages_system.py:376
 msgid "Neue Skalierung"
 msgstr "New scaling"
 
-#: cachyos_dailytool/ui/pages_system.py:388
+#: cachyos_dailytool/ui/pages_system.py:389
 msgid "ANWENDEN"
 msgstr "APPLY"
 
-#: cachyos_dailytool/ui/pages_system.py:389
+#: cachyos_dailytool/ui/pages_system.py:390
 msgid "Anzeige-Einstellungen öffnen"
 msgstr "Open display settings"
 
-#: cachyos_dailytool/ui/pages_system.py:396
+#: cachyos_dailytool/ui/pages_system.py:397
 msgid "Automatisch an die Desktop-Skalierung anpassen"
 msgstr "Automatically match the desktop scaling"
 
-#: cachyos_dailytool/ui/pages_system.py:446
+#: cachyos_dailytool/ui/pages_system.py:447
 msgid "Hinweis: Der globale Wert (kdeglobals/GNOME/GDK_SCALE) wird nach Ab- und Anmelden wirksam."
 msgstr "Note: The global value (kdeglobals/GNOME/GDK_SCALE) takes effect after logging out and back in."
 
-#: cachyos_dailytool/ui/pages_system.py:481
+#: cachyos_dailytool/ui/pages_system.py:482
 msgid "Kein Prefix vorhanden."
 msgstr "No prefix available."
 
-#: cachyos_dailytool/ui/pages_system.py:73
+#: cachyos_dailytool/ui/pages_system.py:74
 msgid "Keine Updates verfügbar."
 msgstr "No updates available."
 
-#: cachyos_dailytool/ui/pages_system.py:82
+#: cachyos_dailytool/ui/pages_system.py:83
 msgid "prüfen"
 msgstr "check"
 
-#: cachyos_dailytool/ui/pages_system.py:325
+#: cachyos_dailytool/ui/pages_system.py:326
 msgid "Gesamt {0}"
 msgstr "Total {0}"
 
-#: cachyos_dailytool/ui/pages_system.py:437
+#: cachyos_dailytool/ui/pages_system.py:438
 msgid "„Anwenden“ setzt die Skalierung des Bildschirms sofort – wie in den Anzeige-Einstellungen. X11-Programme und Wine bekommen sie über Xft.dpi; Wine-Prefixe ohne eigene DPI passt das Tool beim nächsten Start an."
 msgstr "“Apply” sets the scaling of the screen immediately – just like in the display settings. X11 programs and Wine get it via Xft.dpi; the tool adjusts Wine prefixes without their own DPI on the next launch."
 
-#: cachyos_dailytool/ui/pages_system.py:87
+#: cachyos_dailytool/ui/pages_system.py:88
 msgid "DKMS-Status geladen."
 msgstr "DKMS status loaded."
 
-#: cachyos_dailytool/ui/pages_system.py:172
+#: cachyos_dailytool/ui/pages_system.py:173
 msgid "Treiber {0}"
 msgstr "Driver {0}"
 
-#: cachyos_dailytool/ui/pages_system.py:195
+#: cachyos_dailytool/ui/pages_system.py:196
 msgid "Weder nvidia-smi noch amdgpu/Intel-sysfs liefern Werte."
 msgstr "Neither nvidia-smi nor amdgpu/Intel sysfs report any values."
 
-#: cachyos_dailytool/ui/pages_system.py:332
+#: cachyos_dailytool/ui/pages_system.py:333
 msgid "nicht vorhanden"
 msgstr "not available"
 
-#: cachyos_dailytool/ui/pages_system.py:100
+#: cachyos_dailytool/ui/pages_system.py:101
 msgid "Neuer Kernel installiert – Neustart empfohlen."
 msgstr "New kernel installed – reboot recommended."
 
-#: cachyos_dailytool/ui/pages_system.py:290
+#: cachyos_dailytool/ui/pages_system.py:291
 msgid "Gespeichert: {0}"
 msgstr "Saved: {0}"
 
-#: cachyos_dailytool/ui/pages_system.py:432
+#: cachyos_dailytool/ui/pages_system.py:433
 msgid "{0} · Plasma Wayland (je Bildschirm)"
 msgstr "{0} · Plasma Wayland (per screen)"
 
-#: cachyos_dailytool/ui/pages_system.py:444
+#: cachyos_dailytool/ui/pages_system.py:445
 msgid "nicht gesetzt (100 %) · {0}"
 msgstr "not set (100 %) · {0}"
 
-#: cachyos_dailytool/ui/pages_system.py:452
+#: cachyos_dailytool/ui/pages_system.py:453
 msgid "Neue Prefixe und Prefixe ohne eigene DPI bekommen sie beim Anlegen bzw. vor dem Start. Passend zum Desktop: {0} DPI."
 msgstr "New prefixes and prefixes without their own DPI get it when they are created or before launch. Matching the desktop: {0} DPI."
 
-#: cachyos_dailytool/ui/pages_system.py:458
+#: cachyos_dailytool/ui/pages_system.py:459
 msgid "(kein Prefix vorhanden)"
 msgstr "(no prefix available)"
 
-#: cachyos_dailytool/ui/pages_system.py:99
+#: cachyos_dailytool/ui/pages_system.py:100
 msgid "\n=== DKMS-Status ===\n{0}\n=== Kernel ===\n"
 msgstr "\n=== DKMS status ===\n{0}\n=== Kernel ===\n"
 
-#: cachyos_dailytool/ui/pages_system.py:209
+#: cachyos_dailytool/ui/pages_system.py:210
 msgid "{0} U/min"
 msgstr "{0} RPM"
 
-#: cachyos_dailytool/ui/pages_system.py:277
+#: cachyos_dailytool/ui/pages_system.py:278
 msgid "{0} Zeilen"
 msgstr "{0} lines"
 
-#: cachyos_dailytool/ui/pages_system.py:334
+#: cachyos_dailytool/ui/pages_system.py:335
 msgid "{0} DATEIEN"
 msgstr "{0} FILES"
 
-#: cachyos_dailytool/ui/pages_system.py:352
+#: cachyos_dailytool/ui/pages_system.py:353
 msgid "{0}: {1} Einträge, {2} freigegeben"
 msgstr "{0}: {1} entries, {2} freed"
 
-#: cachyos_dailytool/ui/pages_system.py:390
+#: cachyos_dailytool/ui/pages_system.py:391
 msgid "Keine Anzeige-Einstellungen gefunden."
 msgstr "No display settings found."
 
-#: cachyos_dailytool/ui/pages_system.py:486
+#: cachyos_dailytool/ui/pages_system.py:487
 msgid "DPI für „{0}“ auf {1} gesetzt."
 msgstr "DPI for “{0}” set to {1}."
 
-#: cachyos_dailytool/ui/pages_system.py:101
+#: cachyos_dailytool/ui/pages_system.py:102
 msgid "Laufender Kernel {0} ist aktuell."
 msgstr "Running kernel {0} is up to date."
 
-#: cachyos_dailytool/ui/pages_system.py:104
+#: cachyos_dailytool/ui/pages_system.py:105
 msgid "System-Update abgeschlossen."
 msgstr "System update finished."
 
-#: cachyos_dailytool/ui/pages_system.py:104
+#: cachyos_dailytool/ui/pages_system.py:105
 msgid "pacman meldete einen Fehler – Protokoll prüfen."
 msgstr "pacman reported an error – check the log."
 
-#: cachyos_dailytool/ui/pages_system.py:355
+#: cachyos_dailytool/ui/pages_system.py:356
 msgid "{0} freigegeben."
 msgstr "{0} freed."
 
@@ -2513,43 +2537,43 @@ msgstr "Change default folder?"
 msgid "Ändern"
 msgstr "Change"
 
-#: cachyos_dailytool/ui/pages_wine.py:1325
+#: cachyos_dailytool/ui/pages_wine.py:1326
 msgid "Entfernt den Eintrag und seine Verknüpfungen im Startmenü/auf dem Schreibtisch. Die installierten Dateien im Prefix bleiben erhalten."
 msgstr "Removes the entry and its shortcuts in the start menu/on the desktop. The installed files in the prefix are kept."
 
-#: cachyos_dailytool/ui/pages_wine.py:1326
+#: cachyos_dailytool/ui/pages_wine.py:1327
 msgid "Entfernen"
 msgstr "Remove"
 
-#: cachyos_dailytool/ui/pages_wine.py:1346
+#: cachyos_dailytool/ui/pages_wine.py:1347
 msgid "Neuer Name (Ordnername im selben Speicherort):"
 msgstr "New name (folder name in the same location):"
 
-#: cachyos_dailytool/ui/pages_wine.py:1346 cachyos_dailytool/ui/pages_wine.py:1175
+#: cachyos_dailytool/ui/pages_wine.py:1347 cachyos_dailytool/ui/pages_wine.py:1175
 msgid "Umbenennen"
 msgstr "Rename"
 
-#: cachyos_dailytool/ui/pages_wine.py:1373
+#: cachyos_dailytool/ui/pages_wine.py:1374
 msgid "Neuen Speicherort wählen"
 msgstr "Choose new location"
 
-#: cachyos_dailytool/ui/pages_wine.py:1382
+#: cachyos_dailytool/ui/pages_wine.py:1383
 msgid "Backup wiederherstellen?"
 msgstr "Restore backup?"
 
-#: cachyos_dailytool/ui/pages_wine.py:1384 cachyos_dailytool/ui/pages_wine.py:1258
+#: cachyos_dailytool/ui/pages_wine.py:1385 cachyos_dailytool/ui/pages_wine.py:1259
 msgid "Wiederherstellen"
 msgstr "Restore"
 
-#: cachyos_dailytool/ui/pages_wine.py:1396
+#: cachyos_dailytool/ui/pages_wine.py:1397
 msgid "Backup löschen?"
 msgstr "Delete backup?"
 
-#: cachyos_dailytool/ui/pages_wine.py:1396 cachyos_dailytool/ui/pages_wine.py:1182
+#: cachyos_dailytool/ui/pages_wine.py:1397 cachyos_dailytool/ui/pages_wine.py:1182
 msgid "Löschen"
 msgstr "Delete"
 
-#: cachyos_dailytool/ui/pages_wine.py:1417
+#: cachyos_dailytool/ui/pages_wine.py:1418
 msgid "Endgültig löschen"
 msgstr "Delete permanently"
 
@@ -2689,7 +2713,7 @@ msgstr "{0} · {1} · modified {2}{3}"
 msgid "Keine Backups vorhanden."
 msgstr "No backups available."
 
-#: cachyos_dailytool/ui/pages_wine.py:1261
+#: cachyos_dailytool/ui/pages_wine.py:1262
 msgid "Backup löschen"
 msgstr "Delete backup"
 
@@ -2777,51 +2801,51 @@ msgstr "Windows programs…"
 msgid "Startoptionen für alle Programme im Prefix"
 msgstr "Launch options for all programs in the prefix"
 
-#: cachyos_dailytool/ui/pages_wine.py:1285
+#: cachyos_dailytool/ui/pages_wine.py:1286
 msgid "Wayland-Treiber für „{0}“: {1}"
 msgstr "Wayland driver for “{0}”: {1}"
 
-#: cachyos_dailytool/ui/pages_wine.py:1285
+#: cachyos_dailytool/ui/pages_wine.py:1286
 msgid "globale Vorgabe"
 msgstr "global default"
 
-#: cachyos_dailytool/ui/pages_wine.py:1289
+#: cachyos_dailytool/ui/pages_wine.py:1290
 msgid "Runner für „{0}“: {1}"
 msgstr "Runner for “{0}”: {1}"
 
-#: cachyos_dailytool/ui/pages_wine.py:1292
+#: cachyos_dailytool/ui/pages_wine.py:1293
 msgid "Setze DPI {0} für „{1}“ …"
 msgstr "Setting DPI {0} for “{1}”…"
 
-#: cachyos_dailytool/ui/pages_wine.py:1325
+#: cachyos_dailytool/ui/pages_wine.py:1326
 msgid "„{0}“ entfernen?"
 msgstr "Remove “{0}”?"
 
-#: cachyos_dailytool/ui/pages_wine.py:1346
+#: cachyos_dailytool/ui/pages_wine.py:1347
 msgid "Prefix „{0}“ umbenennen"
 msgstr "Rename prefix “{0}”"
 
-#: cachyos_dailytool/ui/pages_wine.py:1378
+#: cachyos_dailytool/ui/pages_wine.py:1379
 msgid "Sichere „{0}“ nach {1} …"
 msgstr "Backing up “{0}” to {1}…"
 
-#: cachyos_dailytool/ui/pages_wine.py:1383
+#: cachyos_dailytool/ui/pages_wine.py:1384
 msgid "{0} wird nach {1} entpackt. Ein gleichnamiger Prefix wird überschrieben."
 msgstr "{0} will be extracted to {1}. A prefix with the same name will be overwritten."
 
-#: cachyos_dailytool/ui/pages_wine.py:1396
+#: cachyos_dailytool/ui/pages_wine.py:1397
 msgid "{0} ({1}) wird unwiderruflich gelöscht."
 msgstr "{0} ({1}) will be deleted permanently."
 
-#: cachyos_dailytool/ui/pages_wine.py:1414
+#: cachyos_dailytool/ui/pages_wine.py:1415
 msgid "\n\nAußerdem werden {0} Anwendungseinträge samt Verknüpfungen entfernt."
 msgstr "\n\nIn addition, {0} application entries and their shortcuts will be removed."
 
-#: cachyos_dailytool/ui/pages_wine.py:1415
+#: cachyos_dailytool/ui/pages_wine.py:1416
 msgid "Prefix „{0}“ löschen?"
 msgstr "Delete prefix “{0}”?"
 
-#: cachyos_dailytool/ui/pages_wine.py:1416
+#: cachyos_dailytool/ui/pages_wine.py:1417
 msgid "{0} wird mit allen darin installierten Programmen und Spielständen unwiderruflich gelöscht.{1} Vorher ein Backup anlegen?"
 msgstr "{0} will be deleted permanently, including all programs and saved games installed in it.{1} Create a backup first?"
 
@@ -2893,19 +2917,19 @@ msgstr "Global default ({0})"
 msgid "Bearbeiten"
 msgstr "Edit"
 
-#: cachyos_dailytool/ui/pages_wine.py:1323
+#: cachyos_dailytool/ui/pages_wine.py:1324
 msgid "„{0}“ und Verknüpfungen entfernt (Programmdateien bleiben im Prefix)."
 msgstr "“{0}” and its shortcuts removed (program files stay in the prefix)."
 
-#: cachyos_dailytool/ui/pages_wine.py:1343
+#: cachyos_dailytool/ui/pages_wine.py:1344
 msgid "Benenne „{0}“ um …"
 msgstr "Renaming “{0}”…"
 
-#: cachyos_dailytool/ui/pages_wine.py:1370
+#: cachyos_dailytool/ui/pages_wine.py:1371
 msgid "Prefix „{0}“ verschieben?"
 msgstr "Move prefix “{0}”?"
 
-#: cachyos_dailytool/ui/pages_wine.py:1371
+#: cachyos_dailytool/ui/pages_wine.py:1372
 msgid "{0}\n→ {1}\n\nAuf demselben Dateisystem sofort, sonst Kopie per rsync. Verknüpfungen werden angepasst."
 msgstr "{0}\n→ {1}\n\nInstant on the same file system, otherwise copied with rsync. Shortcuts are updated."
 
@@ -2949,19 +2973,19 @@ msgstr "Launch options saved."
 msgid "Umgebungsvariablen gespeichert."
 msgstr "Environment variables saved."
 
-#: cachyos_dailytool/ui/pages_wine.py:1333 cachyos_dailytool/ui/pages_wine.py:1352
+#: cachyos_dailytool/ui/pages_wine.py:1334 cachyos_dailytool/ui/pages_wine.py:1353
 msgid "{0} existiert bereits."
 msgstr "{0} already exists."
 
-#: cachyos_dailytool/ui/pages_wine.py:1367
+#: cachyos_dailytool/ui/pages_wine.py:1368
 msgid "Verschiebe „{0}“ nach {1} …"
 msgstr "Moving “{0}” to {1}…"
 
-#: cachyos_dailytool/ui/pages_wine.py:1384
+#: cachyos_dailytool/ui/pages_wine.py:1385
 msgid "Stelle {0} wieder her …"
 msgstr "Restoring {0}…"
 
-#: cachyos_dailytool/ui/pages_wine.py:1392
+#: cachyos_dailytool/ui/pages_wine.py:1393
 msgid "{0} gelöscht."
 msgstr "{0} deleted."
 
@@ -2977,7 +3001,7 @@ msgstr "Could not read the list: {0}"
 msgid "„{0}“ gespeichert."
 msgstr "“{0}” saved."
 
-#: cachyos_dailytool/ui/pages_wine.py:1003 cachyos_dailytool/ui/pages_wine.py:1269
+#: cachyos_dailytool/ui/pages_wine.py:1003 cachyos_dailytool/ui/pages_wine.py:1270
 msgid "Prefix „{0}“ angelegt."
 msgstr "Prefix “{0}” created."
 
@@ -3033,11 +3057,11 @@ msgstr "Default folder changed."
 msgid "keine Startoptionen"
 msgstr "no launch options"
 
-#: cachyos_dailytool/ui/pages_wine.py:1294
+#: cachyos_dailytool/ui/pages_wine.py:1295
 msgid "DPI für „{0}“ auf {1} gesetzt – Programm neu starten."
 msgstr "DPI for “{0}” set to {1} – restart the program."
 
-#: cachyos_dailytool/ui/pages_wine.py:1412
+#: cachyos_dailytool/ui/pages_wine.py:1413
 msgid "Prefix „{0}“ gelöscht."
 msgstr "Prefix “{0}” deleted."
 
@@ -3053,11 +3077,11 @@ msgstr " If wrong: change it under “Manage prefixes”."
 msgid "Fehler beim Anlegen der Verknüpfung: {0}"
 msgstr "Error creating the shortcut: {0}"
 
-#: cachyos_dailytool/ui/pages_wine.py:1344
+#: cachyos_dailytool/ui/pages_wine.py:1345
 msgid "Umbenannt in „{0}“."
 msgstr "Renamed to “{0}”."
 
-#: cachyos_dailytool/ui/pages_wine.py:1379
+#: cachyos_dailytool/ui/pages_wine.py:1380
 msgid "Backup erstellt: {0}"
 msgstr "Backup created: {0}"
 
@@ -3069,7 +3093,7 @@ msgstr "“{0}” removed completely (prefix deleted)."
 msgid "Standardordner geändert, {0} Prefixe verschoben."
 msgstr "Default folder changed, {0} prefixes moved."
 
-#: cachyos_dailytool/ui/pages_wine.py:1368
+#: cachyos_dailytool/ui/pages_wine.py:1369
 msgid "Verschoben nach {0}."
 msgstr "Moved to {0}."
 

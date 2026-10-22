@@ -1,7 +1,7 @@
 # Maintainer: CueSystem (lokal, CachyOS)
 # Reines Python-Paket ohne Build-Werkzeuge: Quellen werden direkt nach site-packages installiert.
 pkgname=cachyos-dailytool
-pkgver=5.1.2
+pkgver=5.1.3
 pkgrel=1
 pkgdesc="CachyOS DailyTool – GTK4/libadwaita-Oberfläche für Wine-Prefixe, Launcher-Migration, ProtonPlus, X3D-Kernzuteilung (CCD), Laufwerke (fstab), GPU-Status, Journal, Shader-Caches und System-Update"
 arch=('any')

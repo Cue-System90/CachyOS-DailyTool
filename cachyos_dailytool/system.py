@@ -1199,6 +1199,25 @@ def protonplus_status() -> str | None:
     return None
 
 
+def protonplus_repo() -> str | None:
+    """Paketquelle, aus der pacman ProtonPlus installieren kann (unter CachyOS „cachyos“), sonst None. Braucht kein Root."""
+    if not have("pacman"):
+        return None
+    r = run(["pacman", "-Sp", "--print-format", "%n %r", "protonplus"], timeout=20)
+    if r.returncode != 0:
+        return None
+    for line in r.stdout.splitlines():          # Abhängigkeiten stehen ebenfalls in der Liste
+        name, _, repo = line.strip().partition(" ")
+        if name == "protonplus" and repo:
+            return repo
+    return None
+
+
+def protonplus_pacman_argv() -> list[str]:
+    """Root-Befehl: ProtonPlus aus den Paketquellen installieren (ein pkexec-/sudo-Aufruf)."""
+    return root_argv("pacman -S --needed --noconfirm protonplus")
+
+
 def protonplus_launch(status: str) -> subprocess.Popen:
     if status == "native":
         return detach(["protonplus"], logname="protonplus")

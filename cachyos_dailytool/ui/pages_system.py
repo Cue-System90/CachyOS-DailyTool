@@ -42,7 +42,8 @@ class UpdatePage(Page):
         self.ugroup.add(self.ulog)
 
         bar = Gtk.Box(spacing=8)
-        self.run_btn = button(tr("SYSTEM AKTUALISIEREN"), ["btn-primary"], icon=pick_icon("software-update-available-symbolic"), on_click=self._update)
+        self.run_btn = button(tr("SYSTEM AKTUALISIEREN"), ["btn-primary"], icon=pick_icon("software-update-available-symbolic", "system-software-update-symbolic"),
+                              on_click=self._update)
         bar.append(self.run_btn)
         bar.append(button(tr("DKMS-Status"), ["btn-secondary"], on_click=self._dkms))
         self.content.append(bar)
@@ -112,7 +113,7 @@ class GpuPage(Page):
     key = "gpu"
     title = tr("GPU-Status")
     subtitle = tr("Live-Werte über nvidia-smi bzw. sysfs (amdgpu/Intel).")
-    icons = ("video-display-symbolic", "display-projector-symbolic")
+    icons = ("video-display-symbolic", "monitor-symbolic", "computer-symbolic", "display-projector-symbolic")
 
     def build(self) -> None:
         self.add_refresh_button()
@@ -191,7 +192,7 @@ class GpuPage(Page):
 
     def _apply(self, gpus: list[system.GpuStatus]) -> None:
         if not gpus and not self.cards:
-            self.cards_box.append(Adw.StatusPage(title=tr("Keine GPU-Daten"), icon_name=pick_icon("video-display-symbolic"),
+            self.cards_box.append(Adw.StatusPage(title=tr("Keine GPU-Daten"), icon_name=pick_icon("video-display-symbolic", "monitor-symbolic", "computer-symbolic"),
                                                  description=tr("Weder nvidia-smi noch amdgpu/Intel-sysfs liefern Werte.")))
             self.cards[-1] = {}
             return
@@ -365,7 +366,7 @@ class ScalingPage(Page):
     def build(self) -> None:
         self.add_refresh_button()
         g = group(tr("Desktop-Skalierung"))
-        self.cur_row = action_row(tr("Aktueller Wert"), "…", pick_icon("preferences-desktop-display-symbolic"))
+        self.cur_row = action_row(tr("Aktueller Wert"), "…", pick_icon("preferences-desktop-display-symbolic", "monitor-symbolic", "computer-symbolic"))
         g.add(self.cur_row)
         self.screens: list[system.ScreenScale] = []
         self.screen_row = Adw.ComboRow(title=tr("Bildschirm"), visible=False)
@@ -386,7 +387,7 @@ class ScalingPage(Page):
         self.content.append(g)
         bar = Gtk.Box(spacing=8)
         bar.append(button(tr("ANWENDEN"), ["btn-primary"], on_click=self._apply))
-        bar.append(button(tr("Anzeige-Einstellungen öffnen"), ["btn-secondary"], icon=pick_icon("preferences-desktop-display-symbolic"),
+        bar.append(button(tr("Anzeige-Einstellungen öffnen"), ["btn-secondary"], icon=pick_icon("preferences-desktop-display-symbolic", "monitor-symbolic", "computer-symbolic"),
                           on_click=lambda: system.open_display_settings() or self.toast(tr("Keine Anzeige-Einstellungen gefunden."))))
         self.content.append(bar)
         self.hint = label("", css=["hint"], wrap=True)
