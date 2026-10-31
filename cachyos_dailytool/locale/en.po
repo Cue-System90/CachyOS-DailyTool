@@ -709,191 +709,195 @@ msgstr "Uninstall script not found: {0}"
 msgid "Neustart fehlgeschlagen: {0}"
 msgstr "Restart failed: {0}"
 
-#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_x3d.py:15 cachyos_dailytool/ui/pages_x3d.py:19
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_x3d.py:16 cachyos_dailytool/ui/pages_x3d.py:21
 msgid "Cache-CCD"
 msgstr "Cache CCD"
 
-#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:15
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:16
 msgid "Frequenz-CCD"
 msgstr "Frequency CCD"
 
-#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/x3d.py:49
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/x3d.py:51
+msgid "ein CCD"
+msgstr "one CCD"
+
+#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/x3d.py:51
 msgid "keine Zuweisung"
 msgstr "no assignment"
 
-#: cachyos_dailytool/ui/dashboard.py:10 cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_system.py:124
+#: cachyos_dailytool/ui/dashboard.py:11 cachyos_dailytool/ui/dialogs.py:39 cachyos_dailytool/ui/pages_system.py:124
 msgid "Automatisch"
 msgstr "Automatic"
 
-#: cachyos_dailytool/ui/dashboard.py:19
+#: cachyos_dailytool/ui/dashboard.py:20
 msgid "Übersicht"
 msgstr "Overview"
 
-#: cachyos_dailytool/ui/dashboard.py:28
+#: cachyos_dailytool/ui/dashboard.py:29
 msgid "Arbeitsspeicher"
 msgstr "Memory"
 
-#: cachyos_dailytool/ui/dashboard.py:29
+#: cachyos_dailytool/ui/dashboard.py:30
 msgid "Laufzeit"
 msgstr "Uptime"
 
-#: cachyos_dailytool/ui/dashboard.py:30
+#: cachyos_dailytool/ui/dashboard.py:31
 msgid "Paket-Updates"
 msgstr "Package updates"
 
-#: cachyos_dailytool/ui/dashboard.py:31
+#: cachyos_dailytool/ui/dashboard.py:32
 msgid "Wine-Prefixe"
 msgstr "Wine prefixes"
 
-#: cachyos_dailytool/ui/dashboard.py:32
+#: cachyos_dailytool/ui/dashboard.py:33
 msgid "Zusätzliche Laufwerke"
 msgstr "Additional drives"
 
-#: cachyos_dailytool/ui/dashboard.py:40
+#: cachyos_dailytool/ui/dashboard.py:41
 msgid "Schnellzugriff"
 msgstr "Quick access"
 
-#: cachyos_dailytool/ui/dashboard.py:54 cachyos_dailytool/ui/pages_launchers.py:391
+#: cachyos_dailytool/ui/dashboard.py:55 cachyos_dailytool/ui/pages_launchers.py:391
 msgid "Hinweise"
 msgstr "Notes"
 
-#: cachyos_dailytool/ui/dashboard.py:59 cachyos_dailytool/ui/dashboard.py:149
+#: cachyos_dailytool/ui/dashboard.py:60 cachyos_dailytool/ui/dashboard.py:152
 msgid "System"
 msgstr "System"
 
-#: cachyos_dailytool/ui/dashboard.py:102
+#: cachyos_dailytool/ui/dashboard.py:103
 msgid "seit dem letzten Start"
 msgstr "since last boot"
 
-#: cachyos_dailytool/ui/dashboard.py:43
+#: cachyos_dailytool/ui/dashboard.py:44
 msgid "Launcher installieren"
 msgstr "Install launcher"
 
-#: cachyos_dailytool/ui/dashboard.py:44 cachyos_dailytool/ui/pages_wine.py:837
+#: cachyos_dailytool/ui/dashboard.py:45 cachyos_dailytool/ui/pages_wine.py:837
 msgid "Programm starten"
 msgstr "Run program"
 
-#: cachyos_dailytool/ui/dashboard.py:45
+#: cachyos_dailytool/ui/dashboard.py:46
 msgid "Laufwerk einbinden"
 msgstr "Mount drive"
 
-#: cachyos_dailytool/ui/dashboard.py:46
+#: cachyos_dailytool/ui/dashboard.py:47
 msgid "System-Update"
 msgstr "System update"
 
-#: cachyos_dailytool/ui/dashboard.py:47 cachyos_dailytool/ui/pages_system.py:226
+#: cachyos_dailytool/ui/dashboard.py:48 cachyos_dailytool/ui/pages_system.py:226
 msgid "Logs & Diagnose"
 msgstr "Logs & diagnostics"
 
-#: cachyos_dailytool/ui/dashboard.py:48
+#: cachyos_dailytool/ui/dashboard.py:49
 msgid "Shader-Cache"
 msgstr "Shader cache"
 
-#: cachyos_dailytool/ui/dashboard.py:96 cachyos_dailytool/ui/pages_system.py:195
+#: cachyos_dailytool/ui/dashboard.py:97 cachyos_dailytool/ui/pages_system.py:195
 msgid "Keine GPU-Daten"
 msgstr "No GPU data"
 
-#: cachyos_dailytool/ui/dashboard.py:96
+#: cachyos_dailytool/ui/dashboard.py:97
 msgid "nvidia-smi/sysfs nicht verfügbar"
 msgstr "nvidia-smi/sysfs not available"
 
-#: cachyos_dailytool/ui/dashboard.py:107
+#: cachyos_dailytool/ui/dashboard.py:108
 msgid "alle dauerhaft eingebunden"
 msgstr "all mounted permanently"
 
-#: cachyos_dailytool/ui/dashboard.py:149
+#: cachyos_dailytool/ui/dashboard.py:152
 msgid "Rechner"
 msgstr "Computer"
 
-#: cachyos_dailytool/ui/dashboard.py:149
+#: cachyos_dailytool/ui/dashboard.py:152
 msgid "Kernel"
 msgstr "Kernel"
 
-#: cachyos_dailytool/ui/dashboard.py:150
+#: cachyos_dailytool/ui/dashboard.py:153
 msgid "Desktop"
 msgstr "Desktop"
 
-#: cachyos_dailytool/ui/dashboard.py:150 cachyos_dailytool/ui/pages_x3d.py:97
+#: cachyos_dailytool/ui/dashboard.py:153 cachyos_dailytool/ui/pages_x3d.py:103
 msgid "Prozessor"
 msgstr "Processor"
 
-#: cachyos_dailytool/ui/dashboard.py:152
+#: cachyos_dailytool/ui/dashboard.py:155
 msgid "Grafik"
 msgstr "Graphics"
 
-#: cachyos_dailytool/ui/dashboard.py:81
+#: cachyos_dailytool/ui/dashboard.py:82
 msgid "{0} · {1} · Kernel {2} · {3} ({4})"
 msgstr "{0} · {1} · Kernel {2} · {3} ({4})"
 
-#: cachyos_dailytool/ui/dashboard.py:118
+#: cachyos_dailytool/ui/dashboard.py:119
 msgid "Ein neuer Kernel wurde installiert, läuft aber noch nicht – Neustart empfohlen."
 msgstr "A new kernel has been installed but is not running yet – restart recommended."
 
-#: cachyos_dailytool/ui/dashboard.py:127
+#: cachyos_dailytool/ui/dashboard.py:128
 msgid "Noch kein Wine-Prefix vorhanden – beim ersten Programmstart anlegen."
 msgstr "No Wine prefix yet – create one when you first run a program."
 
-#: cachyos_dailytool/ui/dashboard.py:129
+#: cachyos_dailytool/ui/dashboard.py:130
 msgid "ProtonPlus ist nicht installiert (verwaltet Proton-GE, Wine-GE und weitere Runner)."
 msgstr "ProtonPlus is not installed (manages Proton-GE, Wine-GE and other runners)."
 
-#: cachyos_dailytool/ui/dashboard.py:131
+#: cachyos_dailytool/ui/dashboard.py:132
 msgid "Weniger als 10 % Arbeitsspeicher frei."
 msgstr "Less than 10 % of memory free."
 
-#: cachyos_dailytool/ui/dashboard.py:134
+#: cachyos_dailytool/ui/dashboard.py:135
 msgid "X3D-Prozessor mit zwei CCDs: Der Dienst für die automatische Kernzuteilung von Spielen läuft nicht."
 msgstr "X3D processor with two CCDs: the service for automatic core assignment of games is not running."
 
-#: cachyos_dailytool/ui/dashboard.py:171
+#: cachyos_dailytool/ui/dashboard.py:174
 msgid "Alles in Ordnung – keine Hinweise."
 msgstr "All good – no notes."
 
-#: cachyos_dailytool/ui/dashboard.py:195 cachyos_dailytool/ui/pages_system.py:73
+#: cachyos_dailytool/ui/dashboard.py:198 cachyos_dailytool/ui/pages_system.py:73
 msgid "System ist aktuell"
 msgstr "System is up to date"
 
-#: cachyos_dailytool/ui/dashboard.py:100
+#: cachyos_dailytool/ui/dashboard.py:101
 msgid "{0} belegt"
 msgstr "{0} used"
 
-#: cachyos_dailytool/ui/dashboard.py:100
+#: cachyos_dailytool/ui/dashboard.py:101
 msgid "von {0} ({1:.0f} %)"
 msgstr "of {0} ({1:.0f} %)"
 
-#: cachyos_dailytool/ui/dashboard.py:107
+#: cachyos_dailytool/ui/dashboard.py:108
 msgid "{0} ohne fstab-Eintrag"
 msgstr "{0} without fstab entry"
 
-#: cachyos_dailytool/ui/dashboard.py:148
+#: cachyos_dailytool/ui/dashboard.py:151
 msgid " · bevorzugt: {0}"
 msgstr " · preferred: {0}"
 
-#: cachyos_dailytool/ui/dashboard.py:183 cachyos_dailytool/ui/pages_launcher.py:91 cachyos_dailytool/ui/pages_launcher.py:218
+#: cachyos_dailytool/ui/dashboard.py:186 cachyos_dailytool/ui/pages_launcher.py:91 cachyos_dailytool/ui/pages_launcher.py:218
 msgid "Öffnen"
 msgstr "Open"
 
-#: cachyos_dailytool/ui/dashboard.py:90
+#: cachyos_dailytool/ui/dashboard.py:91
 msgid "{0:.0f} % Last"
 msgstr "{0:.0f} % load"
 
-#: cachyos_dailytool/ui/dashboard.py:192
+#: cachyos_dailytool/ui/dashboard.py:195
 msgid "verfügbar ({0})"
 msgstr "available ({0})"
 
-#: cachyos_dailytool/ui/dashboard.py:121
+#: cachyos_dailytool/ui/dashboard.py:122
 msgid "{0} ({1}) ist nur temporär unter {2} eingebunden."
 msgstr "{0} ({1}) is only temporarily mounted at {2}."
 
-#: cachyos_dailytool/ui/dashboard.py:138
+#: cachyos_dailytool/ui/dashboard.py:141
 msgid "Spiel auf dem {0}: {1}"
 msgstr "Game on the {0}: {1}"
 
-#: cachyos_dailytool/ui/dashboard.py:193
+#: cachyos_dailytool/ui/dashboard.py:196
 msgid "{0} Paket-Updates verfügbar."
 msgstr "{0} package updates available."
 
-#: cachyos_dailytool/ui/dashboard.py:124
+#: cachyos_dailytool/ui/dashboard.py:125
 msgid "{0} ({1}, {2}) ist nicht eingebunden."
 msgstr "{0} ({1}, {2}) is not mounted."
 
@@ -1537,7 +1541,7 @@ msgstr "ERROR: {0}"
 msgid "{0}: FEHLER – {1}"
 msgstr "{0}: ERROR – {1}"
 
-#: cachyos_dailytool/ui/pages_launchers.py:310 cachyos_dailytool/ui/pages_launchers.py:316
+#: cachyos_dailytool/ui/pages_launchers.py:310 cachyos_dailytool/ui/pages_launchers.py:316 cachyos_dailytool/ui/pages_x3d.py:24
 msgid "Launcher"
 msgstr "Launchers"
 
@@ -1997,7 +2001,7 @@ msgstr "The window size is saved automatically when closing."
 msgid "Fenstergröße zurücksetzen"
 msgstr "Reset window size"
 
-#: cachyos_dailytool/ui/pages_system.py:418 cachyos_dailytool/ui/pages_x3d.py:432
+#: cachyos_dailytool/ui/pages_system.py:418 cachyos_dailytool/ui/pages_x3d.py:471
 msgid "Zurücksetzen"
 msgstr "Reset"
 
@@ -2305,7 +2309,7 @@ msgstr "The main program is detected and linked automatically – known launcher
 msgid "Später festlegen"
 msgstr "Decide later"
 
-#: cachyos_dailytool/ui/pages_wine.py:784 cachyos_dailytool/ui/pages_x3d.py:567
+#: cachyos_dailytool/ui/pages_wine.py:784 cachyos_dailytool/ui/pages_x3d.py:617
 msgid "Speichern"
 msgstr "Save"
 
@@ -2441,7 +2445,7 @@ msgstr "Start menu"
 msgid "Schreibtisch"
 msgstr "Desktop"
 
-#: cachyos_dailytool/ui/pages_wine.py:848 cachyos_dailytool/ui/pages_x3d.py:568
+#: cachyos_dailytool/ui/pages_wine.py:848 cachyos_dailytool/ui/pages_x3d.py:618
 msgid "Programm"
 msgstr "Program"
 
@@ -2541,7 +2545,7 @@ msgstr "Change"
 msgid "Entfernt den Eintrag und seine Verknüpfungen im Startmenü/auf dem Schreibtisch. Die installierten Dateien im Prefix bleiben erhalten."
 msgstr "Removes the entry and its shortcuts in the start menu/on the desktop. The installed files in the prefix are kept."
 
-#: cachyos_dailytool/ui/pages_wine.py:1327
+#: cachyos_dailytool/ui/pages_wine.py:1327 cachyos_dailytool/ui/pages_x3d.py:512
 msgid "Entfernen"
 msgstr "Remove"
 
@@ -2601,7 +2605,7 @@ msgstr "Off (XWayland)"
 msgid "Automatisch (Erkennung)"
 msgstr "Automatic (detection)"
 
-#: cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:16
+#: cachyos_dailytool/ui/pages_wine.py:199 cachyos_dailytool/ui/pages_x3d.py:17
 msgid "Cache-CCD (3D V-Cache)"
 msgstr "Cache CCD (3D V-Cache)"
 
@@ -3109,439 +3113,507 @@ msgstr "“{0}” set up – program {1}, shortcuts created."
 msgid "„{0}“ eingerichtet – Programm {1}."
 msgstr "“{0}” set up – program {1}."
 
-#: cachyos_dailytool/ui/pages_x3d.py:15
+#: cachyos_dailytool/ui/pages_x3d.py:16
+msgid "Ein CCD"
+msgstr "One CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:16
 msgid "Frei"
 msgstr "Unrestricted"
 
-#: cachyos_dailytool/ui/pages_x3d.py:16
+#: cachyos_dailytool/ui/pages_x3d.py:17
+msgid "Ein CCD (Spiel zusammenhalten)"
+msgstr "One CCD (keep the game together)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:18
 msgid "Frei (alle Kerne)"
 msgstr "Unrestricted (all cores)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:19
+#: cachyos_dailytool/ui/pages_x3d.py:21
 msgid "Frequenz-CCD (AMD-Vorgabe)"
 msgstr "Frequency CCD (AMD default)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:19
+#: cachyos_dailytool/ui/pages_x3d.py:21
 msgid "Unverändert lassen"
 msgstr "Leave unchanged"
 
-#: cachyos_dailytool/ui/pages_x3d.py:20
+#: cachyos_dailytool/ui/pages_x3d.py:22
 msgid "Cache-CCD (3D V-Cache) – wie AMDs Treiber"
 msgstr "Cache CCD (3D V-Cache) – like AMD's driver"
 
-#: cachyos_dailytool/ui/pages_x3d.py:20
+#: cachyos_dailytool/ui/pages_x3d.py:22 cachyos_dailytool/ui/pages_x3d.py:23
 msgid "Nicht zuweisen (nur beobachten)"
 msgstr "Do not assign (observe only)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:75
+#: cachyos_dailytool/ui/pages_x3d.py:23
+msgid "Ein CCD – Spiel zusammenhalten (wie Windows' Game Mode)"
+msgstr "One CCD – keep the game together (like Windows' Game Mode)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:24
+msgid "Systemprozess/Helfer"
+msgstr "system process/helper"
+
+#: cachyos_dailytool/ui/pages_x3d.py:24
+msgid "Hintergrundprogramm"
+msgstr "background program"
+
+#: cachyos_dailytool/ui/pages_x3d.py:79
 msgid "X3D-Kerne (CCD)"
 msgstr "X3D cores (CCD)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:76
+#: cachyos_dailytool/ui/pages_x3d.py:80
 msgid "Spiele automatisch dem CCD mit dem 3D V-Cache zuweisen – nach dem Muster von AMDs 3D-V-Cache-Treiber und Anwendungs-Kompatibilitätsdatenbank unter Windows."
 msgstr "Automatically assign games to the CCD with the 3D V-Cache – modelled on AMD's 3D V-Cache driver and application compatibility database on Windows."
 
-#: cachyos_dailytool/ui/pages_x3d.py:327
+#: cachyos_dailytool/ui/pages_x3d.py:353
 msgid "allen Kernen"
 msgstr "all cores"
 
-#: cachyos_dailytool/ui/pages_x3d.py:383
+#: cachyos_dailytool/ui/pages_x3d.py:421
 msgid " Balken: Auslastung je CPU der letzten 2 Sekunden; Linux zählt die SMT-Geschwister getrennt (z. B. 0-7 und 16-23 = CCD0)."
 msgstr " Bars: usage per CPU over the last 2 seconds; Linux counts the SMT siblings separately (e.g. 0-7 and 16-23 = CCD0)."
 
-#: cachyos_dailytool/ui/pages_x3d.py:474
+#: cachyos_dailytool/ui/pages_x3d.py:524
 msgid ". Spiele ohne Eintrag bekommen die Vorgabe für unbekannte Spiele; AMDs eigene Liste ist nicht öffentlich."
 msgstr ". Games without an entry get the default for unknown games; AMD's own list is not public."
 
-#: cachyos_dailytool/ui/pages_x3d.py:98
+#: cachyos_dailytool/ui/pages_x3d.py:104
 msgid "Bevorzugte Kerne"
 msgstr "Preferred cores"
 
-#: cachyos_dailytool/ui/pages_x3d.py:99
+#: cachyos_dailytool/ui/pages_x3d.py:105
 msgid "Hintergrunddienst"
 msgstr "Background service"
 
-#: cachyos_dailytool/ui/pages_x3d.py:100
+#: cachyos_dailytool/ui/pages_x3d.py:106
 msgid "Erkannte Spiele"
 msgstr "Detected games"
 
-#: cachyos_dailytool/ui/pages_x3d.py:110
+#: cachyos_dailytool/ui/pages_x3d.py:119
 msgid "Core Complex Dies (CCD) und Rangfolge der Kerne"
 msgstr "Core Complex Dies (CCD) and core preference"
 
-#: cachyos_dailytool/ui/pages_x3d.py:117
+#: cachyos_dailytool/ui/pages_x3d.py:126
 msgid "CACHE-CCD BEVORZUGEN"
 msgstr "PREFER CACHE CCD"
 
-#: cachyos_dailytool/ui/pages_x3d.py:119
+#: cachyos_dailytool/ui/pages_x3d.py:128
 msgid "FREQUENZ-CCD BEVORZUGEN"
 msgstr "PREFER FREQUENCY CCD"
 
-#: cachyos_dailytool/ui/pages_x3d.py:121
+#: cachyos_dailytool/ui/pages_x3d.py:130
 msgid "ZUGRIFF EINRICHTEN …"
 msgstr "SET UP ACCESS …"
 
-#: cachyos_dailytool/ui/pages_x3d.py:131
-msgid "Automatik (wie AMDs Treiber)"
-msgstr "Automatic mode (like AMD's driver)"
+#: cachyos_dailytool/ui/pages_x3d.py:142
+msgid "Läuft ein Spiel, hält der Dienst dessen gesamten Prozessbaum (alle Threads) auf einem CCD – dem, auf dem beim Erkennen die meisten Spiel-Threads laufen. Steam, Launcher, Discord und Browser wechseln währenddessen auf den anderen CCD. Eine Rangfolge der Kerne gibt es bei gleich großen CCDs nicht."
+msgstr "While a game runs, the service keeps its whole process tree (all threads) on one CCD – the one most of its threads were running on when it was detected. Steam, launchers, Discord and browsers move to the other CCD meanwhile. With equally sized CCDs there is no core ranking."
 
-#: cachyos_dailytool/ui/pages_x3d.py:132
+#: cachyos_dailytool/ui/pages_x3d.py:146
 msgid "Läuft ein Spiel, stellt der Dienst die Rangfolge auf dessen CCD und hält den gesamten Prozessbaum des Spiels dort (alle Threads). Steam, Launcher, Discord und Browser wechseln währenddessen auf den anderen CCD. Nach dem Spiel gilt wieder die Ruhe-Vorgabe."
 msgstr "While a game is running, the service sets the core preference to its CCD and keeps the game's entire process tree there (all threads). Steam, launchers, Discord and browsers move to the other CCD in the meantime. After the game, the idle default applies again."
 
-#: cachyos_dailytool/ui/pages_x3d.py:165
+#: cachyos_dailytool/ui/pages_x3d.py:149
+msgid "Automatik (wie AMDs Treiber)"
+msgstr "Automatic mode (like AMD's driver)"
+
+#: cachyos_dailytool/ui/pages_x3d.py:181
 msgid "Erkannte Spiele (live)"
 msgstr "Detected games (live)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:168
+#: cachyos_dailytool/ui/pages_x3d.py:184
 msgid "Kein Spiel erkannt. Der Dienst prüft alle 1,5 s die eigenen Prozesse."
 msgstr "No game detected. The service checks your own processes every 1.5 s."
 
-#: cachyos_dailytool/ui/pages_x3d.py:174
+#: cachyos_dailytool/ui/pages_x3d.py:190
 msgid "Katalog und eigene Festlegungen"
 msgstr "Catalog and custom rules"
 
-#: cachyos_dailytool/ui/pages_x3d.py:189
+#: cachyos_dailytool/ui/pages_x3d.py:205
 msgid "Protokoll des Dienstes"
 msgstr "Service log"
 
-#: cachyos_dailytool/ui/pages_x3d.py:260
+#: cachyos_dailytool/ui/pages_x3d.py:277
 msgid "Unbekannt"
 msgstr "Unknown"
 
-#: cachyos_dailytool/ui/pages_x3d.py:375
-msgid "Der Kernel-Treiber amd_3d_vcache ist nicht aktiv. Ohne ihn setzt der Dienst nur die Affinität der Spiele; die Rangfolge der Kerne (CPPC) bleibt, wie das BIOS sie vorgibt."
-msgstr "The kernel driver amd_3d_vcache is not active. Without it, the service only sets the affinity of games; the core preference (CPPC) stays as the BIOS sets it."
+#: cachyos_dailytool/ui/pages_x3d.py:409
+msgid "Beide CCDs haben denselben L3-Cache – eine Rangfolge der Kerne (amd_x3d_mode) hat laut AMD keine Wirkung. Der Dienst hält ein erkanntes Spiel stattdessen auf dem CCD, auf dem beim Erkennen die meisten seiner Threads laufen (wie Windows' Game Mode); Hintergrundprogramme wandern auf den anderen."
+msgstr "Both CCDs have the same L3 cache – according to AMD a core ranking (amd_x3d_mode) has no effect. Instead the service keeps a detected game on the CCD most of its threads were running on when it was detected (like Windows' Game Mode); background programs move to the other one."
 
-#: cachyos_dailytool/ui/pages_x3d.py:482
+#: cachyos_dailytool/ui/pages_x3d.py:532
 msgid "Gespeichert – der Dienst übernimmt die Einstellung beim nächsten Durchlauf."
 msgstr "Saved – the service applies the setting on its next pass."
 
-#: cachyos_dailytool/ui/pages_x3d.py:492
+#: cachyos_dailytool/ui/pages_x3d.py:542
 msgid "Festlegung entfernt – es gilt wieder Katalog bzw. Vorgabe."
 msgstr "Rule removed – the catalog or default applies again."
 
-#: cachyos_dailytool/ui/pages_x3d.py:521
+#: cachyos_dailytool/ui/pages_x3d.py:571
 msgid "Schreibrecht auf die Kern-Rangfolge einrichten?"
 msgstr "Set up write access to the core preference?"
 
-#: cachyos_dailytool/ui/pages_x3d.py:525
+#: cachyos_dailytool/ui/pages_x3d.py:575
 msgid "Einrichten"
 msgstr "Set up"
 
-#: cachyos_dailytool/ui/pages_x3d.py:567
+#: cachyos_dailytool/ui/pages_x3d.py:617
 msgid "Festlegung hinzufügen"
 msgstr "Add rule"
 
-#: cachyos_dailytool/ui/pages_x3d.py:568
+#: cachyos_dailytool/ui/pages_x3d.py:618
 msgid "Dateiname der Windows-.exe (z. B. eldenring.exe), Linux-Prozessname oder Steam-AppID."
 msgstr "File name of the Windows .exe (e.g. eldenring.exe), Linux process name or Steam AppID."
 
-#: cachyos_dailytool/ui/pages_x3d.py:118
+#: cachyos_dailytool/ui/pages_x3d.py:127
 msgid "amd_x3d_mode = cache: der Kernel bevorzugt die Kerne mit 3D V-Cache"
 msgstr "amd_x3d_mode = cache: the kernel prefers the cores with 3D V-Cache"
 
-#: cachyos_dailytool/ui/pages_x3d.py:120
+#: cachyos_dailytool/ui/pages_x3d.py:129
 msgid "amd_x3d_mode = frequency: der Kernel bevorzugt die höher taktenden Kerne (AMD-Vorgabe)"
 msgstr "amd_x3d_mode = frequency: the kernel prefers the higher-clocked cores (AMD default)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:122
+#: cachyos_dailytool/ui/pages_x3d.py:131
 msgid "Einmalig als Root: Schreibrecht auf amd_x3d_mode für deine Gruppe"
 msgstr "One-time as root: write access to amd_x3d_mode for your group"
 
-#: cachyos_dailytool/ui/pages_x3d.py:135
+#: cachyos_dailytool/ui/pages_x3d.py:150
 msgid "Erkennung und Zuweisung aktiv"
 msgstr "Detection and assignment active"
 
-#: cachyos_dailytool/ui/pages_x3d.py:136
+#: cachyos_dailytool/ui/pages_x3d.py:151
 msgid "Aus: der Dienst läuft weiter, weist aber nichts zu und hebt bestehende Zuweisungen auf"
 msgstr "Off: the service keeps running but assigns nothing and releases existing assignments"
 
-#: cachyos_dailytool/ui/pages_x3d.py:137
+#: cachyos_dailytool/ui/pages_x3d.py:152
 msgid "Hintergrunddienst läuft"
 msgstr "Background service running"
 
-#: cachyos_dailytool/ui/pages_x3d.py:139
+#: cachyos_dailytool/ui/pages_x3d.py:154
 msgid "Beim Anmelden starten"
 msgstr "Start at login"
 
-#: cachyos_dailytool/ui/pages_x3d.py:140
+#: cachyos_dailytool/ui/pages_x3d.py:155
 msgid "Unbekannte Spiele"
 msgstr "Unknown games"
 
-#: cachyos_dailytool/ui/pages_x3d.py:141
+#: cachyos_dailytool/ui/pages_x3d.py:156
 msgid "Erkannt an GPU-Zugriff und Herkunft: Proton/Wine, Steam, umu, Heroic, Lutris, Spieleordner"
 msgstr "Detected by GPU access and origin: Proton/Wine, Steam, umu, Heroic, Lutris, game folders"
 
-#: cachyos_dailytool/ui/pages_x3d.py:143
+#: cachyos_dailytool/ui/pages_x3d.py:158
 msgid "Ohne laufendes Spiel bevorzugen"
 msgstr "Prefer when no game is running"
 
-#: cachyos_dailytool/ui/pages_x3d.py:144
+#: cachyos_dailytool/ui/pages_x3d.py:159
 msgid "Rangfolge der Kerne (amd_x3d_mode), sobald kein Spiel mehr läuft"
 msgstr "Core preference (amd_x3d_mode) once no game is running"
 
-#: cachyos_dailytool/ui/pages_x3d.py:146
+#: cachyos_dailytool/ui/pages_x3d.py:162
 msgid "Hintergrundprogramme auf den anderen CCD"
 msgstr "Background programs on the other CCD"
 
-#: cachyos_dailytool/ui/pages_x3d.py:147
+#: cachyos_dailytool/ui/pages_x3d.py:163
 msgid "Steam, Store-Launcher, Discord, Browser – nur solange ein Spiel läuft; danach wieder alle Kerne"
 msgstr "Steam, store launchers, Discord, browsers – only while a game is running; all cores again afterwards"
 
-#: cachyos_dailytool/ui/pages_x3d.py:148
+#: cachyos_dailytool/ui/pages_x3d.py:164
 msgid "Zuweisung erzwingen"
 msgstr "Enforce assignment"
 
-#: cachyos_dailytool/ui/pages_x3d.py:149
+#: cachyos_dailytool/ui/pages_x3d.py:165
 msgid "Threads zurückholen, die ein Spiel selbst außerhalb seines CCD platziert"
 msgstr "Bring back threads that a game itself places outside its CCD"
 
-#: cachyos_dailytool/ui/pages_x3d.py:150
+#: cachyos_dailytool/ui/pages_x3d.py:166
 msgid "Zusätzliche Spieleordner für native Spiele (durch : getrennt)"
 msgstr "Additional game folders for native games (separated by :)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:176
+#: cachyos_dailytool/ui/pages_x3d.py:192
 msgid "Spiel, .exe oder Steam-AppID suchen …"
 msgstr "Search game, .exe or Steam AppID …"
 
-#: cachyos_dailytool/ui/pages_x3d.py:179
+#: cachyos_dailytool/ui/pages_x3d.py:195
 msgid "Eintrag hinzufügen …"
 msgstr "Add entry …"
 
-#: cachyos_dailytool/ui/pages_x3d.py:194
+#: cachyos_dailytool/ui/pages_x3d.py:210
 msgid "Ausgabe von Einrichtungsschritten erscheint hier."
 msgstr "Output of setup steps appears here."
 
-#: cachyos_dailytool/ui/pages_x3d.py:267
-msgid "Kein Prozessor mit zwei unterschiedlich großen L3-Caches erkannt (Dual-CCD-X3D wie 7950X3D/7900X3D/9950X3D/9900X3D). Die Zuweisung bleibt hier wirkungslos; Einstellungen können trotzdem vorbereitet werden."
-msgstr "No processor with two L3 caches of different sizes detected (dual-CCD X3D such as 7950X3D/7900X3D/9950X3D/9900X3D). Assignment has no effect here; settings can still be prepared."
+#: cachyos_dailytool/ui/pages_x3d.py:284
+msgid "Kein Prozessor mit mehreren CCDs erkannt (X3D mit zwei CCDs wie 7950X3D/7900X3D/9950X3D/9900X3D oder 9950X3D2). Die Zuweisung bleibt hier wirkungslos; Einstellungen können trotzdem vorbereitet werden."
+msgstr "No processor with several CCDs detected (dual-CCD X3D such as 7950X3D/7900X3D/9950X3D/9900X3D or 9950X3D2). Assignment has no effect here; settings can still be prepared."
 
-#: cachyos_dailytool/ui/pages_x3d.py:273
-msgid "Kein Treiber"
-msgstr "No driver"
+#: cachyos_dailytool/ui/pages_x3d.py:291
+msgid "Kernel mit Cache-Aware Scheduling (CONFIG_SCHED_CACHE): Der Kernel bündelt Threads eines Prozesses selbst je L3-Domäne; die Zuweisung hier bleibt verbindlich."
+msgstr "Kernel with cache-aware scheduling (CONFIG_SCHED_CACHE): the kernel itself groups a process's threads per L3 domain; the assignment made here remains binding."
 
-#: cachyos_dailytool/ui/pages_x3d.py:273
-msgid "amd_3d_vcache fehlt"
-msgstr "amd_3d_vcache missing"
+#: cachyos_dailytool/ui/pages_x3d.py:295
+msgid "Keine Rangfolge"
+msgstr "No ranking"
 
-#: cachyos_dailytool/ui/pages_x3d.py:280
+#: cachyos_dailytool/ui/pages_x3d.py:295
+msgid "gleich große CCDs – amd_x3d_mode ohne Wirkung"
+msgstr "equally sized CCDs – amd_x3d_mode has no effect"
+
+#: cachyos_dailytool/ui/pages_x3d.py:304
 msgid "Erkennung aus – beobachtet nur"
 msgstr "Detection off – observing only"
 
-#: cachyos_dailytool/ui/pages_x3d.py:282
+#: cachyos_dailytool/ui/pages_x3d.py:306
 msgid "Probelauf – ändert nichts"
 msgstr "Dry run – changes nothing"
 
-#: cachyos_dailytool/ui/pages_x3d.py:283
+#: cachyos_dailytool/ui/pages_x3d.py:307
 msgid "Läuft"
 msgstr "Running"
 
-#: cachyos_dailytool/ui/pages_x3d.py:285
+#: cachyos_dailytool/ui/pages_x3d.py:309
 msgid "Gestoppt"
 msgstr "Stopped"
 
-#: cachyos_dailytool/ui/pages_x3d.py:285
+#: cachyos_dailytool/ui/pages_x3d.py:309
 msgid "unten einschalten"
 msgstr "turn on below"
 
-#: cachyos_dailytool/ui/pages_x3d.py:326
+#: cachyos_dailytool/ui/pages_x3d.py:348
+msgid "einem CCD"
+msgstr "one CCD"
+
+#: cachyos_dailytool/ui/pages_x3d.py:352
 msgid "Frequenz-CCDs"
 msgstr "frequency CCDs"
 
-#: cachyos_dailytool/ui/pages_x3d.py:341
+#: cachyos_dailytool/ui/pages_x3d.py:367
 msgid "bevorzugt"
 msgstr "preferred"
 
-#: cachyos_dailytool/ui/pages_x3d.py:348
+#: cachyos_dailytool/ui/pages_x3d.py:375
 msgid "Cache-CCD · 3D V-Cache"
 msgstr "Cache CCD · 3D V-Cache"
 
-#: cachyos_dailytool/ui/pages_x3d.py:381
-msgid "Manuelles Umschalten gilt bis zum nächsten Spielstart bzw. -ende; dann setzt der Dienst die Rangfolge wieder nach seinen Regeln."
-msgstr "Manual switching applies until the next game starts or ends; then the service sets the core preference according to its rules again."
+#: cachyos_dailytool/ui/pages_x3d.py:413
+msgid "Der Kernel-Treiber amd_3d_vcache ist nicht aktiv. Ohne ihn setzt der Dienst nur die Affinität der Spiele; die Rangfolge der Kerne (CPPC) bleibt, wie das BIOS sie vorgibt."
+msgstr "The kernel driver amd_3d_vcache is not active. Without it, the service only sets the affinity of games; the core preference (CPPC) stays as the BIOS sets it."
 
-#: cachyos_dailytool/ui/pages_x3d.py:471
+#: cachyos_dailytool/ui/pages_x3d.py:519
 msgid "{0} Spiele im Katalog, {1} eigene Festlegungen"
 msgstr "{0} games in the catalog, {1} custom rules"
 
-#: cachyos_dailytool/ui/pages_x3d.py:517
+#: cachyos_dailytool/ui/pages_x3d.py:567
 msgid "Richte Schreibrecht auf amd_x3d_mode ein (Passwortabfrage über pkexec) …"
 msgstr "Setting up write access to amd_x3d_mode (password prompt via pkexec) …"
 
-#: cachyos_dailytool/ui/pages_x3d.py:569
+#: cachyos_dailytool/ui/pages_x3d.py:619
 msgid "Anzeigename (optional)"
 msgstr "Display name (optional)"
 
-#: cachyos_dailytool/ui/pages_x3d.py:570
+#: cachyos_dailytool/ui/pages_x3d.py:620
 msgid "Programmdatei / Prozessname / Steam-AppID"
 msgstr "Program file / process name / Steam AppID"
 
-#: cachyos_dailytool/ui/pages_x3d.py:571
+#: cachyos_dailytool/ui/pages_x3d.py:621
 msgid "Zuweisung"
 msgstr "Assignment"
 
-#: cachyos_dailytool/ui/pages_x3d.py:278
+#: cachyos_dailytool/ui/pages_x3d.py:297
+msgid "Kein Treiber"
+msgstr "No driver"
+
+#: cachyos_dailytool/ui/pages_x3d.py:297
+msgid "amd_3d_vcache fehlt"
+msgstr "amd_3d_vcache missing"
+
+#: cachyos_dailytool/ui/pages_x3d.py:302
 msgid "{0} Spiel- · {1} Hintergrund-Threads"
 msgstr "{0} game · {1} background threads"
 
-#: cachyos_dailytool/ui/pages_x3d.py:305
+#: cachyos_dailytool/ui/pages_x3d.py:329
 msgid "Noch keine Einträge – der Dienst protokolliert erkannte Spiele und Umschaltungen."
 msgstr "No entries yet – the service logs detected games and switches."
 
-#: cachyos_dailytool/ui/pages_x3d.py:348
+#: cachyos_dailytool/ui/pages_x3d.py:377
 msgid "Frequenz-CCD · höherer Takt"
 msgstr "Frequency CCD · higher clock"
 
-#: cachyos_dailytool/ui/pages_x3d.py:394
+#: cachyos_dailytool/ui/pages_x3d.py:419
+msgid "Manuelles Umschalten gilt bis zum nächsten Spielstart bzw. -ende; dann setzt der Dienst die Rangfolge wieder nach seinen Regeln."
+msgstr "Manual switching applies until the next game starts or ends; then the service sets the core preference according to its rules again."
+
+#: cachyos_dailytool/ui/pages_x3d.py:432
 msgid "{0} · {1} · {2} Prozesse, {3} Threads"
 msgstr "{0} · {1} · {2} processes, {3} threads"
 
-#: cachyos_dailytool/ui/pages_x3d.py:434
+#: cachyos_dailytool/ui/pages_x3d.py:473
 msgid "Kein Spiel"
 msgstr "Not a game"
 
-#: cachyos_dailytool/ui/pages_x3d.py:473
+#: cachyos_dailytool/ui/pages_x3d.py:521
+msgid " · {0} davon ohne Wirkung, weil der Katalog das Programm als Nicht-Spiel führt"
+msgstr " · {0} of them without effect because the catalogue lists the program as a non-game"
+
+#: cachyos_dailytool/ui/pages_x3d.py:523
 msgid " · {0} weitere Treffer – Suche eingrenzen"
 msgstr " · {0} more matches – narrow the search"
 
-#: cachyos_dailytool/ui/pages_x3d.py:486
+#: cachyos_dailytool/ui/pages_x3d.py:536
 msgid "„{0}“ → {1}"
 msgstr "“{0}” → {1}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:497
+#: cachyos_dailytool/ui/pages_x3d.py:547
 msgid "„{0}“ wird nicht mehr als Spiel behandelt (Zuweisung wird aufgehoben)."
 msgstr "“{0}” is no longer treated as a game (assignment is released)."
 
-#: cachyos_dailytool/ui/pages_x3d.py:522
+#: cachyos_dailytool/ui/pages_x3d.py:572
 msgid "Legt als root die Datei {0} an (Gruppe {1}, Modus 0664 für amd_x3d_mode) und wendet sie sofort an. Danach kann der Dienst ohne Passwort zwischen Cache- und Frequenz-CCD umschalten – wie AMDs Treiber unter Windows."
 msgstr "Creates the file {0} as root (group {1}, mode 0664 for amd_x3d_mode) and applies it immediately. Afterwards the service can switch between the cache and frequency CCD without a password – like AMD's driver on Windows."
 
-#: cachyos_dailytool/ui/pages_x3d.py:555
+#: cachyos_dailytool/ui/pages_x3d.py:605
 msgid "Programmdatei oder Steam-AppID angeben."
 msgstr "Enter a program file or Steam AppID."
 
-#: cachyos_dailytool/ui/pages_x3d.py:138
+#: cachyos_dailytool/ui/pages_x3d.py:153
 msgid "cachyos-dailytool --x3d-daemon über systemd --user ({0})"
 msgstr "cachyos-dailytool --x3d-daemon via systemd --user ({0})"
 
-#: cachyos_dailytool/ui/pages_x3d.py:265
+#: cachyos_dailytool/ui/pages_x3d.py:280
+msgid " · gleich groß"
+msgstr " · equal size"
+
+#: cachyos_dailytool/ui/pages_x3d.py:282
 msgid "{0} CCD(s) · kein Dual-CCD-X3D"
 msgstr "{0} CCD(s) · no dual-CCD X3D"
 
-#: cachyos_dailytool/ui/pages_x3d.py:275 cachyos_dailytool/x3d.py:1566
-msgid "schreibbar"
-msgstr "writable"
-
-#: cachyos_dailytool/ui/pages_x3d.py:275 cachyos_dailytool/x3d.py:1566
-msgid "nur lesbar"
-msgstr "read-only"
-
-#: cachyos_dailytool/ui/pages_x3d.py:290
+#: cachyos_dailytool/ui/pages_x3d.py:314
 msgid " · {0}/{1} auf {2}"
 msgstr " · {0}/{1} on {2}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:378
-msgid "Die Rangfolge gehört root. „Zugriff einrichten“ legt per pkexec eine tmpfiles.d-Regel an, die deiner Gruppe ({0}) Schreibrecht gibt – dauerhaft, ohne Passwortabfrage beim Spielen."
-msgstr "The core preference belongs to root. “Set up access” uses pkexec to create a tmpfiles.d rule that gives your group ({0}) write access – permanently, without a password prompt while gaming."
+#: cachyos_dailytool/ui/pages_x3d.py:379
+msgid "CCD · gleich großer L3 – keine Rangfolge"
+msgstr "CCD · same L3 size – no ranking"
 
-#: cachyos_dailytool/ui/pages_x3d.py:397
+#: cachyos_dailytool/ui/pages_x3d.py:435
 msgid " · seit {0}"
 msgstr " · since {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:432
+#: cachyos_dailytool/ui/pages_x3d.py:471
 msgid "Eigene Festlegung entfernen"
 msgstr "Remove custom rule"
 
-#: cachyos_dailytool/ui/pages_x3d.py:435
+#: cachyos_dailytool/ui/pages_x3d.py:474
 msgid "Dieses Programm nie als Spiel behandeln"
 msgstr "Never treat this program as a game"
 
-#: cachyos_dailytool/ui/pages_x3d.py:464
+#: cachyos_dailytool/ui/pages_x3d.py:508
 msgid "kein Spiel"
 msgstr "not a game"
 
-#: cachyos_dailytool/ui/pages_x3d.py:465
+#: cachyos_dailytool/ui/pages_x3d.py:509
 msgid "Wieder zulassen"
 msgstr "Allow again"
 
-#: cachyos_dailytool/ui/pages_x3d.py:536
+#: cachyos_dailytool/ui/pages_x3d.py:586
 msgid "Dienst gestartet."
 msgstr "Service started."
 
-#: cachyos_dailytool/ui/pages_x3d.py:536
+#: cachyos_dailytool/ui/pages_x3d.py:586
 msgid "Dienst gestoppt."
 msgstr "Service stopped."
 
-#: cachyos_dailytool/ui/pages_x3d.py:350
+#: cachyos_dailytool/ui/pages_x3d.py:299 cachyos_dailytool/x3d.py:1764
+msgid "schreibbar"
+msgstr "writable"
+
+#: cachyos_dailytool/ui/pages_x3d.py:299 cachyos_dailytool/x3d.py:1764
+msgid "nur lesbar"
+msgstr "read-only"
+
+#: cachyos_dailytool/ui/pages_x3d.py:383
 msgid "{0} Kerne / {1} Threads · {2} · CPUs {3}"
 msgstr "{0} cores / {1} threads · {2} · CPUs {3}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:406
+#: cachyos_dailytool/ui/pages_x3d.py:416
+msgid "Die Rangfolge gehört root. „Zugriff einrichten“ legt per pkexec eine tmpfiles.d-Regel an, die deiner Gruppe ({0}) Schreibrecht gibt – dauerhaft, ohne Passwortabfrage beim Spielen."
+msgstr "The core preference belongs to root. “Set up access” uses pkexec to create a tmpfiles.d rule that gives your group ({0}) write access – permanently, without a password prompt while gaming."
+
+#: cachyos_dailytool/ui/pages_x3d.py:444
 msgid "Threads: {0}/{1} auf {2} gebunden"
 msgstr "Threads: {0}/{1} bound to {2}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:409
+#: cachyos_dailytool/ui/pages_x3d.py:447
 msgid " · zuletzt gelaufen auf {0}"
 msgstr " · last ran on {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:429
+#: cachyos_dailytool/ui/pages_x3d.py:468
 msgid "„{name}“ fest dem {mode} zuweisen"
 msgstr "Always assign “{name}” to {mode}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:448
+#: cachyos_dailytool/ui/pages_x3d.py:489
+msgid "Festlegung ohne Wirkung · {0} – der Katalog führt {1} als {2} ({3})"
+msgstr "Rule without effect · {0} – the catalogue lists {1} as {2} ({3})"
+
+#: cachyos_dailytool/ui/pages_x3d.py:492
 msgid "Eigene Festlegung · {0}"
 msgstr "Custom rule · {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:450
+#: cachyos_dailytool/ui/pages_x3d.py:494
 msgid "Kein Spiel (Ausschluss) · {0}"
 msgstr "Not a game (exclusion) · {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:456
+#: cachyos_dailytool/ui/pages_x3d.py:500
 msgid "Katalog · {0}"
 msgstr "Catalog · {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:467 cachyos_dailytool/ui/pages_x3d.py:467
-msgid "Vorgabe"
-msgstr "Default"
+#: cachyos_dailytool/ui/pages_x3d.py:511
+msgid "ohne Wirkung"
+msgstr "no effect"
 
-#: cachyos_dailytool/ui/pages_x3d.py:505
+#: cachyos_dailytool/ui/pages_x3d.py:555
 msgid "Bevorzugte Kerne: {0}"
 msgstr "Preferred cores: {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:534
+#: cachyos_dailytool/ui/pages_x3d.py:584
 msgid "Dienst: {0}"
 msgstr "Service: {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:546
+#: cachyos_dailytool/ui/pages_x3d.py:596
 msgid "Startet künftig beim Anmelden."
 msgstr "Will start at login from now on."
 
-#: cachyos_dailytool/ui/pages_x3d.py:546
+#: cachyos_dailytool/ui/pages_x3d.py:596
 msgid "Autostart aus."
 msgstr "Autostart off."
 
-#: cachyos_dailytool/ui/pages_x3d.py:415
+#: cachyos_dailytool/ui/pages_x3d.py:453
 msgid "{0:.0f} % CPU-Zeit auf {1}"
 msgstr "{0:.0f} % CPU time on {1}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:417
+#: cachyos_dailytool/ui/pages_x3d.py:456
 msgid "alle Threads gebunden"
 msgstr "all threads bound"
 
-#: cachyos_dailytool/ui/pages_x3d.py:545
+#: cachyos_dailytool/ui/pages_x3d.py:513
+msgid "Festlegung löschen – das Programm gilt laut Katalog ohnehin nicht als Spiel"
+msgstr "Delete this rule – according to the catalogue the program is not a game anyway"
+
+#: cachyos_dailytool/ui/pages_x3d.py:515 cachyos_dailytool/ui/pages_x3d.py:515
+msgid "Vorgabe"
+msgstr "Default"
+
+#: cachyos_dailytool/ui/pages_x3d.py:595
 msgid "Autostart: {0}"
 msgstr "Autostart: {0}"
 
-#: cachyos_dailytool/ui/pages_x3d.py:519
+#: cachyos_dailytool/ui/pages_x3d.py:569
 msgid "Zugriff eingerichtet."
 msgstr "Access set up."
 
-#: cachyos_dailytool/ui/pages_x3d.py:520
+#: cachyos_dailytool/ui/pages_x3d.py:570
 msgid "Einrichtung fehlgeschlagen – Protokoll prüfen."
 msgstr "Setup failed – check the log."
 
-#: cachyos_dailytool/ui/pages_x3d.py:417
+#: cachyos_dailytool/ui/pages_x3d.py:456
 msgid "{0} Threads außerhalb"
 msgstr "{0} threads outside"
 
@@ -3625,150 +3697,170 @@ msgstr "Refresh page (Ctrl+R)"
 msgid "Menü"
 msgstr "Menu"
 
-#: cachyos_dailytool/x3d.py:56
+#: cachyos_dailytool/x3d.py:59
 msgid "Wine-Systemprozesse"
 msgstr "Wine system processes"
 
-#: cachyos_dailytool/x3d.py:56
+#: cachyos_dailytool/x3d.py:59
+msgid "Proton-/Steam-Helfer"
+msgstr "Proton/Steam helpers"
+
+#: cachyos_dailytool/x3d.py:59
+msgid "DLSS5oneclick Feed-Host"
+msgstr "DLSS5oneclick feed host"
+
+#: cachyos_dailytool/x3d.py:60
 msgid "Steam (Windows-Teil in Proton)"
 msgstr "Steam (Windows part in Proton)"
 
-#: cachyos_dailytool/x3d.py:56
+#: cachyos_dailytool/x3d.py:60
 msgid "Epic-Port (epic-linux)"
 msgstr "Epic port (epic-linux)"
 
-#: cachyos_dailytool/x3d.py:57
+#: cachyos_dailytool/x3d.py:61
 msgid "Galaxy-Port (galaxy-linux)"
 msgstr "Galaxy port (galaxy-linux)"
 
-#: cachyos_dailytool/x3d.py:57
+#: cachyos_dailytool/x3d.py:61
 msgid "Ubisoft-Port (ubiconnect-linux)"
 msgstr "Ubisoft port (ubiconnect-linux)"
 
-#: cachyos_dailytool/x3d.py:57
+#: cachyos_dailytool/x3d.py:61
 msgid "Sonstige Hintergrundprogramme"
 msgstr "Other background programs"
 
-#: cachyos_dailytool/x3d.py:58
+#: cachyos_dailytool/x3d.py:62
 msgid "Indiana Jones und der Große Kreis"
 msgstr "Indiana Jones and the Great Circle"
 
-#: cachyos_dailytool/x3d.py:239
+#: cachyos_dailytool/x3d.py:280
 msgid "CCD{0}: {1} Kerne, {2}"
 msgstr "CCD{0}: {1} cores, {2}"
 
-#: cachyos_dailytool/x3d.py:322
+#: cachyos_dailytool/x3d.py:382
 msgid "Kernel-Treiber amd_3d_vcache nicht vorhanden (Kernel ≥ 6.13, BIOS: CPPC Dynamic Preferred Cores = Driver/Auto)"
 msgstr "Kernel driver amd_3d_vcache not available (kernel ≥ 6.13, BIOS: CPPC Dynamic Preferred Cores = Driver/Auto)"
 
-#: cachyos_dailytool/x3d.py:1506
+#: cachyos_dailytool/x3d.py:1699
 msgid "systemd --user ist nicht verfügbar"
 msgstr "systemd --user is not available"
 
-#: cachyos_dailytool/x3d.py:237
+#: cachyos_dailytool/x3d.py:278
 msgid "Keine Cache-Topologie gefunden"
 msgstr "No cache topology found"
 
-#: cachyos_dailytool/x3d.py:326
+#: cachyos_dailytool/x3d.py:386
 msgid "Kein Schreibrecht auf amd_x3d_mode – Zugriff zuerst einrichten"
 msgstr "No write access to amd_x3d_mode – set up access first"
 
-#: cachyos_dailytool/x3d.py:345
+#: cachyos_dailytool/x3d.py:405
 msgid "Schreibrecht für Gruppe {0} auf $f eingerichtet ({1})."
 msgstr "Write access for group {0} to $f set up ({1})."
 
-#: cachyos_dailytool/x3d.py:1512
+#: cachyos_dailytool/x3d.py:1705
 msgid "systemctl meldete einen Fehler"
 msgstr "systemctl reported an error"
 
-#: cachyos_dailytool/x3d.py:1521
+#: cachyos_dailytool/x3d.py:1714
 msgid "systemctl start fehlgeschlagen"
 msgstr "systemctl start failed"
 
-#: cachyos_dailytool/x3d.py:1577
-msgid "Spiele    : keine erkannt"
-msgstr "Games     : none detected"
+#: cachyos_dailytool/x3d.py:1758
+msgid " – gleich große CCDs: keine Rangfolge, Spiel bleibt auf einem CCD"
+msgstr " – equally sized CCDs: no ranking, the game stays on one CCD"
 
-#: cachyos_dailytool/x3d.py:319
-msgid "Ungültiger Modus: {0}"
-msgstr "Invalid mode: {0}"
-
-#: cachyos_dailytool/x3d.py:354
-msgid "Zugriffsregel entfernt."
-msgstr "Access rule removed."
-
-#: cachyos_dailytool/x3d.py:895
-msgid "Verknüpfung im DailyTool"
-msgstr "Shortcut in DailyTool"
-
-#: cachyos_dailytool/x3d.py:1399
-msgid "Der X3D-Dienst läuft bereits."
-msgstr "The X3D service is already running."
-
-#: cachyos_dailytool/x3d.py:1535
-msgid "systemctl stop fehlgeschlagen"
-msgstr "systemctl stop failed"
-
-#: cachyos_dailytool/x3d.py:1561
-msgid "Prozessor : {0}"
-msgstr "Processor : {0}"
-
-#: cachyos_dailytool/x3d.py:1563
+#: cachyos_dailytool/x3d.py:1760
 msgid " – kein Dual-CCD-X3D"
 msgstr " – no dual-CCD X3D"
 
-#: cachyos_dailytool/x3d.py:328
+#: cachyos_dailytool/x3d.py:1767
+msgid "Kernel    : Cache-Aware Scheduling (CONFIG_SCHED_CACHE) – der Kernel bündelt Threads je L3-Domäne selbst; die Zuweisung hier bleibt verbindlich"
+msgstr "Kernel    : cache-aware scheduling (CONFIG_SCHED_CACHE) – the kernel groups threads per L3 domain itself; the assignment made here remains binding"
+
+#: cachyos_dailytool/x3d.py:1780
+msgid "Spiele    : keine erkannt"
+msgstr "Games     : none detected"
+
+#: cachyos_dailytool/x3d.py:379
+msgid "Ungültiger Modus: {0}"
+msgstr "Invalid mode: {0}"
+
+#: cachyos_dailytool/x3d.py:414
+msgid "Zugriffsregel entfernt."
+msgstr "Access rule removed."
+
+#: cachyos_dailytool/x3d.py:987
+msgid "Verknüpfung im DailyTool"
+msgstr "Shortcut in DailyTool"
+
+#: cachyos_dailytool/x3d.py:1589
+msgid "Der X3D-Dienst läuft bereits."
+msgstr "The X3D service is already running."
+
+#: cachyos_dailytool/x3d.py:1728
+msgid "systemctl stop fehlgeschlagen"
+msgstr "systemctl stop failed"
+
+#: cachyos_dailytool/x3d.py:1754
+msgid "Prozessor : {0}"
+msgstr "Processor : {0}"
+
+#: cachyos_dailytool/x3d.py:1756
+msgid " – Cache-CCD = CCD{0}"
+msgstr " – cache CCD = CCD{0}"
+
+#: cachyos_dailytool/x3d.py:1765
+msgid " – ohne Wirkung bei gleich großen CCDs"
+msgstr " – no effect with equally sized CCDs"
+
+#: cachyos_dailytool/x3d.py:388
 msgid "Schreiben fehlgeschlagen: {0}"
 msgstr "Writing failed: {0}"
 
-#: cachyos_dailytool/x3d.py:889
+#: cachyos_dailytool/x3d.py:981
 msgid "Eigene Festlegung"
 msgstr "Custom rule"
 
-#: cachyos_dailytool/x3d.py:899
+#: cachyos_dailytool/x3d.py:991
 msgid "Katalog"
 msgstr "Catalog"
 
-#: cachyos_dailytool/x3d.py:903
+#: cachyos_dailytool/x3d.py:995
 msgid "Windows-Programm mit GPU-Zugriff"
 msgstr "Windows program with GPU access"
 
-#: cachyos_dailytool/x3d.py:908
+#: cachyos_dailytool/x3d.py:1000
 msgid "Natives Spiel mit GPU-Zugriff"
 msgstr "Native game with GPU access"
 
-#: cachyos_dailytool/x3d.py:908
+#: cachyos_dailytool/x3d.py:1000
 msgid "Vom Launcher gestartet, GPU-Zugriff"
 msgstr "Started by a launcher, GPU access"
 
-#: cachyos_dailytool/x3d.py:1562
+#: cachyos_dailytool/x3d.py:1761
 msgid "Topologie : {0}"
 msgstr "Topology  : {0}"
 
-#: cachyos_dailytool/x3d.py:1565
-msgid "Rangfolge : {0}"
-msgstr "Preference: {0}"
-
-#: cachyos_dailytool/x3d.py:1565
-msgid "kein Treiber"
-msgstr "no driver"
-
-#: cachyos_dailytool/x3d.py:1569
+#: cachyos_dailytool/x3d.py:1771
 msgid "Dienst    : {0}"
 msgstr "Service   : {0}"
 
-#: cachyos_dailytool/x3d.py:1569
+#: cachyos_dailytool/x3d.py:1771
 msgid "läuft"
 msgstr "running"
 
-#: cachyos_dailytool/x3d.py:1569
+#: cachyos_dailytool/x3d.py:1771
 msgid "läuft nicht"
 msgstr "not running"
 
-#: cachyos_dailytool/x3d.py:1590
+#: cachyos_dailytool/x3d.py:1797
 msgid "Spiel     : {name} [{source}] → {mode}{cpus} – {reason}; Wurzel {root}, {procs} Prozesse, {on}/{total} Threads im Ziel-CCD"
 msgstr "Game      : {name} [{source}] → {mode}{cpus} – {reason}; root {root}, {procs} processes, {on}/{total} threads on the target CCD"
 
-#: cachyos_dailytool/x3d.py:1563
-msgid " – Cache-CCD = CCD{0}"
-msgstr " – cache CCD = CCD{0}"
+#: cachyos_dailytool/x3d.py:1763
+msgid "Rangfolge : {0}"
+msgstr "Preference: {0}"
+
+#: cachyos_dailytool/x3d.py:1763
+msgid "kein Treiber"
+msgstr "no driver"

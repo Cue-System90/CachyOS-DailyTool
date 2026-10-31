@@ -67,6 +67,37 @@
    ]
   },
   {
+   "name": "Proton-/Steam-Helfer",
+   "kind": "system",
+   "exe": [
+    "xalia.exe",
+    "d3ddriverquery64.exe",
+    "d3ddriverquery.exe",
+    "qtwebengineprocess.exe",
+    "unrealcefsubprocess.exe",
+    "cefsharp.browsersubprocess.exe",
+    "winebrowser.exe",
+    "bssndrpt64.exe",
+    "bssndrpt.exe"
+   ]
+  },
+  {
+   "name": "DLSS5oneclick Feed-Host",
+   "kind": "system",
+   "exe": [
+    "dlss5-feed-host64.exe"
+   ]
+  },
+  {
+   "name": "Paradox Launcher",
+   "kind": "launcher",
+   "exe": [
+    "paradox launcher.exe",
+    "dowser.exe",
+    "bootstrapper-v2.exe"
+   ]
+  },
+  {
    "name": "Steam (Windows-Teil in Proton)",
    "kind": "launcher",
    "exe": [

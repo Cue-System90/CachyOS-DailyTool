@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import fcntl
 import grp
+import gzip
 import json
 import logging
 import os
@@ -44,16 +45,19 @@ from .system import DATA_DIR, LOG_DIR
 
 log = logging.getLogger(__name__)
 
-MODES = ("cache", "frequency", "none")
+# single: ein CCD – bei gleich großen CCDs (9950X3D2) gibt es keinen Cache-/Frequenz-Unterschied, das Spiel bleibt trotzdem auf einem CCD
+MODES = ("cache", "frequency", "single", "none")
 # bleibt deutsch (Dienstprotokoll, Startprotokoll des Launchers) – Anzeige mit tr(MODE_LABELS[…])
-MODE_LABELS = {"cache": N_("Cache-CCD"), "frequency": N_("Frequenz-CCD"), "none": N_("keine Zuweisung"), "": N_("Automatisch")}
+MODE_LABELS = {"cache": N_("Cache-CCD"), "frequency": N_("Frequenz-CCD"), "single": N_("ein CCD"), "none": N_("keine Zuweisung"),
+               "": N_("Automatisch")}
 IDLE_MODES = ("frequency", "cache", "keep")
 KINDS = ("game", "launcher", "background", "system")
 # Werte landen deutsch im Zustand des Dienstes (source_label) – Anzeige mit tr()
 SOURCE_LABELS = {"steam": "Steam", "umu": "umu/Proton", "heroic": "Heroic", "lutris": "Lutris", "wine": "Wine",
                  "native": N_("Nativ"), "registry": "DailyTool"}
 # deutschsprachige Anzeigenamen aus data/x3d_catalog.json – nur für den Übersetzungskatalog (Anzeige mit tr(name))
-_CATALOG_NAMES = (N_("Wine-Systemprozesse"), N_("Steam (Windows-Teil in Proton)"), N_("Epic-Port (epic-linux)"),
+_CATALOG_NAMES = (N_("Wine-Systemprozesse"), N_("Proton-/Steam-Helfer"), N_("DLSS5oneclick Feed-Host"),
+                  N_("Steam (Windows-Teil in Proton)"), N_("Epic-Port (epic-linux)"),
                   N_("Galaxy-Port (galaxy-linux)"), N_("Ubisoft-Port (ubiconnect-linux)"), N_("Sonstige Hintergrundprogramme"),
                   N_("Indiana Jones und der Große Kreis"))
 
@@ -70,6 +74,9 @@ UNIT_NAME = "cachyos-dailytool-x3d.service"
 TMPFILES_CONF = "/etc/tmpfiles.d/cachyos-dailytool-x3d.conf"
 INTERVAL = 1.5
 STATE_MAX_AGE = 8.0           # Sekunden: älterer Zustand = Dienst läuft nicht
+SESSION_GRACE_TICKS = 3       # Takte, die eine Sitzung fehlen darf, bevor sie als beendet gilt (Flattern beim Spielstart)
+IDLE_GRACE = 10.0             # Sekunden ohne Spiel, bevor die Ruhe-Rangfolge gilt und Hintergrundprogramme freikommen
+KERNEL_CONFIG = Path("/proc/config.gz")
 
 CONFIG_DEFAULTS: dict[str, str] = {
     "X3D_ENABLED": "1",            # Erkennung/Zuweisung aktiv (der Dienst selbst wird über systemd --user gestartet)
@@ -185,6 +192,18 @@ class Topology:
         return len(self.ccds) >= 2 and len(sizes) >= 2
 
     @property
+    def symmetric(self) -> bool:
+        """Mindestens zwei CCDs mit gleich großem L3 (z. B. Ryzen 9 9950X3D2 mit 3D V-Cache auf beiden CCDs): es gibt keine
+        Cache-/Frequenz-Rangfolge (amd_x3d_mode hat laut AMD keine Wirkung), ein Spiel wird trotzdem auf einem CCD gehalten."""
+        sizes = {c.l3_bytes for c in self.ccds}
+        return len(self.ccds) >= 2 and len(sizes) == 1
+
+    @property
+    def multi(self) -> bool:
+        """Zuteilung sinnvoll: mehrere CCDs, mit (dual) oder ohne (symmetric) Cache-CCD."""
+        return self.dual or self.symmetric
+
+    @property
     def cache_ccd(self) -> Ccd | None:
         if not self.dual:
             return None
@@ -208,6 +227,28 @@ class Topology:
             if cpu in c.cpus:
                 return c.id
         return -1
+
+    def ccd(self, cid: int | None) -> Ccd | None:
+        return next((c for c in self.ccds if c.id == cid), None)
+
+    def cpus_of_ccd(self, cid: int | None) -> set[int] | None:
+        """Kerne eines CCD (Modus „single“)."""
+        c = self.ccd(cid)
+        return set(c.cpus) if c else None
+
+    def cpus_except(self, cid: int | None) -> set[int] | None:
+        """Kerne aller anderen CCDs (Hintergrundprogramme im Modus „single“)."""
+        rest = {cpu for c in self.ccds if c.id != cid for cpu in c.cpus}
+        return rest or None
+
+    def effective_mode(self, mode: str) -> str:
+        """Modus auf diese Topologie abbilden: ohne Cache-CCD (symmetric) wird cache/frequency zu „single“, mit Cache-CCD
+        wird eine „single“-Festlegung zu cache."""
+        if self.symmetric and mode in ("cache", "frequency"):
+            return "single"
+        if self.dual and mode == "single":
+            return "cache"
+        return mode
 
     def ccd_ids_for(self, mode: str) -> set[int]:
         """CCDs, die vollständig im Zielbereich des Modus liegen."""
@@ -242,7 +283,7 @@ class Topology:
         return " · ".join(parts)
 
     def to_dict(self) -> dict:
-        return {"cpu_model": self.cpu_model, "dual": self.dual,
+        return {"cpu_model": self.cpu_model, "dual": self.dual, "symmetric": self.symmetric, "multi": self.multi,
                 "ccds": [asdict(c) for c in sorted(self.ccds, key=lambda c: c.id)],
                 "cache": self.cache_ccd.id if self.cache_ccd else None}
 
@@ -287,6 +328,25 @@ def topology(refresh: bool = False) -> Topology:
             log.exception("CPU-Topologie konnte nicht gelesen werden")
             _topology = Topology()
     return _topology
+
+
+def kernel_sched_cache(path: Path | None = None) -> bool | None:
+    """Ist der Kernel mit CONFIG_SCHED_CACHE gebaut (Cache-Aware Scheduling, Kernel ≥ 7.2)? None = Konfiguration nicht lesbar.
+
+    Der Kernel bündelt dann Threads eines Prozesses selbst je L3-Domäne; die Zuweisung hier bleibt verbindlich, denn eine
+    gesetzte Affinität schlägt den Vorschlag des Schedulers. Es wird nur gelesen, kein Eingriff in debugfs."""
+    cands = [Path(path)] if path else [KERNEL_CONFIG, Path(f"/boot/config-{os.uname().release}")]
+    for p in cands:
+        try:
+            opener = gzip.open if p.suffix == ".gz" else open
+            with opener(p, "rb") as fh:
+                for line in fh:
+                    if line.startswith(b"CONFIG_SCHED_CACHE="):
+                        return line.strip() == b"CONFIG_SCHED_CACHE=y"
+            return False
+        except (OSError, EOFError):
+            continue
+    return None
 
 
 # ====================================================================== Rangfolge (Kernel-Treiber amd_3d_vcache)
@@ -427,11 +487,17 @@ class Catalog:
 
 
 class UserRules:
-    """Eigene Festlegungen (~/.config/cachy-daily-toolkit/x3d.json): Schlüssel → Modus/Name; Ausschlüsse („kein Spiel“)."""
+    """Eigene Festlegungen (~/.config/cachy-daily-toolkit/x3d.json): Schlüssel → Modus/Name; Ausschlüsse („kein Spiel“).
 
-    def __init__(self, path: Path = USER_FILE) -> None:
+    Mit Katalog: Festlegungen, deren Schlüssel der Katalog als Nicht-Spiel führt (Launcher, Hintergrundprogramm, Systemprozess/
+    Helfer), wirken nicht – sie stehen in ``shadowed`` (Anzeige mit Hinweis, Entfernen über clear_override) und bleiben in der
+    Datei, bis der Nutzer sie entfernt. Beispiel: „exe:xalia.exe“ (Protons Gamepad-Hilfsprogramm) als Spiel festgelegt."""
+
+    def __init__(self, path: Path = USER_FILE, catalog: Catalog | None = None) -> None:
         self.path = Path(path)
+        self.catalog = catalog
         self.overrides: dict[str, dict] = {}
+        self.shadowed: dict[str, dict] = {}   # Schlüssel → Festlegung + "catalog" (Eintragsname), "kind"
         self.ignore: set[str] = set()
         self.names: dict[str, str] = {}      # Anzeigename je Schlüssel (auch für Ausschlüsse)
         self._mtime: float = -1.0
@@ -458,11 +524,24 @@ class UserRules:
                 self.overrides[str(k)] = {"mode": v["mode"], "name": str(v.get("name", "")), "source": str(v.get("source", ""))}
         self.ignore = {str(k) for k in (data.get("ignore") or []) if k}
         self.names = {str(k): str(v) for k, v in (data.get("names") or {}).items() if v}
+        self._shadow()
+
+    def _shadow(self) -> None:
+        """Festlegungen aussortieren, deren Schlüssel der Katalog als Nicht-Spiel führt (wirken nicht, bleiben gespeichert)."""
+        self.shadowed = {}
+        if self.catalog is None:
+            return
+        for k in list(self.overrides):
+            e = self.catalog.get(k)
+            if e is not None and e.kind != "game":
+                self.shadowed[k] = {**self.overrides.pop(k), "catalog": e.name, "kind": e.kind}
 
     def save(self) -> None:
+        stored = {k: {f: v.get(f, "") for f in ("mode", "name", "source")} for k, v in self.shadowed.items()}
+        stored.update(self.overrides)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp")
-        tmp.write_text(json.dumps({"version": 1, "overrides": self.overrides, "ignore": sorted(self.ignore),
+        tmp.write_text(json.dumps({"version": 1, "overrides": stored, "ignore": sorted(self.ignore),
                                    "names": self.names}, indent=2, ensure_ascii=False), encoding="utf-8")
         tmp.replace(self.path)
         self._mtime = self.mtime()
@@ -470,15 +549,17 @@ class UserRules:
     def set_override(self, key: str, mode: str, name: str = "", source: str = "") -> None:
         if mode not in MODES:
             raise ValueError(mode)
-        old = self.overrides.get(key, {})
+        old = self.overrides.get(key) or self.shadowed.pop(key, None) or {}
         self.overrides[key] = {"mode": mode, "name": name or old.get("name", ""), "source": source or old.get("source", "")}
         if name:
             self.names[key] = name
         self.ignore.discard(key)
+        self._shadow()
         self.save()
 
     def clear_override(self, key: str) -> None:
         self.overrides.pop(key, None)
+        self.shadowed.pop(key, None)
         self.ignore.discard(key)
         self.names.pop(key, None)
         self.save()
@@ -487,6 +568,7 @@ class UserRules:
         if on:
             self.ignore.add(key)
             self.overrides.pop(key, None)
+            self.shadowed.pop(key, None)
             if name:
                 self.names[key] = name
         else:
@@ -494,7 +576,8 @@ class UserRules:
         self.save()
 
     def label(self, key: str) -> str:
-        return self.names.get(key) or (self.overrides.get(key) or {}).get("name") or key.split(":", 1)[-1]
+        return (self.names.get(key) or (self.overrides.get(key) or {}).get("name") or (self.shadowed.get(key) or {}).get("name")
+                or key.split(":", 1)[-1])
 
 
 @dataclass
@@ -707,10 +790,12 @@ class Session:
     placement: dict[int, int] = field(default_factory=dict)   # CCD → Threads, die zuletzt dort liefen
     cpu_ticks: dict[int, int] = field(default_factory=dict)   # CCD → CPU-Zeit (Ticks) seit Erkennung
     share: float | None = None                                # Anteil der CPU-Zeit auf dem zugewiesenen CCD (%)
+    ccd: int | None = None                                    # Modus „single“: gewählter CCD (beim Erkennen festgelegt)
+    missing: int = 0                                          # Takte in Folge, in denen die Sitzung nicht erkannt wurde (Schonfrist)
 
     def to_dict(self) -> dict:
         return {"root": self.root, "name": self.name, "source": self.source, "source_label": SOURCE_LABELS.get(self.source, self.source),
-                "key": self.key, "keys": self.keys, "mode": self.mode, "reason": self.reason, "priority": self.priority,
+                "key": self.key, "keys": self.keys, "mode": self.mode, "ccd": self.ccd, "reason": self.reason, "priority": self.priority,
                 "pids": len(self.pids), "threads": self.threads, "since": self.since,
                 "threads_on_ccd": self.threads_on_ccd, "placement": {str(k): v for k, v in self.placement.items()},
                 "cpu_ticks": {str(k): v for k, v in self.cpu_ticks.items()}, "share": self.share}
@@ -866,7 +951,14 @@ class Detector:
     # -- Einstufung ------------------------------------------------------------
     def classify(self, p: Proc) -> Match | None:
         """Spiel? Reihenfolge: Ausschlüsse (Katalog launcher/background/system, Installer-Muster, Wrapper) →
-        eigene Festlegung → DailyTool-Verknüpfung → Katalog-Spiel → Heuristik (GPU-Zugriff + Herkunft)."""
+        eigene Festlegung → DailyTool-Verknüpfung → Katalog-Spiel → Heuristik (GPU-Zugriff + Herkunft).
+        Der Modus wird auf die Topologie abgebildet (gleich große CCDs: cache/frequency → single)."""
+        m = self._classify(p)
+        if m is not None:
+            m.mode = self.topo.effective_mode(m.mode)
+        return m
+
+    def _classify(self, p: Proc) -> Match | None:
         if p.pid <= 1 or p.pid == os.getpid():
             return None
         keys = self.keys_for(p)
@@ -1035,6 +1127,21 @@ def thread_stats(pid: int, procfs: str = "/proc") -> list[tuple[int, int, int]]:
     return out
 
 
+def pick_ccd(topo: Topology, pids: Iterable[int], procfs: str = "/proc") -> int:
+    """Modus „single“: der CCD, auf dem zuletzt die meisten Threads der Prozesse liefen (Rückfall: kleinste CCD-Nummer) –
+    wie Windows' Game Mode, der ein Spiel auf einem CCD belässt, statt es zu verteilen."""
+    count: dict[int, int] = {}
+    for pid in pids:
+        for _tid, psr, _t in thread_stats(pid, procfs):
+            cid = topo.ccd_of(psr)
+            if cid >= 0:
+                count[cid] = count.get(cid, 0) + 1
+    ids = sorted(c.id for c in topo.ccds)
+    if not ids:
+        return 0
+    return max(ids, key=lambda i: (count.get(i, 0), -i))
+
+
 def cpu_times(procfs: str = "/proc") -> dict[int, tuple[int, int]]:
     """CPU → (beschäftigt, gesamt) in Ticks aus /proc/stat."""
     out: dict[int, tuple[int, int]] = {}
@@ -1139,7 +1246,7 @@ class Controller:
         self.dry_run = dry_run
         self.topo = topo or topology()
         self.catalog = catalog or Catalog()
-        self.rules = rules or UserRules()
+        self.rules = rules or UserRules(catalog=self.catalog)
         self.settings = Settings.from_config(self.cfg)
         self.apps = apps if apps is not None else registry_apps()
         self.detector = detector or Detector(self.topo, self.settings, self.catalog, self.rules, self.apps)
@@ -1148,7 +1255,11 @@ class Controller:
         self.pinned: dict[int, frozenset[int]] = {}
         self.bg_pinned: dict[int, frozenset[int]] = {}
         self.sessions: list[Session] = []
-        self.session_since: dict[int, float] = {}
+        self._last_game_ts = 0.0                              # letzter Takt mit aktivem Spiel (Schonfrist bis zur Ruhe-Rangfolge)
+        self._last_lead_mode: str | None = None               # Zuweisung des zuletzt führenden Spiels (gilt in der Schonfrist weiter)
+        self.session_grace_ticks = SESSION_GRACE_TICKS
+        self.idle_grace = IDLE_GRACE
+        self.clock: Callable[[], float] = time.time
         self._thread_ticks: dict[int, int] = {}               # tid → zuletzt gemessene CPU-Zeit
         self._session_ticks: dict[int, dict[int, int]] = {}   # Sitzungswurzel → CCD → CPU-Zeit seit Erkennung
         self.events: deque[tuple[float, str]] = deque(maxlen=60)
@@ -1176,7 +1287,10 @@ class Controller:
         log.info(text)
 
     # -- Einstellungen nachladen -------------------------------------------------
-    def reload_if_changed(self) -> None:
+    def reload_if_changed(self) -> bool:
+        """Einstellungen, Festlegungen und Verknüpfungen nachladen; True, wenn sich etwas geändert hat (dann gilt die neue
+        Einstufung laufender Spiele sofort, statt dass die Hysterese die alte behält)."""
+        changed = False
         m = self._mtime(self.cfg.path)
         if m != self._cfg_mtime:
             self._cfg_mtime = m
@@ -1185,52 +1299,44 @@ class Controller:
             self.detector.settings = self.settings
             self.detector.game_dirs = self.detector._default_game_dirs() + list(self.settings.game_dirs)
             self.event("Einstellungen neu geladen")
+            changed = True
         if self.rules.changed():
             self.rules.load()
             self.event("Eigene Festlegungen neu geladen")
+            changed = True
         r = self._mtime(self._registry_path())
         if r != self._reg_mtime:
             self._reg_mtime = r
             self.apps = registry_apps()
             self.detector.apps = self.apps
+            changed = True
+        return changed
 
     # -- Takt ----------------------------------------------------------------------
     def tick(self) -> None:
-        self.reload_if_changed()
+        rules_changed = self.reload_if_changed()
         all_cpus = set(self.topo.all_cpus) or set(os.sched_getaffinity(0))
-        if not self.settings.enabled or not self.topo.dual:
+        if not self.settings.enabled or not self.topo.multi:
             if self.pinned or self.bg_pinned:
                 self._release_all(all_cpus)
             self.sessions = []
+            self._last_game_ts, self._last_lead_mode = 0.0, None
             self._apply_mode(None)
             self.write_state()
             return
-        sessions, _matches = self.detector.detect()
-        now = time.time()
-        prev_roots = {s.root: s for s in self.sessions}
-        for s in sessions:
-            s.since = self.session_since.setdefault(s.root, now)
-            old = prev_roots.get(s.root)
-            if old is None:
-                self.event(f"Spiel erkannt: {s.name} ({SOURCE_LABELS.get(s.source, s.source)}, {s.reason}) → {MODE_LABELS[s.mode]}")
-            elif old.mode != s.mode:
-                self.event(f"{s.name}: Zuweisung geändert → {MODE_LABELS[s.mode]}")
-                if s.mode == "none":
-                    release_affinity([t for pid in s.pids for t in list_threads(pid, self.detector.procfs)], all_cpus,
-                                     pinned=self.pinned, dry_run=self.dry_run)
-        live_roots = {s.root for s in sessions}
-        for root, old in prev_roots.items():
-            if root not in live_roots:
-                self.event(f"Spiel beendet: {old.name}")
-                self.session_since.pop(root, None)
-                self._session_ticks.pop(root, None)
+        detected, _matches = self.detector.detect()
+        now = self.clock()
+        sessions = self._reconcile(detected, now, rules_changed, all_cpus)
         self.sessions = sessions
         # Spiel-Prozessbäume auf ihren CCD
         game_pids: set[int] = set()
         live_tids: set[int] = set()
         for s in sessions:
-            cpus = self.topo.cpus_for(s.mode)
             game_pids |= s.pids
+            if s.missing:                       # Schonfrist: nichts anfassen, letzte Messwerte behalten
+                live_tids |= {t for pid in s.pids for t in list_threads(pid, self.detector.procfs)}
+                continue
+            cpus = self._session_cpus(s)
             if cpus:
                 n = set_affinity(s.pids, cpus, pinned=self.pinned, enforce=self.settings.enforce,
                                  procfs=self.detector.procfs, dry_run=self.dry_run)
@@ -1239,17 +1345,25 @@ class Controller:
             live_tids |= self._sample_session(s, cpus)
         for tid in [t for t in self._thread_ticks if t not in live_tids]:
             self._thread_ticks.pop(tid, None)
+        # Führendes Spiel; ohne Spiel gilt eine Schonfrist, bevor Rangfolge und Hintergrundprogramme zurückgestellt werden
+        lead = next((s for s in sessions if s.mode in ("cache", "frequency", "single")), None)
+        in_grace = False
+        if lead is not None:
+            self._last_game_ts, self._last_lead_mode = now, lead.mode
+        elif self._last_lead_mode is not None and now - self._last_game_ts < self.idle_grace:
+            in_grace = True
+        else:
+            self._last_lead_mode = None
         # Hintergrundprogramme auf den anderen CCD
-        lead = next((s for s in sessions if s.mode in ("cache", "frequency")), None)
         if lead is not None and self.settings.background:
-            other = self.topo.other_cpus(lead.mode)
+            other = self._other_cpus(lead)
             if other:
                 bg = self.detector.background_pids(sessions)
                 set_affinity(bg, other, pinned=self.bg_pinned, enforce=False, procfs=self.detector.procfs, dry_run=self.dry_run)
                 live_tids = {t for pid in bg for t in list_threads(pid, self.detector.procfs)}
                 for tid in [t for t in self.bg_pinned if t not in live_tids]:
                     self.bg_pinned.pop(tid, None)
-        elif self.bg_pinned:
+        elif self.bg_pinned and not in_grace:
             n = release_affinity(list(self.bg_pinned), all_cpus, pinned=self.bg_pinned, dry_run=self.dry_run)
             self.bg_pinned.clear()
             if n:
@@ -1258,9 +1372,82 @@ class Controller:
         live_game_tids = {t for pid in game_pids for t in list_threads(pid, self.detector.procfs)}
         for tid in [t for t in self.pinned if t not in live_game_tids]:
             self.pinned.pop(tid, None)
-        # Rangfolge der Kerne (CPPC) wie der AMD-Treiber: Spiel → dessen CCD, sonst Ruhe-Vorgabe
-        self._apply_mode(lead.mode if lead else None)
+        # Rangfolge der Kerne (CPPC) wie der AMD-Treiber: Spiel → dessen CCD (auch in der Schonfrist), sonst Ruhe-Vorgabe
+        self._apply_mode(self._last_lead_mode)
         self.write_state()
+
+    def _reconcile(self, detected: list[Session], now: float, rules_changed: bool, all_cpus: set[int]) -> list[Session]:
+        """Neue Erkennung mit den bisherigen Sitzungen abgleichen (Hysterese gegen Flattern).
+
+        Dieselbe Sitzung: gleiche Wurzel oder gemeinsame gematchte PIDs – „since“ bleibt, kein „erkannt“/„beendet“, Name und
+        Zuweisung bleiben stabil; nur ein höherwertiger Treffer (oder geänderte Einstellungen) ersetzt die Einstufung.
+        Eine Sitzung gilt erst als beendet, wenn sie session_grace_ticks Takte in Folge fehlt; bis dahin bleibt sie gelistet."""
+        live_pids = set(self.detector.procs)
+        prev = list(self.sessions)
+        used: set[int] = set()
+        out: list[Session] = []
+        for s in detected:
+            cands = [i for i, o in enumerate(prev) if i not in used and (o.root == s.root or (o.matched & s.matched))]
+            if not cands:
+                if s.mode == "single":
+                    s.ccd = pick_ccd(self.topo, s.pids, self.detector.procfs)
+                self.event(f"Spiel erkannt: {s.name} ({SOURCE_LABELS.get(s.source, s.source)}, {s.reason}) → {self._target_label(s)}"
+                           f" [Wurzel {s.root}: {self._matched_exes(s)}]")
+                out.append(s)
+                continue
+            used.update(cands)
+            old = max((prev[i] for i in cands), key=lambda o: (o.priority, -o.since))
+            s.since, s.ccd = old.since, old.ccd
+            s.matched |= old.matched & live_pids
+            if old.root != s.root and old.root in self._session_ticks:
+                self._session_ticks[s.root] = self._session_ticks.pop(old.root)
+            if not rules_changed and s.priority <= old.priority:
+                s.name, s.source, s.key, s.mode, s.reason, s.priority, s.keys = \
+                    old.name, old.source, old.key, old.mode, old.reason, old.priority, list(old.keys)
+            else:
+                if s.name != old.name:
+                    self.event(f"{old.name} → {s.name} ({s.reason}) [Wurzel {s.root}: {self._matched_exes(s)}]")
+                if s.mode != old.mode:
+                    if s.mode == "single" and s.ccd is None:
+                        s.ccd = pick_ccd(self.topo, s.pids, self.detector.procfs)
+                    self.event(f"{s.name}: Zuweisung geändert → {self._target_label(s)}")
+                    if s.mode == "none":
+                        release_affinity([t for pid in s.pids for t in list_threads(pid, self.detector.procfs)], all_cpus,
+                                         pinned=self.pinned, dry_run=self.dry_run)
+            if s.mode == "single" and s.ccd is None:
+                s.ccd = pick_ccd(self.topo, s.pids, self.detector.procfs)
+            out.append(s)
+        for i, old in enumerate(prev):
+            if i in used:
+                continue
+            old.missing += 1
+            if old.missing < self.session_grace_ticks:
+                out.append(old)
+            else:
+                self.event(f"Spiel beendet: {old.name}")
+                self._session_ticks.pop(old.root, None)
+        return sorted(out, key=lambda s: s.root)
+
+    def _target_label(self, s: Session) -> str:
+        """Ziel einer Sitzung fürs Protokoll (deutsch): Modus bzw. bei „single“ der gewählte CCD."""
+        if s.mode == "single":
+            return f"CCD{s.ccd} ({MODE_LABELS['single']})"
+        return MODE_LABELS[s.mode]
+
+    def _matched_exes(self, s: Session) -> str:
+        """.exe-/Programmnamen der gematchten Prozesse – damit Fehlerkennungen im Protokoll nachvollziehbar sind."""
+        names = set()
+        for pid in s.matched:
+            p = self.detector.procs.get(pid)
+            if p is not None:
+                names.add(p.win_exe or p.exe_base)
+        return ", ".join(sorted(names)) or "?"
+
+    def _session_cpus(self, s: Session) -> set[int] | None:
+        return self.topo.cpus_of_ccd(s.ccd) if s.mode == "single" else self.topo.cpus_for(s.mode)
+
+    def _other_cpus(self, s: Session) -> set[int] | None:
+        return self.topo.cpus_except(s.ccd) if s.mode == "single" else self.topo.other_cpus(s.mode)
 
     def _sample_session(self, s: Session, cpus: set[int] | None) -> set[int]:
         """Thread-Lage einer Sitzung messen: Affinität im Ziel-CCD, zuletzt genutzter CCD, CPU-Zeit je CCD seit Erkennung."""
@@ -1290,13 +1477,16 @@ class Controller:
         s.threads, s.threads_on_ccd, s.placement, s.cpu_ticks = total, on_ccd, placement, dict(ticks)
         all_ticks = sum(ticks.values())
         if all_ticks > 0 and target is not None:
-            wanted = self.topo.ccd_ids_for(s.mode)
+            wanted = {s.ccd} if s.mode == "single" else self.topo.ccd_ids_for(s.mode)
             s.share = 100.0 * sum(v for k, v in ticks.items() if k in wanted) / all_ticks
         else:
             s.share = None
         return seen
 
     def _apply_mode(self, game_mode: str | None) -> None:
+        if self.topo.symmetric:                 # gleich große CCDs: amd_x3d_mode hat keine Wirkung – nichts umschalten
+            self.desired_mode = None
+            return
         if game_mode in ("cache", "frequency"):
             desired = game_mode
         elif self.settings.idle_mode in ("cache", "frequency"):
@@ -1344,7 +1534,7 @@ class Controller:
         return {
             "ts": time.time(), "pid": os.getpid(), "running": not stopped, "dry_run": self.dry_run,
             "enabled": self.settings.enabled, "mode": self._read_mode(), "mode_writable": self._mode_writable(),
-            "desired_mode": self.desired_mode, "topology": self.topo.to_dict(),
+            "desired_mode": self.desired_mode, "topology": self.topo.to_dict(), "idle_grace": self._last_lead_mode is not None and not self.sessions,
             "settings": asdict(self.settings),
             "sessions": [s.to_dict() for s in self.sessions],
             "background_threads": len(self.bg_pinned), "game_threads": len(self.pinned),
@@ -1400,8 +1590,11 @@ def run_daemon(dry_run: bool = False, interval: float = INTERVAL, max_ticks: int
         return 3
     topo = topology(refresh=True)
     ctl = Controller(cfg, dry_run=dry_run, topo=topo)
-    if not topo.dual:
-        ctl.event(f"Kein X3D-Prozessor mit zwei unterschiedlichen CCDs erkannt ({topo.summary(localized=False)}) – Dienst wartet nur.")
+    if not topo.multi:
+        ctl.event(f"Kein Prozessor mit mehreren CCDs erkannt ({topo.summary(localized=False)}) – Dienst wartet nur.")
+    elif topo.symmetric:
+        ctl.event(f"X3D-Dienst gestartet: {topo.cpu_model} – {topo.summary(localized=False)} – gleich große CCDs: keine Rangfolge, "
+                  f"Spiele bleiben auf einem CCD" + (" (Probelauf)" if dry_run else ""))
     else:
         ctl.event(f"X3D-Dienst gestartet: {topo.cpu_model} – {topo.summary(localized=False)} – Cache-CCD = CCD{topo.cache_ccd.id}"
                   + (" (Probelauf)" if dry_run else ""))
@@ -1559,24 +1752,38 @@ def print_status() -> int:
     """Kommandozeile: Topologie, Rangfolge, Dienst und erkannte Spiele (einmaliger Durchlauf ohne Eingriff)."""
     topo = topology(refresh=True)
     print(tr("Prozessor : {0}").format(topo.cpu_model or "?"))
-    print(tr("Topologie : {0}").format(topo.summary())
-          + (tr(" – Cache-CCD = CCD{0}").format(topo.cache_ccd.id) if topo.dual else tr(" – kein Dual-CCD-X3D")))
+    if topo.dual:
+        topo_note = tr(" – Cache-CCD = CCD{0}").format(topo.cache_ccd.id)
+    elif topo.symmetric:
+        topo_note = tr(" – gleich große CCDs: keine Rangfolge, Spiel bleibt auf einem CCD")
+    else:
+        topo_note = tr(" – kein Dual-CCD-X3D")
+    print(tr("Topologie : {0}").format(topo.summary()) + topo_note)
     mp = mode_path()
     print(tr("Rangfolge : {0}").format(read_mode() or tr("kein Treiber"))
-          + (f" ({mp}, {tr('schreibbar') if mode_writable() else tr('nur lesbar')})" if mp else ""))
+          + (f" ({mp}, {tr('schreibbar') if mode_writable() else tr('nur lesbar')})" if mp else "")
+          + (tr(" – ohne Wirkung bei gleich großen CCDs") if mp and topo.symmetric else ""))
+    if kernel_sched_cache():
+        print(tr("Kernel    : Cache-Aware Scheduling (CONFIG_SCHED_CACHE) – der Kernel bündelt Threads je L3-Domäne selbst; "
+                 "die Zuweisung hier bleibt verbindlich"))
     st = read_state()
     alive = daemon_alive()
     print(tr("Dienst    : {0}").format(tr("läuft") if alive else tr("läuft nicht"))
           + (f" (PID {st.get('pid')})" if alive and st else ""))
-    if not topo.dual:
+    if not topo.multi:
         return 0
     cfg = Config()
-    det = Detector(topo, Settings.from_config(cfg), Catalog(), UserRules(), registry_apps())
+    cat = Catalog()
+    det = Detector(topo, Settings.from_config(cfg), cat, UserRules(catalog=cat), registry_apps())
     sessions, _ = det.detect()
     if not sessions:
         print(tr("Spiele    : keine erkannt"))
     for s in sessions:
-        cpus = topo.cpus_for(s.mode)
+        if s.mode == "single":
+            s.ccd = pick_ccd(topo, s.pids)
+            cpus = topo.cpus_of_ccd(s.ccd)
+        else:
+            cpus = topo.cpus_for(s.mode)
         on = 0
         total = 0
         for pid in s.pids:
@@ -1589,7 +1796,8 @@ def print_status() -> int:
                     pass
         print(tr("Spiel     : {name} [{source}] → {mode}{cpus} – {reason}; Wurzel {root}, {procs} Prozesse, "
                  "{on}/{total} Threads im Ziel-CCD").format(
-            name=tr(s.name), source=tr(SOURCE_LABELS.get(s.source, s.source)), mode=tr(MODE_LABELS[s.mode]),
+            name=tr(s.name), source=tr(SOURCE_LABELS.get(s.source, s.source)),
+            mode=f"CCD{s.ccd}" if s.mode == "single" else tr(MODE_LABELS[s.mode]),
             cpus=(" (CPUs " + format_cpu_list(cpus) + ")") if cpus else "", reason=tr(s.reason), root=s.root,
             procs=len(s.pids), on=on, total=total))
     return 0

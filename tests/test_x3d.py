@@ -78,6 +78,52 @@ class TopologyTests(unittest.TestCase):
             cpu = fake_sysfs(root, [(list(range(0, 8)), "32768K"), (list(range(8, 16)), "32768K")])
             topo = x3d.read_topology(cpu, root / "cpuinfo")
         self.assertFalse(topo.dual)
+        self.assertTrue(topo.symmetric, "zwei gleich große CCDs (Dual Edition) – Zuteilung ohne Rangfolge")
+        self.assertTrue(topo.multi)
+
+    def test_symmetric_dual_ccd(self):
+        """9950X3D2 Dual Edition: 96 MB L3 je CCD – kein Cache-/Frequenz-CCD, aber Modus „single“ (ein CCD)."""
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            cpu = fake_sysfs(root, [(list(range(0, 8)) + list(range(16, 24)), "98304K"),
+                                    (list(range(8, 16)) + list(range(24, 32)), "98304K")])
+            topo = x3d.read_topology(cpu, root / "cpuinfo")
+        self.assertTrue(topo.symmetric)
+        self.assertFalse(topo.dual)
+        self.assertTrue(topo.multi)
+        self.assertIsNone(topo.cache_ccd)
+        self.assertIsNone(topo.cpus_for("cache"))
+        self.assertEqual(topo.effective_mode("cache"), "single")
+        self.assertEqual(topo.effective_mode("frequency"), "single")
+        self.assertEqual(topo.effective_mode("none"), "none")
+        self.assertEqual(topo.cpus_of_ccd(1), set(range(8, 16)) | set(range(24, 32)))
+        self.assertEqual(topo.cpus_except(1), set(range(0, 8)) | set(range(16, 24)))
+        self.assertIsNone(topo.cpus_of_ccd(None))
+        d = topo.to_dict()
+        self.assertTrue(d["symmetric"] and d["multi"])
+        self.assertIsNone(d["cache"])
+        self.assertEqual(x3d.pick_ccd(topo, [999999999]), 0, "ohne messbare Threads: CCD0")
+        dual = _topo()
+        self.assertEqual(dual.effective_mode("single"), "cache", "Festlegung „ein CCD“ auf einem X3D mit Cache-CCD = Cache-CCD")
+        self.assertEqual(dual.effective_mode("frequency"), "frequency")
+
+
+class KernelTests(unittest.TestCase):
+    def test_kernel_sched_cache(self):
+        import gzip
+        with tempfile.TemporaryDirectory() as td:
+            gz = Path(td) / "config.gz"
+            with gzip.open(gz, "wb") as fh:
+                fh.write(b"CONFIG_SCHED_CLUSTER=y\nCONFIG_SCHED_CACHE=y\n")
+            self.assertTrue(x3d.kernel_sched_cache(gz))
+            with gzip.open(gz, "wb") as fh:
+                fh.write(b"# CONFIG_SCHED_CACHE is not set\n")
+            self.assertFalse(x3d.kernel_sched_cache(gz))
+            plain = Path(td) / "config-7.2.0"
+            plain.write_text("CONFIG_SCHED_CACHE=y\n")
+            self.assertTrue(x3d.kernel_sched_cache(plain))
+            self.assertIsNone(x3d.kernel_sched_cache(Path(td) / "fehlt.gz"))
+        self.assertIn(x3d.kernel_sched_cache(), (True, False, None))
 
 
 class CatalogRulesTests(unittest.TestCase):
@@ -92,6 +138,40 @@ class CatalogRulesTests(unittest.TestCase):
         self.assertIsNone(cat.get("exe:unbekannt.exe"))
         kinds = {e.kind for e in cat.entries}
         self.assertTrue(kinds <= set(x3d.KINDS))
+
+    def test_catalog_excludes_proton_helpers(self):
+        cat = x3d.Catalog()
+        for exe in ("xalia.exe", "d3ddriverquery64.exe", "d3ddriverquery.exe", "dlss5-feed-host64.exe", "qtwebengineprocess.exe",
+                    "unrealcefsubprocess.exe"):
+            e = cat.get(f"exe:{exe}")
+            self.assertIsNotNone(e, exe)
+            self.assertEqual(e.kind, "system", exe)
+        self.assertEqual(cat.get("exe:paradox launcher.exe").kind, "launcher")
+
+    def test_override_on_catalog_non_game_is_shadowed(self):
+        """Festlegung „exe:xalia.exe = Rise of the Merchants Demo“ wirkt nicht, bleibt aber gespeichert, bis sie entfernt wird."""
+        cat = x3d.Catalog()
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x3d.json"
+            raw = x3d.UserRules(p)
+            raw.set_override("exe:xalia.exe", "cache", name="Rise of the Merchants Demo", source="steam")
+            raw.set_override("exe:rotm.exe", "cache", name="Rise of the Merchants", source="steam")
+            r = x3d.UserRules(p, catalog=cat)
+            self.assertNotIn("exe:xalia.exe", r.overrides)
+            self.assertIn("exe:rotm.exe", r.overrides)
+            self.assertEqual(r.shadowed["exe:xalia.exe"]["catalog"], "Proton-/Steam-Helfer")
+            self.assertEqual(r.shadowed["exe:xalia.exe"]["kind"], "system")
+            self.assertEqual(r.shadowed["exe:xalia.exe"]["mode"], "cache")
+            self.assertEqual(r.label("exe:xalia.exe"), "Rise of the Merchants Demo")
+            r.save()
+            self.assertIn("exe:xalia.exe", x3d.UserRules(p).overrides, "Speichern wirft die verdeckte Festlegung nicht weg")
+            r.set_override("exe:services.exe", "frequency", name="Dienste")
+            self.assertIn("exe:services.exe", r.shadowed)
+            self.assertNotIn("exe:services.exe", r.overrides)
+            r.clear_override("exe:xalia.exe")
+            self.assertNotIn("exe:xalia.exe", r.shadowed)
+            self.assertNotIn("exe:xalia.exe", x3d.UserRules(p).overrides)
+            self.assertIn("exe:rotm.exe", x3d.UserRules(p).overrides)
 
     def test_user_rules_roundtrip(self):
         with tempfile.TemporaryDirectory() as td:
@@ -241,6 +321,22 @@ class DetectionTests(unittest.TestCase):
         det, sessions, matches = self._detect()
         self.assertEqual(sessions, [])
 
+    def test_proton_helpers_are_not_games_even_with_override(self):
+        self.rules.set_override("exe:xalia.exe", "cache", name="Rise of the Merchants Demo", source="steam")
+        env = {"SteamAppId": "1493710", "STEAM_COMPAT_DATA_PATH": "/home/u/.local/share/Steam/steamapps/compatdata/1493710"}
+        self.fp.add(300, 200, "reaper", "/home/u/.local/share/Steam/ubuntu12_32/reaper", env=env)
+        self.fp.add(301, 300, "xalia.exe", "/opt/proton/bin/wine64-preloader", ["Z:\\opt\\proton\\files\\lib\\wine\\x86_64-windows\\xalia.exe"],
+                    env=env, gpu=True)
+        self.fp.add(302, 300, "d3ddriverquery64", "/opt/proton/bin/wine64-preloader", ["Z:\\home\\u\\.local\\share\\Steam\\d3ddriverquery64.exe"],
+                    env=env, gpu=True)
+        self.fp.add(303, 1, "dlss5-feed-host6", "/usr/bin/wine64-preloader", ["Z:\\mnt\\dlss5\\dlss5-feed-host64.exe"],
+                    env={"WINEPREFIX": "/mnt/pfx"}, gpu=True)
+        det, sessions, matches = self._detect()
+        self.assertEqual((sessions, matches), ([], {}))
+        bound = x3d.UserRules(self.rules.path, catalog=x3d.Catalog())
+        self.assertIn("exe:xalia.exe", bound.shadowed)
+        self.assertNotIn("exe:xalia.exe", bound.overrides)
+
     def test_native_game_from_games_dir_and_steam_marker(self):
         self.fp.add(600, 1, "factorio", "/home/u/Games/factorio/bin/x64/factorio", gpu=True)
         self.fp.add(601, 1, "mygame.x86_64", "/mnt/other/mygame/mygame.x86_64", gpu=True)                       # kein Spieleordner, keine Markierung
@@ -363,9 +459,18 @@ class ControllerTests(unittest.TestCase):
         self.topo = _topo()
         self.state = base / "state.json"
         self.affinity_calls: list = []
+        self.now = [time.time()]                       # steuerbare Uhr für die Schonfristen
 
     def tearDown(self):
         self.td.cleanup()
+
+    def _add_game(self, root: int = 300, pid: int = 301, exe: str = "eldenring.exe", appid: str = "1245620") -> None:
+        env = {"SteamAppId": appid}
+        self.fp.add(root, 200, "reaper", "/home/u/.local/share/Steam/ubuntu12_32/reaper", env=env)
+        self.fp.add(pid, root, exe, "/opt/p/bin/wine64-preloader", [f"Z:\\g\\{exe}"], env=env, gpu=True)
+
+    def _events(self, text: str) -> int:
+        return sum(text in e[1] for e in self.ctl.events)
 
     def _controller(self, writable: bool = True, dry_run: bool = False) -> x3d.Controller:
         det = self.fp.detector(self.topo, x3d.Settings.from_config(self.cfg), self.rules)
@@ -385,6 +490,8 @@ class ControllerTests(unittest.TestCase):
             return 0
         x3d.set_affinity = fake_set
         self.addCleanup(lambda: setattr(x3d, "set_affinity", orig))
+        ctl.clock = lambda: self.now[0]
+        self.ctl = ctl
         return ctl
 
     def test_mode_follows_game_and_returns_to_idle(self):
@@ -409,10 +516,118 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(st["sessions"][0]["name"], "Elden Ring")
         self.assertEqual(st["desired_mode"], "cache")
         self.assertTrue(any("Spiel erkannt" in e[1] for e in st["events"]))
+        self.assertEqual(self._events("[Wurzel 300: eldenring.exe]"), 1, "Protokoll nennt Wurzel-PID und .exe der Treffer")
         del self.fp.table[300], self.fp.table[301]
         ctl.tick()
+        ctl.tick()
+        self.assertEqual(len(ctl.sessions), 1, "zwei fehlende Takte: Sitzung bleibt (Schonfrist)")
+        self.assertEqual(ctl.sessions[0].missing, 2)
+        self.assertEqual(self._events("Spiel beendet"), 0)
+        ctl.tick()
+        self.assertEqual(ctl.sessions, [])
+        self.assertEqual(self._events("Spiel beendet"), 1, "dritter fehlender Takt: beendet")
+        self.assertEqual(self.mode["writes"], ["cache"], "Ruhe-Rangfolge erst nach der Schonfrist")
+        self.assertTrue(json.loads(self.state.read_text())["idle_grace"])
+        self.now[0] += x3d.IDLE_GRACE - 1
+        ctl.tick()
+        self.assertEqual(self.mode["writes"], ["cache"])
+        self.now[0] += 1.5
+        ctl.tick()
         self.assertEqual(self.mode["writes"], ["cache", "frequency"], "nach dem Spiel zurück zur Ruhe-Vorgabe")
+        self.assertFalse(json.loads(self.state.read_text())["idle_grace"])
         self.assertTrue(any("Spiel beendet" in e[1] for e in ctl.events))
+
+    def test_short_absence_within_grace_keeps_session(self):
+        ctl = self._controller()
+        self._add_game()
+        ctl.tick()
+        since = ctl.sessions[0].since
+        saved = {k: self.fp.table.pop(k) for k in (300, 301)}
+        ctl.tick()
+        self.assertEqual(ctl.sessions[0].missing, 1)
+        self.fp.table.update(saved)
+        ctl.tick()
+        self.assertEqual((len(ctl.sessions), ctl.sessions[0].missing, ctl.sessions[0].since), (1, 0, since))
+        self.assertEqual((self._events("Spiel erkannt"), self._events("Spiel beendet")), (1, 0))
+
+    def test_session_identity_follows_matched_pids_not_root(self):
+        """Wurzelprozess fällt weg (Spiel wird von PID 1 adoptiert): gleiche gematchte PID = dieselbe Sitzung."""
+        ctl = self._controller()
+        self._add_game()
+        ctl.tick()
+        s1 = ctl.sessions[0]
+        self.assertEqual(s1.root, 300)
+        del self.fp.table[300]
+        self.fp.table[301]["ppid"] = 1
+        ctl.tick()
+        self.assertEqual(len(ctl.sessions), 1)
+        s2 = ctl.sessions[0]
+        self.assertEqual((s2.root, s2.since, s2.name, s2.missing), (301, s1.since, "Elden Ring", 0))
+        self.assertEqual((self._events("Spiel erkannt"), self._events("Spiel beendet")), (1, 0))
+
+    def test_higher_match_wins_and_name_stays_stable(self):
+        """Hilfsprozess zuerst, dann das eigentliche Spiel mit eigener Festlegung: Name wechselt zum höherwertigen Treffer
+        und bleibt, wenn dieser Prozess wieder weg ist; geänderte Festlegungen gelten dagegen sofort."""
+        self.rules.set_override("exe:realgame.exe", "frequency", name="Real Game")
+        ctl = self._controller()
+        env = {"WINEPREFIX": "/mnt/games/pfx"}
+        self.fp.add(900, 1, "helper.exe", "/opt/p/bin/wine64-preloader", ["Z:\\g\\Helper.exe"], env=env, gpu=True)
+        ctl.tick()
+        self.assertEqual((ctl.sessions[0].name, ctl.sessions[0].mode, ctl.sessions[0].priority), ("Helper", "cache", 0))
+        since = ctl.sessions[0].since
+        self.fp.add(901, 900, "realgame.exe", "/opt/p/bin/wine64-preloader", ["Z:\\g\\RealGame.exe"], env=env, gpu=True)
+        ctl.tick()
+        s = ctl.sessions[0]
+        self.assertEqual((s.name, s.mode, s.priority, s.since), ("Real Game", "frequency", 3, since))
+        self.assertEqual(self._events("Zuweisung geändert"), 1)
+        self.assertEqual(self._events("Spiel erkannt"), 1)
+        del self.fp.table[901]
+        ctl.tick()
+        s = ctl.sessions[0]
+        self.assertEqual((s.name, s.mode, s.priority), ("Real Game", "frequency", 3), "niedrigerer Treffer verdrängt den höheren nicht")
+        self.assertEqual(self._events("Spiel erkannt"), 1)
+        time.sleep(0.01)
+        x3d.UserRules(self.rules.path).clear_override("exe:realgame.exe")      # von außen geändert (Oberfläche)
+        ctl.tick()
+        s = ctl.sessions[0]
+        self.assertEqual((s.name, s.mode, s.priority), ("Helper", "cache", 0), "nach Neuladen der Festlegungen gilt die neue Einstufung")
+        self.assertEqual(self._events("Zuweisung geändert"), 2)
+
+    def test_symmetric_topology_single_ccd_mode(self):
+        """Zwei gleich große CCDs: keine Rangfolge; das Spiel bleibt auf dem CCD, auf dem beim Erkennen die meisten Threads laufen."""
+        self.topo = x3d.Topology(cpu_model="AMD Ryzen 9 9950X3D2 16-Core Processor", ccds=[
+            x3d.Ccd(0, list(range(0, 8)) + list(range(16, 24)), 96 * 1024 ** 2, 8),
+            x3d.Ccd(1, list(range(8, 16)) + list(range(24, 32)), 96 * 1024 ** 2, 8)])
+        ctl = self._controller()
+        self._add_game()
+        orig = x3d.thread_stats
+        x3d.thread_stats = lambda pid, procfs="/proc": [(1, 9, 0), (2, 25, 0), (3, 3, 0)] if pid == 301 else []
+        self.addCleanup(lambda: setattr(x3d, "thread_stats", orig))
+        ctl.tick()
+        s = ctl.sessions[0]
+        self.assertEqual((s.mode, s.ccd), ("single", 1), "zwei von drei Threads liefen auf CCD1")
+        ccd1 = frozenset(self.topo.cpus_of_ccd(1))
+        ccd0 = frozenset(self.topo.cpus_of_ccd(0))
+        self.assertTrue([c for c in self.affinity_calls if 301 in c[0] and c[1] == ccd1], "Spielbaum auf CCD1")
+        self.assertTrue([c for c in self.affinity_calls if c[0] == {200} and c[1] == ccd0], "Steam auf den anderen CCD")
+        self.assertEqual(self.mode["writes"], [], "keine Rangfolge bei gleich großen CCDs")
+        self.assertIsNone(ctl.desired_mode)
+        self.assertEqual(self._events("→ CCD1 (ein CCD)"), 1)
+        st = json.loads(self.state.read_text())
+        self.assertTrue(st["topology"]["symmetric"])
+        self.assertEqual(st["sessions"][0]["ccd"], 1)
+        self.assertEqual(st["sessions"][0]["mode"], "single")
+        ctl.tick()
+        self.assertEqual(ctl.sessions[0].ccd, 1, "CCD bleibt über Takte stabil")
+        self.rules.set_override("exe:eldenring.exe", "none")
+        ctl.tick()
+        self.assertEqual(ctl.sessions[0].mode, "none")
+        self.cfg.set("X3D_DEFAULT_MODE", "frequency")
+        self.assertEqual(x3d.Settings.from_config(self.cfg).default_mode, "frequency")
+        x3d.thread_stats = lambda pid, procfs="/proc": []
+        self.rules.clear_override("exe:eldenring.exe")
+        ctl.tick()
+        self.assertEqual((ctl.sessions[0].mode, ctl.sessions[0].ccd), ("single", 1), "frequency wird zu „single“, CCD bleibt")
 
     def test_idle_keep_and_unwritable_mode(self):
         self.cfg.set("X3D_IDLE_MODE", "keep")
@@ -423,6 +638,11 @@ class ControllerTests(unittest.TestCase):
         self.assertEqual(self.mode["writes"], [])
         self.assertTrue(any("kein Schreibrecht" in e[1] for e in ctl.events))
         del self.fp.table[301]
+        for _ in range(x3d.SESSION_GRACE_TICKS):
+            ctl.tick()
+        self.assertEqual(ctl.sessions, [])
+        self.assertEqual(ctl.desired_mode, "cache", "Schonfrist: Rangfolge bleibt noch")
+        self.now[0] += x3d.IDLE_GRACE + 0.1
         ctl.tick()
         self.assertIsNone(ctl.desired_mode, "„keep“ stellt im Leerlauf nichts um")
 
@@ -544,6 +764,10 @@ class MeasurementTests(unittest.TestCase):
                 proc.kill()
                 proc.wait()
                 ctl.tick()
+                self.assertEqual(len(ctl.sessions), 1, "Schonfrist: bleibt noch gelistet")
+                self.assertEqual((ctl.sessions[0].threads, ctl.sessions[0].share), (1, 100.0), "letzte Messwerte bleiben")
+                for _ in range(x3d.SESSION_GRACE_TICKS - 1):
+                    ctl.tick()
                 self.assertEqual(ctl.sessions, [])
                 self.assertEqual(ctl._session_ticks, {})
                 self.assertEqual(ctl._thread_ticks, {})

@@ -14,6 +14,14 @@ X3D core assignment, drives, GPU and system updates – in one window, every fun
   backup, rename, move, uninstall.
 - **X3D core assignment (CCD)** – for Ryzen 7950X3D/7900X3D/9950X3D/9900X3D: a background service detects running games
   and keeps them on the 3D V-Cache CCD while Steam, launchers and browsers move to the other one, like AMD's Windows driver.
+  Proton helpers such as `xalia.exe` and `d3ddriverquery64.exe` are never treated as games, and user rules for programs the
+  catalogue lists as non-games are shown as ineffective and can be removed with one click.
+  Detection uses hysteresis: a game session is tracked by its matched processes, counts as ended only after three missed
+  checks, and the idle core ranking returns only after 10 seconds without a game.
+  On a CPU with two equally sized CCDs (Ryzen 9 9950X3D2) there is no cache/frequency ranking; the game is kept on the CCD
+  most of its threads were running on when detected, like Windows' Game Mode.
+  On kernels built with cache-aware scheduling (`CONFIG_SCHED_CACHE`, 7.2+) the page notes that the kernel groups threads
+  per L3 domain itself while the assignment made here stays binding.
 - **Drives** – mount NVMe/SATA/USB partitions permanently via fstab (with preview and backup), format, create folders.
 - **System** – pacman update with DKMS and kernel check, live GPU status, journal filters, shader cache cleanup,
   ProtonPlus and compat tools, desktop scaling.

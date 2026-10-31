@@ -7,7 +7,8 @@ from .util import Gtk, button, label, pick_icon, run_async
 from .widgets import Card, Page, StatTile, button_flow
 
 # x3d.MODE_LABELS bleibt deutsch (Ereignisprotokoll des Dienstes, Tests) – Anzeige hier über die Modus-Kennung übersetzen
-_MODE_TEXT = {"cache": tr("Cache-CCD"), "frequency": tr("Frequenz-CCD"), "none": tr("keine Zuweisung"), "": tr("Automatisch")}
+_MODE_TEXT = {"cache": tr("Cache-CCD"), "frequency": tr("Frequenz-CCD"), "single": tr("ein CCD"), "none": tr("keine Zuweisung"),
+              "": tr("Automatisch")}
 
 
 def _mode_text(mode: str, default: str) -> str:
@@ -130,12 +131,14 @@ class DashboardPage(Page):
         if info.mem_total and info.mem_avail / info.mem_total < 0.1:
             hints.append(("warn", tr("Weniger als 10 % Arbeitsspeicher frei."), None))
         topo, x3d_alive, x3d_state = d["x3d"]
-        if topo.dual and not x3d_alive:
+        if topo.multi and not x3d_alive:
             hints.append(("info", tr("X3D-Prozessor mit zwei CCDs: Der Dienst für die automatische Kernzuteilung von Spielen läuft nicht."),
                           "x3d"))
-        elif topo.dual and x3d_state and x3d_state.get("sessions"):
+        elif topo.multi and x3d_state and x3d_state.get("sessions"):
             names = ", ".join(s["name"] for s in x3d_state["sessions"][:3])
-            hints.append(("info", tr("Spiel auf dem {0}: {1}").format(_mode_text(x3d_state['sessions'][0]['mode'], '?'), names), "x3d"))
+            s0 = x3d_state["sessions"][0]
+            where = f"CCD{s0['ccd']}" if s0.get("mode") == "single" and s0.get("ccd") is not None else _mode_text(s0.get("mode", ""), "?")
+            hints.append(("info", tr("Spiel auf dem {0}: {1}").format(where, names), "x3d"))
         self._hints_static = hints
         self._render_hints()
 

@@ -12,12 +12,16 @@ from .widgets import Card, LogView, Page, StatTile, Tag, TaskRunner, group
 log = logging.getLogger(__name__)
 
 MODE_CHOICES = ("cache", "frequency", "none")
-MODE_TITLES = {"cache": tr("Cache-CCD"), "frequency": tr("Frequenz-CCD"), "none": tr("Frei")}
-MODE_LONG = {"cache": tr("Cache-CCD (3D V-Cache)"), "frequency": tr("Frequenz-CCD"), "none": tr("Frei (alle Kerne)")}
-TAG_STYLE = {"cache": "accent", "frequency": "ok", "none": None}
+SINGLE_CHOICES = ("single", "none")              # gleich große CCDs (9950X3D2): kein Cache-/Frequenz-CCD, nur „ein CCD“ oder frei
+MODE_TITLES = {"cache": tr("Cache-CCD"), "frequency": tr("Frequenz-CCD"), "single": tr("Ein CCD"), "none": tr("Frei")}
+MODE_LONG = {"cache": tr("Cache-CCD (3D V-Cache)"), "frequency": tr("Frequenz-CCD"), "single": tr("Ein CCD (Spiel zusammenhalten)"),
+             "none": tr("Frei (alle Kerne)")}
+TAG_STYLE = {"cache": "accent", "frequency": "ok", "single": "accent", "none": None}
 IDLE_CHOICES = ("frequency", "cache", "keep")
 IDLE_TITLES = [tr("Frequenz-CCD (AMD-Vorgabe)"), tr("Cache-CCD"), tr("Unverändert lassen")]
 DEFAULT_TITLES = [tr("Cache-CCD (3D V-Cache) – wie AMDs Treiber"), tr("Frequenz-CCD"), tr("Nicht zuweisen (nur beobachten)")]
+SINGLE_DEFAULT_TITLES = [tr("Ein CCD – Spiel zusammenhalten (wie Windows' Game Mode)"), tr("Nicht zuweisen (nur beobachten)")]
+KIND_LABELS = {"system": tr("Systemprozess/Helfer"), "launcher": tr("Launcher"), "background": tr("Hintergrundprogramm")}
 
 
 class CpuBars(Gtk.DrawingArea):
@@ -89,8 +93,10 @@ class X3dPage(Page):
         self._last_events = ""
         self._search = ""
         self.topo = x3d.topology()
-        self.rules = x3d.UserRules()
         self.catalog = x3d.Catalog()
+        self.rules = x3d.UserRules(catalog=self.catalog)       # Festlegungen auf Katalog-Nichtspiele wirken nicht (shadowed)
+        self.mode_choices = SINGLE_CHOICES if self.topo.symmetric else MODE_CHOICES
+        self._sched_cache: bool | None = None
         cfg = self.cfg
 
         row = Gtk.Box(spacing=12, homogeneous=True)
@@ -105,6 +111,9 @@ class X3dPage(Page):
         self.notice = label("", css=["body-text", "warn"], wrap=True)
         self.notice.set_visible(False)
         self.content.append(self.notice)
+        self.kernel_hint = label("", css=["hint"], wrap=True)
+        self.kernel_hint.set_visible(False)
+        self.content.append(self.kernel_hint)
 
         # CCDs und Rangfolge
         self.ccd_card = Card(tr("Core Complex Dies (CCD) und Rangfolge der Kerne"))
@@ -122,16 +131,22 @@ class X3dPage(Page):
                                  on_click=self._setup_access, tooltip=tr("Einmalig als Root: Schreibrecht auf amd_x3d_mode für deine Gruppe"))
         for b in (self.btn_cache, self.btn_freq, self.btn_access):
             bar.append(b)
+        self.mode_bar = bar
         self.ccd_card.append(bar)
         self.ccd_hint = label("", css=["hint"], wrap=True)
         self.ccd_card.append(self.ccd_hint)
         self.content.append(self.ccd_card)
 
         # Automatik
-        self.auto_group = group(tr("Automatik (wie AMDs Treiber)"),
-                                tr("Läuft ein Spiel, stellt der Dienst die Rangfolge auf dessen CCD und hält den gesamten Prozessbaum des Spiels "
-                                   "dort (alle Threads). Steam, Launcher, Discord und Browser wechseln währenddessen auf den anderen CCD. "
-                                   "Nach dem Spiel gilt wieder die Ruhe-Vorgabe."))
+        if self.topo.symmetric:
+            auto_text = tr("Läuft ein Spiel, hält der Dienst dessen gesamten Prozessbaum (alle Threads) auf einem CCD – dem, auf dem beim "
+                           "Erkennen die meisten Spiel-Threads laufen. Steam, Launcher, Discord und Browser wechseln währenddessen auf den "
+                           "anderen CCD. Eine Rangfolge der Kerne gibt es bei gleich großen CCDs nicht.")
+        else:
+            auto_text = tr("Läuft ein Spiel, stellt der Dienst die Rangfolge auf dessen CCD und hält den gesamten Prozessbaum des Spiels "
+                           "dort (alle Threads). Steam, Launcher, Discord und Browser wechseln währenddessen auf den anderen CCD. "
+                           "Nach dem Spiel gilt wieder die Ruhe-Vorgabe.")
+        self.auto_group = group(tr("Automatik (wie AMDs Treiber)"), auto_text)
         self.sw_enabled = Adw.SwitchRow(title=tr("Erkennung und Zuweisung aktiv"),
                                         subtitle=tr("Aus: der Dienst läuft weiter, weist aber nichts zu und hebt bestehende Zuweisungen auf"))
         self.sw_service = Adw.SwitchRow(title=tr("Hintergrunddienst läuft"),
@@ -139,10 +154,11 @@ class X3dPage(Page):
         self.sw_autostart = Adw.SwitchRow(title=tr("Beim Anmelden starten"), subtitle="systemctl --user enable")
         self.cb_default = Adw.ComboRow(title=tr("Unbekannte Spiele"),
                                        subtitle=tr("Erkannt an GPU-Zugriff und Herkunft: Proton/Wine, Steam, umu, Heroic, Lutris, Spieleordner"))
-        self.cb_default.set_model(Gtk.StringList.new(DEFAULT_TITLES))
+        self.cb_default.set_model(Gtk.StringList.new(SINGLE_DEFAULT_TITLES if self.topo.symmetric else DEFAULT_TITLES))
         self.cb_idle = Adw.ComboRow(title=tr("Ohne laufendes Spiel bevorzugen"),
                                     subtitle=tr("Rangfolge der Kerne (amd_x3d_mode), sobald kein Spiel mehr läuft"))
         self.cb_idle.set_model(Gtk.StringList.new(IDLE_TITLES))
+        self.cb_idle.set_visible(not self.topo.symmetric)      # ohne Cache-/Frequenz-Unterschied gibt es keine Rangfolge
         self.sw_bg = Adw.SwitchRow(title=tr("Hintergrundprogramme auf den anderen CCD"),
                                    subtitle=tr("Steam, Store-Launcher, Discord, Browser – nur solange ein Spiel läuft; danach wieder alle Kerne"))
         self.sw_enforce = Adw.SwitchRow(title=tr("Zuweisung erzwingen"),
@@ -154,7 +170,7 @@ class X3dPage(Page):
         self.sw_enabled.connect("notify::active", lambda r, _p: self._cfg("X3D_ENABLED", "1" if r.get_active() else "0"))
         self.sw_bg.connect("notify::active", lambda r, _p: self._cfg("X3D_BACKGROUND", "1" if r.get_active() else "0"))
         self.sw_enforce.connect("notify::active", lambda r, _p: self._cfg("X3D_ENFORCE", "1" if r.get_active() else "0"))
-        self.cb_default.connect("notify::selected", lambda r, _p: self._cfg("X3D_DEFAULT_MODE", MODE_CHOICES[r.get_selected()]))
+        self.cb_default.connect("notify::selected", lambda r, _p: self._cfg("X3D_DEFAULT_MODE", self.mode_choices[r.get_selected()]))
         self.cb_idle.connect("notify::selected", lambda r, _p: self._cfg("X3D_IDLE_MODE", IDLE_CHOICES[r.get_selected()]))
         self.en_dirs.connect("apply", lambda r: self._cfg("X3D_GAME_DIRS", r.get_text().strip()))
         self.sw_service.connect("notify::active", self._toggle_service)
@@ -202,8 +218,8 @@ class X3dPage(Page):
             self.sw_enabled.set_active(cfg.get("X3D_ENABLED", "1") == "1")
             self.sw_bg.set_active(cfg.get("X3D_BACKGROUND", "1") == "1")
             self.sw_enforce.set_active(cfg.get("X3D_ENFORCE", "1") == "1")
-            d = cfg.get("X3D_DEFAULT_MODE", "cache")
-            self.cb_default.set_selected(MODE_CHOICES.index(d) if d in MODE_CHOICES else 0)
+            d = self.topo.effective_mode(cfg.get("X3D_DEFAULT_MODE", "cache"))
+            self.cb_default.set_selected(self.mode_choices.index(d) if d in self.mode_choices else 0)
             i = cfg.get("X3D_IDLE_MODE", "frequency")
             self.cb_idle.set_selected(IDLE_CHOICES.index(i) if i in IDLE_CHOICES else 0)
             self.en_dirs.set_text(cfg.get("X3D_GAME_DIRS", ""))
@@ -248,6 +264,7 @@ class X3dPage(Page):
                  "alive": x3d.daemon_alive(), "has_driver": x3d.mode_path() is not None, "usage": usage}
             if full:
                 d["autostart"] = x3d.autostart_enabled() if x3d.systemd_user_available() else None
+                d["sched_cache"] = x3d.kernel_sched_cache()
             return d
         run_async(work, lambda d: self._apply(d, full))
 
@@ -258,18 +275,25 @@ class X3dPage(Page):
         sessions = st.get("sessions", []) if self._alive else []
         import re as _re
         model = _re.sub(r"^AMD\s+Ryzen\s+\d\s+", "", _re.sub(r"\s+\d+-Core Processor$|\s+Processor$", "", topo.cpu_model)) or tr("Unbekannt")
-        if topo.dual:
+        if topo.multi:
             sizes = " + ".join(f"{c.l3_bytes // 1024 ** 2}" for c in sorted(topo.ccds, key=lambda c: c.id))
-            self.t_cpu.set(model, f"{len(topo.ccds)} CCDs · {sizes} MB L3", "ok")
+            self.t_cpu.set(model, f"{len(topo.ccds)} CCDs · {sizes} MB L3" + (tr(" · gleich groß") if topo.symmetric else ""), "ok")
         else:
             self.t_cpu.set(model, tr("{0} CCD(s) · kein Dual-CCD-X3D").format(len(topo.ccds)), "warn")
-        if not topo.dual:
-            self.notice.set_text(tr("Kein Prozessor mit zwei unterschiedlich großen L3-Caches erkannt (Dual-CCD-X3D wie 7950X3D/7900X3D/"
-                                    "9950X3D/9900X3D). Die Zuweisung bleibt hier wirkungslos; Einstellungen können trotzdem vorbereitet werden."))
+        if not topo.multi:
+            self.notice.set_text(tr("Kein Prozessor mit mehreren CCDs erkannt (X3D mit zwei CCDs wie 7950X3D/7900X3D/9950X3D/9900X3D oder "
+                                    "9950X3D2). Die Zuweisung bleibt hier wirkungslos; Einstellungen können trotzdem vorbereitet werden."))
             self.notice.set_visible(True)
         else:
             self.notice.set_visible(False)
-        if not d["has_driver"]:
+        if "sched_cache" in d:
+            self._sched_cache = d["sched_cache"]
+            self.kernel_hint.set_text(tr("Kernel mit Cache-Aware Scheduling (CONFIG_SCHED_CACHE): Der Kernel bündelt Threads eines Prozesses "
+                                         "selbst je L3-Domäne; die Zuweisung hier bleibt verbindlich."))
+            self.kernel_hint.set_visible(bool(self._sched_cache))
+        if topo.symmetric:
+            self.t_mode.set(tr("Keine Rangfolge"), tr("gleich große CCDs – amd_x3d_mode ohne Wirkung"), None)
+        elif not d["has_driver"]:
             self.t_mode.set(tr("Kein Treiber"), tr("amd_3d_vcache fehlt"), "warn")
         else:
             self.t_mode.set(MODE_TITLES.get(self._mode or "", "?"), "amd_x3d_mode · " + (tr("schreibbar") if self._writable else tr("nur lesbar")),
@@ -282,13 +306,13 @@ class X3dPage(Page):
                 sub = tr("Probelauf – ändert nichts")
             self.t_service.set(tr("Läuft"), sub, "ok")
         else:
-            self.t_service.set(tr("Gestoppt"), tr("unten einschalten"), "warn" if topo.dual else None)
+            self.t_service.set(tr("Gestoppt"), tr("unten einschalten"), "warn" if topo.multi else None)
         if sessions:
             first = sessions[0]
             sub = tr(first["name"])
             if first.get("threads"):
                 sub += tr(" · {0}/{1} auf {2}").format(first.get("threads_on_ccd", 0), first["threads"],
-                                                       self._ccd_label(first.get("mode", "")))
+                                                       self._ccd_label(first.get("mode", ""), first.get("ccd")))
             if len(sessions) > 1:
                 sub += f" · +{len(sessions) - 1}"
             ok = first.get("threads", 0) == 0 or first.get("threads_on_ccd", 0) == first.get("threads", 0) or first.get("mode") == "none"
@@ -318,8 +342,10 @@ class X3dPage(Page):
             finally:
                 self._loading = False
 
-    def _ccd_label(self, mode: str) -> str:
+    def _ccd_label(self, mode: str, ccd: int | None = None) -> str:
         topo = self.topo
+        if mode == "single":
+            return f"CCD{ccd}" if ccd is not None else tr("einem CCD")
         if mode == "cache" and topo.cache_ccd:
             return f"CCD{topo.cache_ccd.id}"
         if mode == "frequency" and topo.freq_ccd:
@@ -345,7 +371,14 @@ class X3dPage(Page):
             usage.set_hexpand(True)
             head.append(usage)
             card.append(head)
-            role = tr("Cache-CCD · 3D V-Cache") if is_cache else (tr("Frequenz-CCD · höherer Takt") if topo.dual else "CCD")
+            if is_cache:
+                role = tr("Cache-CCD · 3D V-Cache")
+            elif topo.dual:
+                role = tr("Frequenz-CCD · höherer Takt")
+            elif topo.symmetric:
+                role = tr("CCD · gleich großer L3 – keine Rangfolge")
+            else:
+                role = "CCD"
             card.append(label(role, css=["body-text"]))
             card.append(label(tr("{0} Kerne / {1} Threads · {2} · CPUs {3}").format(ccd.cores or len(ccd.cpus), len(ccd.cpus),
                                                                                     ccd.l3_text, ccd.cpu_list),
@@ -371,7 +404,12 @@ class X3dPage(Page):
             b.remove_css_class("btn-secondary")
             b.add_css_class("btn-primary" if self._mode == mode else "btn-secondary")
         self.btn_access.set_visible(has_driver and not self._writable)
-        if not has_driver:
+        self.mode_bar.set_visible(not topo.symmetric)
+        if topo.symmetric:
+            hint = tr("Beide CCDs haben denselben L3-Cache – eine Rangfolge der Kerne (amd_x3d_mode) hat laut AMD keine Wirkung. "
+                      "Der Dienst hält ein erkanntes Spiel stattdessen auf dem CCD, auf dem beim Erkennen die meisten seiner Threads "
+                      "laufen (wie Windows' Game Mode); Hintergrundprogramme wandern auf den anderen.")
+        elif not has_driver:
             hint = tr("Der Kernel-Treiber amd_3d_vcache ist nicht aktiv. Ohne ihn setzt der Dienst nur die Affinität der Spiele; "
                       "die Rangfolge der Kerne (CPPC) bleibt, wie das BIOS sie vorgibt.")
         elif not self._writable:
@@ -395,14 +433,14 @@ class X3dPage(Page):
                                                                       s.get("pids", 0), s.get("threads", 0))
             if since:
                 sub += tr(" · seit {0}").format(since)
-            cpus = self.topo.cpus_for(mode)
+            cpus = self.topo.cpus_of_ccd(s.get("ccd")) if mode == "single" else self.topo.cpus_for(mode)
             if cpus:
                 sub += f" · CPUs {x3d.format_cpu_list(cpus)}"
             threads = s.get("threads", 0)
             on = s.get("threads_on_ccd", 0)
             placement = s.get("placement") or {}
             if threads:
-                where = self._ccd_label(mode)
+                where = self._ccd_label(mode, s.get("ccd"))
                 sub += "\n" + tr("Threads: {0}/{1} auf {2} gebunden").format(on, threads, where)
                 last = ", ".join(f"CCD{k}: {v}" for k, v in sorted(placement.items()) if k != "-1")
                 if last:
@@ -411,9 +449,10 @@ class X3dPage(Page):
             row.set_subtitle_lines(3)
             row.add_prefix(Gtk.Image(icon_name=pick_icon("applications-games-symbolic", "input-gaming-symbolic"), pixel_size=16))
             share = s.get("share")
-            if share is not None and mode in ("cache", "frequency"):
-                row.add_suffix(Tag(tr("{0:.0f} % CPU-Zeit auf {1}").format(share, self._ccd_label(mode)), "ok" if share >= 95 else "warn"))
-            elif threads and mode in ("cache", "frequency"):
+            if share is not None and mode in ("cache", "frequency", "single"):
+                row.add_suffix(Tag(tr("{0:.0f} % CPU-Zeit auf {1}").format(share, self._ccd_label(mode, s.get("ccd"))),
+                                   "ok" if share >= 95 else "warn"))
+            elif threads and mode in ("cache", "frequency", "single"):
                 row.add_suffix(Tag(tr("alle Threads gebunden") if on == threads else tr("{0} Threads außerhalb").format(threads - on),
                                    "ok" if on == threads else "warn"))
             row.add_suffix(Tag(MODE_TITLES.get(mode, mode), TAG_STYLE.get(mode)))
@@ -423,7 +462,7 @@ class X3dPage(Page):
     def _mode_buttons(self, key: str, name: str, source: str, current: str, allow_ignore: bool = False,
                       has_override: bool = False) -> Gtk.Widget:
         box = Gtk.Box(spacing=2, valign=Gtk.Align.CENTER)
-        for mode in MODE_CHOICES:
+        for mode in self.mode_choices:
             b = button(MODE_TITLES[mode], ["btn-secondary" if mode == current else "flat"],
                        on_click=lambda m=mode: self._override(key, m, name, source),
                        tooltip=tr("„{name}“ fest dem {mode} zuweisen").format(name=tr(name), mode=MODE_LONG[mode]))
@@ -443,32 +482,43 @@ class X3dPage(Page):
     def _render_catalog(self) -> None:
         _clear(self.cat_list)
         q = self._search
-        rows: list[tuple[str, str, str, str, bool, bool]] = []  # name, key, sub, mode, has_override, ignored
+        rows: list[tuple[str, str, str, str, bool, str]] = []  # name, key, sub, mode, has_override, state ("" | ignored | shadowed)
+        for key, ov in sorted(self.rules.shadowed.items(), key=lambda kv: (kv[1].get("name") or kv[0]).lower()):
+            kind = KIND_LABELS.get(ov.get("kind", ""), ov.get("kind", ""))
+            rows.append((self.rules.label(key), key,
+                         tr("Festlegung ohne Wirkung · {0} – der Katalog führt {1} als {2} ({3})").format(
+                             key, key.split(":", 1)[-1], kind, tr(ov.get("catalog", ""))), ov["mode"], True, "shadowed"))
         for key, ov in sorted(self.rules.overrides.items(), key=lambda kv: (kv[1].get("name") or kv[0]).lower()):
-            rows.append((self.rules.label(key), key, tr("Eigene Festlegung · {0}").format(key), ov["mode"], True, False))
+            rows.append((self.rules.label(key), key, tr("Eigene Festlegung · {0}").format(key), ov["mode"], True, ""))
         for key in sorted(self.rules.ignore):
-            rows.append((self.rules.label(key), key, tr("Kein Spiel (Ausschluss) · {0}").format(key), "", True, True))
+            rows.append((self.rules.label(key), key, tr("Kein Spiel (Ausschluss) · {0}").format(key), "", True, "ignored"))
         for e in sorted(self.catalog.games(), key=lambda e: e.name.lower()):
             keys = e.keys()
             key = next((k for k in keys if k.startswith("exe:")), keys[0] if keys else "")
             if not key or key in self.rules.overrides or key in self.rules.ignore:
                 continue
-            rows.append((e.name, key, tr("Katalog · {0}").format(", ".join(e.exe[:3] + e.steam[:1])), e.mode, False, False))
+            rows.append((e.name, key, tr("Katalog · {0}").format(", ".join(e.exe[:3] + e.steam[:1])), e.mode, False, ""))
         if q:
             rows = [r for r in rows if q in tr(r[0]).lower() or q in r[2].lower() or q in r[1].lower()]
         shown = rows[:60]
-        for name, key, sub, mode, has_override, ignored in shown:
+        for name, key, sub, mode, has_override, state in shown:
             row = Adw.ActionRow(title=GLib.markup_escape_text(tr(name)), subtitle=GLib.markup_escape_text(sub))
-            row.set_subtitle_lines(1)
-            if ignored:
+            row.set_subtitle_lines(2 if state == "shadowed" else 1)
+            if state == "ignored":
                 row.add_suffix(Tag(tr("kein Spiel"), "danger"))
                 row.add_suffix(button(tr("Wieder zulassen"), ["flat"], on_click=lambda k=key: self._reset(k)))
+            elif state == "shadowed":
+                row.add_suffix(Tag(tr("ohne Wirkung"), "warn"))
+                row.add_suffix(button(tr("Entfernen"), ["flat"], on_click=lambda k=key: self._reset(k),
+                                      tooltip=tr("Festlegung löschen – das Programm gilt laut Katalog ohnehin nicht als Spiel")))
             else:
                 row.add_suffix(Tag(MODE_TITLES.get(mode, tr("Vorgabe")) if mode else tr("Vorgabe"), TAG_STYLE.get(mode) if mode else None))
                 row.add_suffix(self._mode_buttons(key, name, "", mode, has_override=has_override))
             self.cat_list.append(row)
-        n_user = len(self.rules.overrides) + len(self.rules.ignore)
+        n_user = len(self.rules.overrides) + len(self.rules.ignore) + len(self.rules.shadowed)
         info = tr("{0} Spiele im Katalog, {1} eigene Festlegungen").format(len(self.catalog.games()), n_user)
+        if self.rules.shadowed:
+            info += tr(" · {0} davon ohne Wirkung, weil der Katalog das Programm als Nicht-Spiel führt").format(len(self.rules.shadowed))
         if len(rows) > len(shown):
             info += tr(" · {0} weitere Treffer – Suche eingrenzen").format(len(rows) - len(shown))
         info += tr(". Spiele ohne Eintrag bekommen die Vorgabe für unbekannte Spiele; AMDs eigene Liste ist nicht öffentlich.")
@@ -560,7 +610,7 @@ class X3dPage(Page):
                 key = f"exe:{ident.lower()}"
             else:
                 key = f"comm:{ident}"
-            mode = MODE_CHOICES[cb.get_selected()]
+            mode = self.mode_choices[cb.get_selected()]
             d.close()
             self._override(key, mode, nm or x3d.pretty_name(ident), "")
 
@@ -569,7 +619,7 @@ class X3dPage(Page):
         name = Adw.EntryRow(title=tr("Anzeigename (optional)"))
         exe = Adw.EntryRow(title=tr("Programmdatei / Prozessname / Steam-AppID"))
         cb = Adw.ComboRow(title=tr("Zuweisung"))
-        cb.set_model(Gtk.StringList.new([MODE_LONG[m] for m in MODE_CHOICES]))
+        cb.set_model(Gtk.StringList.new([MODE_LONG[m] for m in self.mode_choices]))
         for w in (name, exe, cb):
             g.add(w)
         dlg.add_group(g)
