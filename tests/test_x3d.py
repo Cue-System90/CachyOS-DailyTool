@@ -147,6 +147,8 @@ class CatalogRulesTests(unittest.TestCase):
             self.assertIsNotNone(e, exe)
             self.assertEqual(e.kind, "system", exe)
         self.assertEqual(cat.get("exe:paradox launcher.exe").kind, "launcher")
+        for exe in ("roon.exe", "raatserver.exe"):          # Musiksoftware unter Wine mit GPU-Zugriff – kein Spiel
+            self.assertEqual(cat.get(f"exe:{exe}").kind, "background", exe)
 
     def test_override_on_catalog_non_game_is_shadowed(self):
         """Festlegung „exe:xalia.exe = Rise of the Merchants Demo“ wirkt nicht, bleibt aber gespeichert, bis sie entfernt wird."""

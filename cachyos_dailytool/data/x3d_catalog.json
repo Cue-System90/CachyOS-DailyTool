@@ -253,6 +253,17 @@
    ]
   },
   {
+   "name": "Roon",
+   "kind": "background",
+   "exe": [
+    "roon.exe",
+    "raatserver.exe",
+    "roonappliance.exe",
+    "roonserver.exe",
+    "roonbridge.exe"
+   ]
+  },
+  {
    "name": "Discord",
    "kind": "background",
    "comm": [
